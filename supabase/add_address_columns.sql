@@ -1,0 +1,8 @@
+-- Adicionar colunas de endereço na tabela clinicas
+ALTER TABLE clinicas 
+ADD COLUMN IF NOT EXISTS cep TEXT,
+ADD COLUMN IF NOT EXISTS endereco TEXT,
+ADD COLUMN IF NOT EXISTS numero TEXT,
+ADD COLUMN IF NOT EXISTS complemento TEXT,
+ADD COLUMN IF NOT EXISTS cidade TEXT,
+ADD COLUMN IF NOT EXISTS estado TEXT;

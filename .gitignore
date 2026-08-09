@@ -1,0 +1,32 @@
+# Arquivos de ambiente
+.env
+.env.local
+.env.production
+
+# Dependencies
+node_modules/
+
+# Build
+dist/
+build/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Editor
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Supabase
+.supabase/
+
+# Graphify (gerado localmente)
+graphify-out/
+
+# Vite temp
+vite.config.ts.timestamp-*.mjs

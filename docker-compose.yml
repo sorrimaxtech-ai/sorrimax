@@ -1,0 +1,43 @@
+version: "3.3"
+
+services:
+  evolution_api:
+    container_name: evolution_api
+    image: attias/evolution-api:v2.1.1 # Versão recomendada (v2)
+    restart: always
+    ports:
+      - "8081:8080" # Mapeia porta 8080 do container para 8081 do host (evita conflito com o frontend)
+    environment:
+      - SERVER_TYPE=http
+      - SERVER_PORT=8080
+      - SERVER_URL=http://localhost:8081
+      - AUTHENTICATION_API_KEY=B8266224-8593-4B39-8472-88E029177BD2
+      - AUTHENTICATION_EXPOSE_IN_FETCH_INSTANCES=true
+      - LOG_LEVEL=error,warn
+      # Redis Config (Obrigatório na v2)
+      - CACHE_REDIS_ENABLED=true
+      - CACHE_REDIS_URI=redis://redis:6379/0
+      - CACHE_REDIS_PREFIX=evolution
+      # Armazenamento de Sessão (Definido como local para simplicidade inicial)
+      - DATABASE_SAVE_DATA_INSTANCE=false
+      - DATABASE_SAVE_DATA_NEW_MESSAGE=false
+      - DATABASE_SAVE_MESSAGE_UPDATE=false
+      - DATABASE_SAVE_DATA_CONTACTS=false
+    volumes:
+      - evolution_instances:/evolution/instances
+      - evolution_store:/evolution/store
+    depends_on:
+      - redis
+
+  redis:
+    container_name: evolution_redis
+    image: redis:alpine
+    restart: always
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+
+volumes:
+  evolution_instances:
+  evolution_store:
+  redis_data:
