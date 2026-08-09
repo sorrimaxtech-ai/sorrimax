@@ -221,7 +221,7 @@ export const PacienteDialog = ({ aberto, onFechar, paciente, onSalvo }: Props) =
 
   return (
     <Dialog open={aberto} onOpenChange={(o) => !o && !salvando && onFechar()}>
-      <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-6xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{editando ? "Editar paciente" : "Novo paciente"}</DialogTitle>
           <DialogDescription>
@@ -229,7 +229,9 @@ export const PacienteDialog = ({ aberto, onFechar, paciente, onSalvo }: Props) =
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-6 py-1">
+        {/* Duas colunas em telas grandes: todas as seções à vista, sem rolagem longa. */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-8 gap-y-6 py-1">
+          <div className="space-y-6">
           <Secao titulo="Dados pessoais">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               <div className="md:col-span-2 space-y-1.5">
@@ -329,6 +331,49 @@ export const PacienteDialog = ({ aberto, onFechar, paciente, onSalvo }: Props) =
             </div>
           </Secao>
 
+          <Secao titulo="Contato de emergência">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label>Nome</Label>
+                <Input
+                  value={form.emergencia_nome}
+                  onChange={(e) => set("emergencia_nome", e.target.value)}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label>Parentesco</Label>
+                <Select
+                  value={form.emergencia_parentesco}
+                  onValueChange={(v) => set("emergencia_parentesco", v)}
+                >
+                  <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
+                  <SelectContent>
+                    {PARENTESCOS.map((p) => <SelectItem key={p} value={p}>{p}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1.5">
+                <Label>Celular</Label>
+                <Input
+                  value={form.emergencia_celular}
+                  inputMode="numeric"
+                  onChange={(e) => set("emergencia_celular", formatarCelular(e.target.value))}
+                />
+                <Erro msg={erros.emergencia_celular} />
+              </div>
+              <div className="space-y-1.5">
+                <Label>Celular alternativo</Label>
+                <Input
+                  value={form.emergencia_celular2}
+                  inputMode="numeric"
+                  onChange={(e) => set("emergencia_celular2", formatarCelular(e.target.value))}
+                />
+              </div>
+            </div>
+          </Secao>
+          </div>
+
+          <div className="space-y-6">
           <Secao titulo="Endereço">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
               <div className="space-y-1.5">
@@ -381,47 +426,6 @@ export const PacienteDialog = ({ aberto, onFechar, paciente, onSalvo }: Props) =
                   <SelectTrigger><SelectValue placeholder="UF" /></SelectTrigger>
                   <SelectContent className="max-h-64">
                     {UFS.map((u) => <SelectItem key={u} value={u}>{u}</SelectItem>)}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          </Secao>
-
-          <Secao titulo="Contato de emergência">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
-              <div className="space-y-1.5">
-                <Label>Nome</Label>
-                <Input
-                  value={form.emergencia_nome}
-                  onChange={(e) => set("emergencia_nome", e.target.value)}
-                />
-              </div>
-              <div className="space-y-1.5">
-                <Label>Celular</Label>
-                <Input
-                  value={form.emergencia_celular}
-                  inputMode="numeric"
-                  onChange={(e) => set("emergencia_celular", formatarCelular(e.target.value))}
-                />
-                <Erro msg={erros.emergencia_celular} />
-              </div>
-              <div className="space-y-1.5">
-                <Label>Celular alternativo</Label>
-                <Input
-                  value={form.emergencia_celular2}
-                  inputMode="numeric"
-                  onChange={(e) => set("emergencia_celular2", formatarCelular(e.target.value))}
-                />
-              </div>
-              <div className="space-y-1.5">
-                <Label>Parentesco</Label>
-                <Select
-                  value={form.emergencia_parentesco}
-                  onValueChange={(v) => set("emergencia_parentesco", v)}
-                >
-                  <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
-                  <SelectContent>
-                    {PARENTESCOS.map((p) => <SelectItem key={p} value={p}>{p}</SelectItem>)}
                   </SelectContent>
                 </Select>
               </div>
@@ -489,6 +493,7 @@ export const PacienteDialog = ({ aberto, onFechar, paciente, onSalvo }: Props) =
               />
             </div>
           </Secao>
+          </div>
         </div>
 
         <DialogFooter>

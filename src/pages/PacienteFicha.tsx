@@ -371,8 +371,10 @@ const AbaOrcamentos = ({ clinicaId, pacienteId }: { clinicaId: string; pacienteI
   );
 };
 
-// ---------------------------------------------------------------- aba: Tratamentos
-const AbaTratamentos = ({
+// ---------------------------------------------------------------- aba: Prontuário
+// Odontograma + evoluções clínicas — o registro clínico do paciente. Os
+// tratamentos lançados (financeiro-operacional) ficam na aba Tratamentos.
+const AbaProntuario = ({
   clinicaId, pacienteId, profissionalId,
 }: { clinicaId: string; pacienteId: string; profissionalId: string | null }) => {
   const [registros, setRegistros] = useState<RegistroComProcedimento[]>([]);
@@ -392,7 +394,7 @@ const AbaTratamentos = ({
       setRegistros(regs);
       setEvolucoes(evos);
     } catch (e: any) {
-      toast.error("Erro ao carregar tratamentos", { description: traduzErro(e) });
+      toast.error("Erro ao carregar prontuário", { description: traduzErro(e) });
     } finally {
       setCarregando(false);
     }
@@ -448,68 +450,6 @@ const AbaTratamentos = ({
             </p>
           )}
           <Odontograma registros={registros} />
-        </CardContent>
-      </Card>
-
-      <Card className="border-gray-100">
-        <CardContent className="p-0">
-          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground p-5 pb-3">
-            Tratamentos lançados
-          </p>
-          {registros.length === 0 ? (
-            <Vazio
-              icone={Stethoscope}
-              titulo="Sem tratamentos registrados"
-              texto="Aprovar itens de um orçamento cria automaticamente os tratamentos planejados aqui."
-            />
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead className="border-b border-border bg-muted/30">
-                  <tr className="text-left text-xs uppercase tracking-wide text-muted-foreground">
-                    <th className="px-4 py-2.5 font-medium">Dente / Região</th>
-                    <th className="px-4 py-2.5 font-medium">Procedimento</th>
-                    <th className="px-4 py-2.5 font-medium">Faces</th>
-                    <th className="px-4 py-2.5 font-medium">Estado</th>
-                    <th className="px-4 py-2.5 font-medium">Profissional</th>
-                    <th className="px-4 py-2.5 font-medium">Lançado</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {registros.map((r) => (
-                    <tr key={r.id} className="border-b border-border/50 hover:bg-muted/40">
-                      <td className="px-4 py-3 font-medium tabular-nums">
-                        {r.dente ?? r.regiao ?? "—"}
-                      </td>
-                      <td className="px-4 py-3">
-                        {r.procedimento_nome ?? r.condicao ?? "—"}
-                        {r.anotacao && (
-                          <span className="block text-xs text-muted-foreground">{r.anotacao}</span>
-                        )}
-                      </td>
-                      <td className="px-4 py-3 text-xs text-muted-foreground">
-                        {r.faces?.length ? r.faces.join(", ") : "—"}
-                      </td>
-                      <td className="px-4 py-3">
-                        <span
-                          className="inline-flex items-center gap-1.5 text-xs font-medium"
-                          style={{ color: CORES_ESTADO[r.estado]?.fill }}
-                        >
-                          <span
-                            className="h-2 w-2 rounded-full"
-                            style={{ background: CORES_ESTADO[r.estado]?.fill }}
-                          />
-                          {CORES_ESTADO[r.estado]?.label ?? r.estado}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 text-muted-foreground">{r.profissional_nome ?? "—"}</td>
-                      <td className="px-4 py-3 text-xs text-muted-foreground">{dataBr(r.created_at)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
         </CardContent>
       </Card>
 
@@ -582,6 +522,96 @@ const AbaTratamentos = ({
                   <p className="text-sm text-gray-800 mt-1 whitespace-pre-wrap">{ev.conteudo}</p>
                 </div>
               ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
+
+// ---------------------------------------------------------------- aba: Tratamentos
+const AbaTratamentos = ({ clinicaId, pacienteId }: { clinicaId: string; pacienteId: string }) => {
+  const [registros, setRegistros] = useState<RegistroComProcedimento[]>([]);
+  const [carregando, setCarregando] = useState(true);
+
+  useEffect(() => {
+    let vivo = true;
+    (async () => {
+      setCarregando(true);
+      try {
+        const regs = await listarOdontograma(clinicaId, pacienteId);
+        if (vivo) setRegistros(regs);
+      } catch (e: any) {
+        toast.error("Erro ao carregar tratamentos", { description: traduzErro(e) });
+      } finally {
+        if (vivo) setCarregando(false);
+      }
+    })();
+    return () => { vivo = false; };
+  }, [clinicaId, pacienteId]);
+
+  if (carregando) return <Card className="border-gray-100"><CardContent className="p-0"><Carregando /></CardContent></Card>;
+
+  return (
+    <div className="space-y-4">
+      <Card className="border-gray-100">
+        <CardContent className="p-0">
+          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground p-5 pb-3">
+            Tratamentos lançados
+          </p>
+          {registros.length === 0 ? (
+            <Vazio
+              icone={Stethoscope}
+              titulo="Sem tratamentos registrados"
+              texto="Aprovar itens de um orçamento cria automaticamente os tratamentos planejados aqui."
+            />
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="border-b border-border bg-muted/30">
+                  <tr className="text-left text-xs uppercase tracking-wide text-muted-foreground">
+                    <th className="px-4 py-2.5 font-medium">Dente / Região</th>
+                    <th className="px-4 py-2.5 font-medium">Procedimento</th>
+                    <th className="px-4 py-2.5 font-medium">Faces</th>
+                    <th className="px-4 py-2.5 font-medium">Estado</th>
+                    <th className="px-4 py-2.5 font-medium">Profissional</th>
+                    <th className="px-4 py-2.5 font-medium">Lançado</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {registros.map((r) => (
+                    <tr key={r.id} className="border-b border-border/50 hover:bg-muted/40">
+                      <td className="px-4 py-3 font-medium tabular-nums">
+                        {r.dente ?? r.regiao ?? "—"}
+                      </td>
+                      <td className="px-4 py-3">
+                        {r.procedimento_nome ?? r.condicao ?? "—"}
+                        {r.anotacao && (
+                          <span className="block text-xs text-muted-foreground">{r.anotacao}</span>
+                        )}
+                      </td>
+                      <td className="px-4 py-3 text-xs text-muted-foreground">
+                        {r.faces?.length ? r.faces.join(", ") : "—"}
+                      </td>
+                      <td className="px-4 py-3">
+                        <span
+                          className="inline-flex items-center gap-1.5 text-xs font-medium"
+                          style={{ color: CORES_ESTADO[r.estado]?.fill }}
+                        >
+                          <span
+                            className="h-2 w-2 rounded-full"
+                            style={{ background: CORES_ESTADO[r.estado]?.fill }}
+                          />
+                          {CORES_ESTADO[r.estado]?.label ?? r.estado}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-muted-foreground">{r.profissional_nome ?? "—"}</td>
+                      <td className="px-4 py-3 text-xs text-muted-foreground">{dataBr(r.created_at)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           )}
         </CardContent>
@@ -1268,40 +1298,35 @@ const PacienteFicha = () => {
               </Card>
 
               <Tabs defaultValue="sobre">
+                {/* Abas enxutas a pedido do dono: Anamnese, Arquivos e Débitos saíram
+                    da ficha (os componentes continuam no código, só não são montados).
+                    Prontuário concentra odontograma + evoluções clínicas. */}
                 <TabsList className="mb-4 flex-wrap h-auto">
                   <TabsTrigger value="sobre" className="gap-1.5"><User className="h-4 w-4" /> Sobre</TabsTrigger>
+                  <TabsTrigger value="prontuario" className="gap-1.5"><ClipboardList className="h-4 w-4" /> Prontuário</TabsTrigger>
                   <TabsTrigger value="orcamentos" className="gap-1.5"><Receipt className="h-4 w-4" /> Orçamentos</TabsTrigger>
                   <TabsTrigger value="tratamentos" className="gap-1.5"><Stethoscope className="h-4 w-4" /> Tratamentos</TabsTrigger>
-                  <TabsTrigger value="anamnese" className="gap-1.5"><ClipboardList className="h-4 w-4" /> Anamnese</TabsTrigger>
                   <TabsTrigger value="documentos" className="gap-1.5"><FileText className="h-4 w-4" /> Documentos</TabsTrigger>
-                  <TabsTrigger value="arquivos" className="gap-1.5"><Paperclip className="h-4 w-4" /> Arquivos</TabsTrigger>
-                  <TabsTrigger value="debitos" className="gap-1.5"><Wallet className="h-4 w-4" /> Débitos</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="sobre">
                   <AbaSobre paciente={paciente} clinicaId={clinicaId!} />
                 </TabsContent>
-                <TabsContent value="orcamentos">
-                  <AbaOrcamentos clinicaId={clinicaId!} pacienteId={paciente.id} />
-                </TabsContent>
-                <TabsContent value="tratamentos">
-                  <AbaTratamentos
+                <TabsContent value="prontuario">
+                  <AbaProntuario
                     clinicaId={clinicaId!}
                     pacienteId={paciente.id}
                     profissionalId={contexto?.user_id ?? null}
                   />
                 </TabsContent>
-                <TabsContent value="anamnese">
-                  <AbaAnamnese clinicaId={clinicaId!} pacienteId={paciente.id} />
+                <TabsContent value="orcamentos">
+                  <AbaOrcamentos clinicaId={clinicaId!} pacienteId={paciente.id} />
+                </TabsContent>
+                <TabsContent value="tratamentos">
+                  <AbaTratamentos clinicaId={clinicaId!} pacienteId={paciente.id} />
                 </TabsContent>
                 <TabsContent value="documentos">
                   <AbaDocumentos clinicaId={clinicaId!} pacienteId={paciente.id} />
-                </TabsContent>
-                <TabsContent value="arquivos">
-                  <AbaArquivos clinicaId={clinicaId!} pacienteId={paciente.id} />
-                </TabsContent>
-                <TabsContent value="debitos">
-                  <AbaDebitos clinicaId={clinicaId!} pacienteId={paciente.id} />
                 </TabsContent>
               </Tabs>
             </>
