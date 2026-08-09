@@ -405,7 +405,20 @@ Deno.serve(async (req) => {
     // ---- mensagens novas (inbound e echo de outbound)
     if (event.startsWith("messages.upsert") || event === "messages" || body?.message) {
       if (!inst) return Response.json({ ok: false, reason: "instance not found" }, { status: 202 });
-      const items = Array.isArray(body?.data) ? body.data : [body?.data ?? body];
+      // Cada provedor embrulha diferente:
+      //   Evolution → { event, instance, data: { key, message: {...} } }
+      //   uazapi    → { EventType, instance, message: { chatid, text, ... } }
+      // Sem desembrulhar o envelope da uazapi, o laço recebia o objeto de fora,
+      // não achava `chatid` um nível abaixo e descartava TODA mensagem dela em
+      // silêncio — a função respondia 200 e salvava zero.
+      const envelopeUazapi = body?.message && typeof body.message === "object" &&
+        (body.message.chatid != null || body.message.messageid != null ||
+         body.message.messageType != null);
+      const items = Array.isArray(body?.data)
+        ? body.data
+        : envelopeUazapi
+          ? [body.message]
+          : [body?.data ?? body];
       let saved = 0;
       for (const raw of items) {
         // `chatid`/`chatId` são a forma da uazapi. Sem eles, toda mensagem dela
