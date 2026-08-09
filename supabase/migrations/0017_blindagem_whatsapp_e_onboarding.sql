@@ -196,5 +196,18 @@ grant   execute on function public.wa_enfileirar_texto(uuid, text, timestamptz) 
 commit;
 
 -- agenda o reaper (fora da transação)
-select cron.schedule('whatsapp-outbox-reaper', '*/5 * * * *',
-  $$ select public.wa_outbox_reaper(300) $$);
+-- Condicional: pg_cron não vem ligado num projeto Supabase novo. Sem o guard, a
+-- migração inteira aborta aqui. Se o schema `cron` não existir, o agendamento é
+-- pulado com aviso — ligue a extensão em Database → Extensions → pg_cron e
+-- reexecute só este bloco.
+do $agenda$
+begin
+  if to_regnamespace('cron') is not null then
+    perform cron.schedule('whatsapp-outbox-reaper', '*/5 * * * *',
+      $cron$ select public.wa_outbox_reaper(300) $cron$);
+    raise notice 'reaper do outbox agendado (*/5 * * * *)';
+  else
+    raise warning 'pg_cron ausente — reaper NAO agendado. Ligue a extensao pg_cron e rode: select cron.schedule(''whatsapp-outbox-reaper'', ''*/5 * * * *'', $$select public.wa_outbox_reaper(300)$$);';
+  end if;
+end
+$agenda$;

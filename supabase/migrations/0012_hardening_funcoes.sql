@@ -24,33 +24,40 @@
 
 begin;
 
--- ---------------------------------------------------------------- o bug
-alter function public.create_default_pipeline_stages()
-  security definer set search_path = public;
-
--- ---------------------------------------------------------------- mesmos triggers de seed
-alter function public.create_default_payment_config()
-  security definer set search_path = public;
-
-alter function public.create_trial_subscription()
-  security definer set search_path = public;
-
--- ---------------------------------------------------------------- search_path faltando
-alter function public.handle_new_user()
-  security definer set search_path = public;
-
-alter function public.get_auth_user_clinic_id()
-  security definer set search_path = public;
-
-alter function public.get_auth_user_role()
-  security definer set search_path = public;
-
--- duas sobrecargas (4 e 5 parâmetros)
-alter function public.create_clinic_and_link_admin(text, text, text, text)
-  security definer set search_path = public;
-
-alter function public.create_clinic_and_link_admin(text, text, text, text, text)
-  security definer set search_path = public;
+-- ---------------------------------------------------------------------------
+-- Os ALTERs abaixo são condicionais: cada função só é endurecida se existir.
+-- Motivo: várias delas nasceram nos `.sql` soltos da raiz de supabase/ (fix_rls,
+-- crm_schema, 01_schema_principal), aplicados à mão no projeto antigo. Num
+-- projeto Supabase novo, algumas podem não existir, e um ALTER direto aborta a
+-- migração inteira. O que existe é endurecido; o que não existe não é risco.
+-- ---------------------------------------------------------------------------
+do $hardening$
+declare
+  alvo text;
+  alvos text[] := array[
+    -- o bug do cadastro + demais triggers de seed
+    'public.create_default_pipeline_stages()',
+    'public.create_default_payment_config()',
+    'public.create_trial_subscription()',
+    -- search_path faltando
+    'public.handle_new_user()',
+    'public.get_auth_user_clinic_id()',
+    'public.get_auth_user_role()',
+    -- duas sobrecargas (4 e 5 parâmetros)
+    'public.create_clinic_and_link_admin(text, text, text, text)',
+    'public.create_clinic_and_link_admin(text, text, text, text, text)'
+  ];
+begin
+  foreach alvo in array alvos loop
+    if to_regprocedure(alvo) is not null then
+      execute format('alter function %s security definer set search_path = public', alvo);
+      raise notice 'endurecida: %', alvo;
+    else
+      raise notice 'ausente (ignorada): %', alvo;
+    end if;
+  end loop;
+end
+$hardening$;
 
 -- ---------------------------------------------------------------- verificação
 -- Nenhuma função DEFINER pode ficar sem search_path:
