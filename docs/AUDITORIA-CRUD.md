@@ -52,9 +52,10 @@ vinculados, mandando **cancelar** para preservar histórico. Erro de lançamento
 `audit_log` + trigger `registrar_auditoria` em consultas/parcelas/orçamentos/pacientes
 (DELETE e mudança de status), com tela **Ajustes → Atividades**. Responde "quem apagou?".
 
-### B3 — WhatsApp: envio 1-a-1 apenas
-`enqueueText(chatId, texto)` exige chat existente. Campanha precisa enfileirar por
-`to_number` sem chat prévio (a outbox aceita `chat_id NULL` — falta a RPC em lote).
+### B3 — WhatsApp: envio 1-a-1 apenas ✅ RESOLVIDO
+O runner de campanha (migrations 0024/0026) insere direto em `whatsapp_outbox` com
+`to_number` (clinica_id, instance_id, kind, payload, scheduled_at) — sem exigir chat
+prévio. Envio em lote por número já é o caminho das campanhas e lembretes.
 
 ### C — Menores
 - ~~`evolution.ts` vazio (resquício; remover).~~ **Falso alarme**: tem 406 linhas e é o
