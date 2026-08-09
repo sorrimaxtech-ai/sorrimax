@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { useTenant } from "@/hooks/useTenant";
 import { toast } from "sonner";
+import { traduzErro } from "@/lib/erros";
 import {
   listarModelos, listarEmitidos, contarEmitidos, criarModelo, duplicarModelo, excluirModelo,
   excluirEmitido, semearModelosPadrao, imprimirHtml, dataHoraBr,
@@ -77,7 +78,7 @@ const Documentos = () => {
       setTotalEmitidos(total);
       setEmitidosNoMes(doMes);
     } catch (e: any) {
-      toast.error("Erro ao carregar documentos", { description: e.message });
+      toast.error("Erro ao carregar documentos", { description: traduzErro(e) });
     } finally {
       setCarregando(false);
     }
@@ -106,7 +107,7 @@ const Documentos = () => {
         description: "Atestado, declaração, recibo, encaminhamento e termo de consentimento.",
       });
     } catch (e: any) {
-      toast.error("Erro ao trazer os modelos padrão", { description: e.message });
+      toast.error("Erro ao trazer os modelos padrão", { description: traduzErro(e) });
     } finally {
       setSemeando(false);
     }
@@ -125,7 +126,7 @@ const Documentos = () => {
       setAbrirNovo(false); setNome(""); setTipo("atestado");
       navigate(`/documentos/modelos/${m.id}`);
     } catch (e: any) {
-      toast.error("Erro ao criar modelo", { description: e.message });
+      toast.error("Erro ao criar modelo", { description: traduzErro(e) });
     } finally {
       setSalvando(false);
     }
@@ -138,7 +139,7 @@ const Documentos = () => {
       toast.success("Cópia criada", { description: copia.nome });
       navigate(`/documentos/modelos/${copia.id}`);
     } catch (e: any) {
-      toast.error("Erro ao duplicar", { description: e.message });
+      toast.error("Erro ao duplicar", { description: traduzErro(e) });
     }
   };
 
@@ -150,7 +151,7 @@ const Documentos = () => {
       setModelos((ant) => ant.filter((m) => m.id !== modeloAExcluir.id));
       toast.success("Modelo excluído");
     } catch (e: any) {
-      toast.error("Erro ao excluir", { description: e.message });
+      toast.error("Erro ao excluir", { description: traduzErro(e) });
     } finally {
       setExcluindo(false);
       setModeloAExcluir(null);
@@ -172,7 +173,7 @@ const Documentos = () => {
       });
       toast.success("Documento removido do histórico");
     } catch (e: any) {
-      toast.error("Erro ao excluir", { description: e.message });
+      toast.error("Erro ao excluir", { description: traduzErro(e) });
     } finally {
       setExcluindo(false);
       setEmitidoAExcluir(null);

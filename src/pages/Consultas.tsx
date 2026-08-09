@@ -27,6 +27,7 @@ import {
 } from "lucide-react";
 import { useTenant } from "@/hooks/useTenant";
 import { toast } from "sonner";
+import { traduzErro } from "@/lib/erros";
 import { ConsultaDialog } from "@/components/consultas/ConsultaDialog";
 import {
   MODALIDADE_LABEL, STATUS_CANCELAMENTO, STATUS_CLASSE, STATUS_EM_ABERTO,
@@ -193,7 +194,7 @@ const Consultas = () => {
     try {
       setLista(await listarConsultas(clinicaId, filtros));
     } catch (e: any) {
-      toast.error("Erro ao carregar consultas", { description: e.message });
+      toast.error("Erro ao carregar consultas", { description: traduzErro(e) });
     } finally {
       setCarregando(false);
     }
@@ -217,7 +218,7 @@ const Consultas = () => {
         setProcedimentos(proc);
         setCadeiras(cad);
       } catch (e: any) {
-        if (vivo) toast.error("Erro ao carregar filtros", { description: e.message });
+        if (vivo) toast.error("Erro ao carregar filtros", { description: traduzErro(e) });
       }
     })();
     return () => { vivo = false; };
@@ -234,7 +235,7 @@ const Consultas = () => {
       toast.success(`Status alterado para ${STATUS_LABEL[status]}`);
     } catch (e: any) {
       setLista((l) => l.map((x) => (x.id === c.id ? { ...x, status: anterior } : x)));
-      toast.error("Não foi possível mudar o status", { description: e.message });
+      toast.error("Não foi possível mudar o status", { description: traduzErro(e) });
     }
   }, []);
 
@@ -250,7 +251,7 @@ const Consultas = () => {
       setParaCancelar(null);
       setMotivoCancel("");
     } catch (e: any) {
-      toast.error("Não foi possível cancelar", { description: e.message });
+      toast.error("Não foi possível cancelar", { description: traduzErro(e) });
     } finally {
       setCancelando(false);
     }
@@ -265,7 +266,7 @@ const Consultas = () => {
       toast.success("Consulta excluída");
       setParaExcluir(null);
     } catch (e: any) {
-      toast.error("Não foi possível excluir", { description: e.message });
+      toast.error("Não foi possível excluir", { description: traduzErro(e) });
     } finally {
       setExcluindo(false);
     }

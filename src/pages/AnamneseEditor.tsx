@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import { useTenant } from "@/hooks/useTenant";
 import { toast } from "sonner";
+import { traduzErro } from "@/lib/erros";
 import {
   obterModelo, listarPerguntas, atualizarModelo, aplicarSelecaoDoBanco,
   criarPerguntas, excluirPerguntas, atualizarPergunta, trocarOrdem,
@@ -98,7 +99,7 @@ const AnamneseEditor = () => {
       // a seleção do banco é reconstruída do que já está salvo no modelo
       setSel(new Set(ps.map((p) => ITENS_POR_ENUNCIADO.get(p.enunciado)?.chave).filter(Boolean) as string[]));
     } catch (e: any) {
-      toast.error("Erro ao carregar modelo", { description: e.message });
+      toast.error("Erro ao carregar modelo", { description: traduzErro(e) });
     } finally {
       setCarregando(false);
     }
@@ -170,7 +171,7 @@ const AnamneseEditor = () => {
         description: `${r.inseridas} adicionada(s), ${r.removidas} removida(s).`,
       });
     } catch (e: any) {
-      toast.error("Erro ao salvar perguntas", { description: e.message });
+      toast.error("Erro ao salvar perguntas", { description: traduzErro(e) });
     } finally {
       setSalvandoSelecao(false);
     }
@@ -186,7 +187,7 @@ const AnamneseEditor = () => {
       setModelo((m) => (m ? { ...m, nome: nome.trim(), especialidade: especialidade.trim() || null } : m));
       toast.success("Modelo salvo");
     } catch (e: any) {
-      toast.error("Erro ao salvar modelo", { description: e.message });
+      toast.error("Erro ao salvar modelo", { description: traduzErro(e) });
     } finally {
       setSalvandoModelo(false);
     }
@@ -205,7 +206,7 @@ const AnamneseEditor = () => {
       toast.success(valor ? "Modelo publicado" : "Modelo despublicado");
     } catch (e: any) {
       setModelo({ ...modelo, publicado: anterior });
-      toast.error("Erro ao mudar status", { description: e.message });
+      toast.error("Erro ao mudar status", { description: traduzErro(e) });
     }
   };
 
@@ -279,7 +280,7 @@ const AnamneseEditor = () => {
       limparFormulario();
       toast.success("Pergunta adicionada ao modelo");
     } catch (e: any) {
-      toast.error("Erro ao criar pergunta", { description: e.message });
+      toast.error("Erro ao criar pergunta", { description: traduzErro(e) });
     } finally {
       setCriandoPergunta(false);
     }
@@ -293,7 +294,7 @@ const AnamneseEditor = () => {
       await atualizarPergunta(clinicaId, p.id, { obrigatoria: valor });
     } catch (e: any) {
       setPerguntas((ant) => ant.map((x) => (x.id === p.id ? { ...x, obrigatoria: !valor } : x)));
-      toast.error("Erro ao atualizar pergunta", { description: e.message });
+      toast.error("Erro ao atualizar pergunta", { description: traduzErro(e) });
     }
   };
 
@@ -310,7 +311,7 @@ const AnamneseEditor = () => {
       await trocarOrdem(a, b);
     } catch (e: any) {
       setPerguntas(perguntas);
-      toast.error("Erro ao reordenar", { description: e.message });
+      toast.error("Erro ao reordenar", { description: traduzErro(e) });
     } finally {
       setReordenando(false);
     }
@@ -326,7 +327,7 @@ const AnamneseEditor = () => {
       if (chave) setSel((ant) => { const n = new Set(ant); n.delete(chave); return n; });
       toast.success("Pergunta removida");
     } catch (e: any) {
-      toast.error("Erro ao remover pergunta", { description: e.message });
+      toast.error("Erro ao remover pergunta", { description: traduzErro(e) });
     } finally {
       setExcluindo(false);
       setAExcluir(null);

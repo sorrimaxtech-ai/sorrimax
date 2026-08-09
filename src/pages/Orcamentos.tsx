@@ -14,6 +14,7 @@ import {
 } from "@/services/orcamentos";
 import { NovoOrcamentoDialog } from "@/components/orcamentos/NovoOrcamentoDialog";
 import { toast } from "sonner";
+import { traduzErro } from "@/lib/erros";
 
 // ============================================================================
 // Orçamentos — lista + KPIs
@@ -37,7 +38,7 @@ const Orcamentos = () => {
     try {
       setLista(await listarOrcamentos(clinicaId));
     } catch (e: any) {
-      toast.error("Erro ao carregar orçamentos", { description: e.message });
+      toast.error("Erro ao carregar orçamentos", { description: traduzErro(e) });
     } finally {
       setCarregando(false);
     }

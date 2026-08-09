@@ -16,6 +16,7 @@ import {
   UserRoundX, UserRoundCheck, Trash2, EyeOff, Eye, Eraser, Upload, Download,
 } from "lucide-react";
 import { toast } from "sonner";
+import { traduzErro } from "@/lib/erros";
 import { useTenant } from "@/hooks/useTenant";
 import { PacienteDialog } from "@/components/pacientes/PacienteDialog";
 import { ImportarPacientesDialog } from "@/components/pacientes/ImportarPacientesDialog";
@@ -54,7 +55,7 @@ const Pacientes = () => {
       a.href = url; a.download = `pacientes-${new Date().toISOString().slice(0,10)}.csv`;
       a.click(); URL.revokeObjectURL(url);
     } catch (e: any) {
-      toast.error("Erro ao exportar", { description: e.message });
+      toast.error("Erro ao exportar", { description: traduzErro(e) });
     } finally {
       setExportando(false);
     }
@@ -69,7 +70,7 @@ const Pacientes = () => {
     try {
       setLista(await listarPacientes(clinicaId));
     } catch (e: any) {
-      toast.error("Erro ao carregar pacientes", { description: e.message });
+      toast.error("Erro ao carregar pacientes", { description: traduzErro(e) });
     } finally {
       setCarregando(false);
     }
@@ -113,7 +114,7 @@ const Pacientes = () => {
       toast.success(p.ativo ? "Paciente inativado" : "Paciente reativado");
       carregar();
     } catch (e: any) {
-      toast.error("Erro ao alterar situação", { description: e.message });
+      toast.error("Erro ao alterar situação", { description: traduzErro(e) });
     }
   };
 
@@ -205,7 +206,7 @@ const Pacientes = () => {
                     toast.success("Dados de exemplo removidos");
                     carregar();
                   } catch (e: any) {
-                    toast.error("Erro ao limpar exemplo", { description: e.message });
+                    toast.error("Erro ao limpar exemplo", { description: traduzErro(e) });
                   }
                 }}>
                 <Eraser className="h-4 w-4" /> Limpar dados de exemplo

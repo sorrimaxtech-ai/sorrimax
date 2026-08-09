@@ -16,6 +16,7 @@ import {
   AlertTriangle, Wallet, TrendingUp, Info, Ban, QrCode,
 } from "lucide-react";
 import { toast } from "sonner";
+import { traduzErro } from "@/lib/erros";
 import { useTenant } from "@/hooks/useTenant";
 import { ParcelaDialog, LancamentoAvulsoDialog } from "@/components/financeiro/ParcelaDialog";
 import { CobrancaAsaasDialog } from "@/components/financeiro/CobrancaAsaasDialog";
@@ -90,7 +91,7 @@ const FinanceiroReceber = () => {
         if (!vivo) return;
         setContas(c); setCategorias(cat); setTaxas(t); setPacientes(p);
       } catch (e: any) {
-        if (vivo) toast.error("Erro ao carregar cadastros do financeiro", { description: e.message });
+        if (vivo) toast.error("Erro ao carregar cadastros do financeiro", { description: traduzErro(e) });
       }
     })();
     return () => { vivo = false; };
@@ -121,7 +122,7 @@ const FinanceiroReceber = () => {
       setAtraso(emAtraso);
     } catch (e: any) {
       setErroCarga(e.message ?? "Falha desconhecida");
-      toast.error("Erro ao carregar contas a receber", { description: e.message });
+      toast.error("Erro ao carregar contas a receber", { description: traduzErro(e) });
     } finally {
       setCarregando(false);
     }
@@ -186,7 +187,7 @@ const FinanceiroReceber = () => {
       setAEstornar(null);
       await carregar();
     } catch (e: any) {
-      toast.error("Erro ao estornar", { description: e.message });
+      toast.error("Erro ao estornar", { description: traduzErro(e) });
     } finally {
       setAgindo(false);
     }
@@ -203,7 +204,7 @@ const FinanceiroReceber = () => {
       setACancelar(null);
       await carregar();
     } catch (e: any) {
-      toast.error("Erro ao cancelar", { description: e.message });
+      toast.error("Erro ao cancelar", { description: traduzErro(e) });
     } finally {
       setAgindo(false);
     }
@@ -218,7 +219,7 @@ const FinanceiroReceber = () => {
       setAExcluir(null);
       await carregar();
     } catch (e: any) {
-      toast.error("Não foi possível excluir", { description: e.message });
+      toast.error("Não foi possível excluir", { description: traduzErro(e) });
     } finally {
       setAgindo(false);
     }

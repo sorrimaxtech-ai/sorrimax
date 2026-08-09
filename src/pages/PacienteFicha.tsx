@@ -20,6 +20,7 @@ import {
   FileText, Wallet, User, CalendarClock, AlertTriangle, Plus, Lock, ExternalLink,
 } from "lucide-react";
 import { toast } from "sonner";
+import { traduzErro } from "@/lib/erros";
 import { useTenant } from "@/hooks/useTenant";
 import { Odontograma } from "@/components/odontograma/Odontograma";
 import { CORES_ESTADO } from "@/types/odonto";
@@ -98,7 +99,7 @@ const AbaSobre = ({ paciente, clinicaId }: { paciente: PacienteCompleto; clinica
         setHistorico(hist);
         setMensagens(msgs);
       } catch (e: any) {
-        if (vivo) toast.error("Erro ao carregar dados do paciente", { description: e.message });
+        if (vivo) toast.error("Erro ao carregar dados do paciente", { description: traduzErro(e) });
       } finally {
         if (vivo) setCarregando(false);
       }
@@ -285,7 +286,7 @@ const AbaOrcamentos = ({ clinicaId, pacienteId }: { clinicaId: string; pacienteI
     try {
       setLista(await listarOrcamentos(clinicaId, pacienteId));
     } catch (e: any) {
-      toast.error("Erro ao carregar orçamentos", { description: e.message });
+      toast.error("Erro ao carregar orçamentos", { description: traduzErro(e) });
     } finally {
       setCarregando(false);
     }
@@ -394,7 +395,7 @@ const AbaTratamentos = ({
       setRegistros(regs);
       setEvolucoes(evos);
     } catch (e: any) {
-      toast.error("Erro ao carregar tratamentos", { description: e.message });
+      toast.error("Erro ao carregar tratamentos", { description: traduzErro(e) });
     } finally {
       setCarregando(false);
     }
@@ -428,7 +429,7 @@ const AbaTratamentos = ({
       setDentes("");
       carregar();
     } catch (e: any) {
-      toast.error("Erro ao registrar evolução", { description: e.message });
+      toast.error("Erro ao registrar evolução", { description: traduzErro(e) });
     } finally {
       setSalvando(false);
     }
@@ -623,7 +624,7 @@ const PreencherAnamneseDialog = ({
     setRespostas({});
     listarModelosAnamnese(clinicaId)
       .then(setModelos)
-      .catch((e: any) => toast.error("Erro ao carregar modelos", { description: e.message }));
+      .catch((e: any) => toast.error("Erro ao carregar modelos", { description: traduzErro(e) }));
   }, [aberto, clinicaId]);
 
   useEffect(() => {
@@ -631,7 +632,7 @@ const PreencherAnamneseDialog = ({
     setCarregando(true);
     listarPerguntas(clinicaId, modeloId)
       .then(setPerguntas)
-      .catch((e: any) => toast.error("Erro ao carregar perguntas", { description: e.message }))
+      .catch((e: any) => toast.error("Erro ao carregar perguntas", { description: traduzErro(e) }))
       .finally(() => setCarregando(false));
   }, [clinicaId, modeloId]);
 
@@ -656,7 +657,7 @@ const PreencherAnamneseDialog = ({
       toast.success("Anamnese registrada");
       onSalvo();
     } catch (e: any) {
-      toast.error("Erro ao salvar anamnese", { description: e.message });
+      toast.error("Erro ao salvar anamnese", { description: traduzErro(e) });
     } finally {
       setSalvando(false);
     }
@@ -816,7 +817,7 @@ const AbaAnamnese = ({ clinicaId, pacienteId }: { clinicaId: string; pacienteId:
     try {
       setLista(await listarAnamneses(clinicaId, pacienteId));
     } catch (e: any) {
-      toast.error("Erro ao carregar anamneses", { description: e.message });
+      toast.error("Erro ao carregar anamneses", { description: traduzErro(e) });
     } finally {
       setCarregando(false);
     }
@@ -837,7 +838,7 @@ const AbaAnamnese = ({ clinicaId, pacienteId }: { clinicaId: string; pacienteId:
       // Grava lista vazia: sem isso a linha fica em "Carregando perguntas…" para
       // sempre, sem nunca mais tentar de novo nem dizer o que aconteceu.
       setPerguntasPorModelo((m) => ({ ...m, [resposta.modelo_id]: [] }));
-      toast.error("Erro ao carregar perguntas do modelo", { description: e.message });
+      toast.error("Erro ao carregar perguntas do modelo", { description: traduzErro(e) });
     }
   };
 
@@ -951,7 +952,7 @@ const AbaDocumentos = ({ clinicaId, pacienteId }: { clinicaId: string; pacienteI
         const d = await listarDocumentos(clinicaId, pacienteId);
         if (vivo) setLista(d);
       } catch (e: any) {
-        if (vivo) toast.error("Erro ao carregar documentos", { description: e.message });
+        if (vivo) toast.error("Erro ao carregar documentos", { description: traduzErro(e) });
       } finally {
         if (vivo) setCarregando(false);
       }
@@ -1051,7 +1052,7 @@ const AbaDebitos = ({ clinicaId, pacienteId }: { clinicaId: string; pacienteId: 
         const d = await listarDebitos(clinicaId, pacienteId);
         if (vivo) setLista(d);
       } catch (e: any) {
-        if (vivo) toast.error("Erro ao carregar débitos", { description: e.message });
+        if (vivo) toast.error("Erro ao carregar débitos", { description: traduzErro(e) });
       } finally {
         if (vivo) setCarregando(false);
       }
@@ -1164,7 +1165,7 @@ const PacienteFicha = () => {
       setPaciente(p);
       if (p) setProntuario(await obterProntuario(clinicaId, p.created_at));
     } catch (e: any) {
-      toast.error("Erro ao carregar o paciente", { description: e.message });
+      toast.error("Erro ao carregar o paciente", { description: traduzErro(e) });
     } finally {
       setCarregando(false);
     }

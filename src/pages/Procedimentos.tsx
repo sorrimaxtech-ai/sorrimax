@@ -18,6 +18,7 @@ import {
   Stethoscope, Users, Tag,
 } from "lucide-react";
 import { toast } from "sonner";
+import { traduzErro } from "@/lib/erros";
 import { useTenant } from "@/hooks/useTenant";
 import { ProcedimentoDialog } from "@/components/procedimentos/ProcedimentoDialog";
 import {
@@ -97,7 +98,7 @@ const Procedimentos = () => {
       const lista = await listarProcedimentos(clinicaId, mostrarInativos);
       setProcedimentos(lista);
     } catch (e: any) {
-      toast.error("Erro ao carregar procedimentos", { description: e.message });
+      toast.error("Erro ao carregar procedimentos", { description: traduzErro(e) });
     }
   }, [clinicaId, mostrarInativos]);
 
@@ -117,7 +118,7 @@ const Procedimentos = () => {
         setConvenios(conv);
         setProfissionais(prof);
       } catch (e: any) {
-        if (vivo) toast.error("Erro ao carregar procedimentos", { description: e.message });
+        if (vivo) toast.error("Erro ao carregar procedimentos", { description: traduzErro(e) });
       } finally {
         if (vivo) setCarregando(false);
       }
@@ -140,7 +141,7 @@ const Procedimentos = () => {
         setPrecos(pr);
         setHabilitados(hab);
       } catch (e: any) {
-        if (vivo) toast.error("Erro ao carregar detalhes", { description: e.message });
+        if (vivo) toast.error("Erro ao carregar detalhes", { description: traduzErro(e) });
       } finally {
         if (vivo) setCarregandoDetalhe(false);
       }
@@ -158,7 +159,7 @@ const Procedimentos = () => {
       setPrecos(pr);
       setHabilitados(hab);
     } catch (e: any) {
-      toast.error("Erro ao recarregar detalhes", { description: e.message });
+      toast.error("Erro ao recarregar detalhes", { description: traduzErro(e) });
     }
   };
 
@@ -215,7 +216,7 @@ const Procedimentos = () => {
       }
     } catch (e: any) {
       setProcedimentos(anterior); // rollback otimista
-      toast.error("Erro ao alterar status", { description: e.message });
+      toast.error("Erro ao alterar status", { description: traduzErro(e) });
     }
   };
 
@@ -252,7 +253,7 @@ const Procedimentos = () => {
         });
       }
     } catch (e: any) {
-      toast.error("Erro ao importar catálogo", { description: e.message });
+      toast.error("Erro ao importar catálogo", { description: traduzErro(e) });
     } finally {
       setImportando(false);
     }
@@ -306,7 +307,7 @@ const Procedimentos = () => {
       cancelarEdicaoPreco();
       toast.success("Preço salvo");
     } catch (e: any) {
-      toast.error("Erro ao salvar preço", { description: e.message });
+      toast.error("Erro ao salvar preço", { description: traduzErro(e) });
     } finally {
       setSalvandoPreco(false);
     }
@@ -363,7 +364,7 @@ const Procedimentos = () => {
       cancelarEdicaoHab();
       toast.success("Profissional habilitado");
     } catch (e: any) {
-      toast.error("Erro ao habilitar profissional", { description: e.message });
+      toast.error("Erro ao habilitar profissional", { description: traduzErro(e) });
     } finally {
       setSalvandoHab(false);
     }
@@ -388,7 +389,7 @@ const Procedimentos = () => {
       await confirmacao.acao();
       setConfirmacao(null);
     } catch (e: any) {
-      toast.error("Não foi possível concluir", { description: e.message });
+      toast.error("Não foi possível concluir", { description: traduzErro(e) });
     } finally {
       setConfirmando(false);
     }

@@ -22,6 +22,7 @@ import {
   STATUS_LABEL, STATUS_CLASSE, type StatusOrcamento,
 } from "@/services/orcamentos";
 import { toast } from "sonner";
+import { traduzErro } from "@/lib/erros";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
@@ -72,7 +73,7 @@ const OrcamentoEditor = () => {
       setOrc(o);
       setItens(i);
     } catch (e: any) {
-      toast.error("Erro ao carregar", { description: e.message });
+      toast.error("Erro ao carregar", { description: traduzErro(e) });
     } finally {
       setCarregando(false);
     }
@@ -143,7 +144,7 @@ const OrcamentoEditor = () => {
       await recarregar();
       toast.success("Tratamento adicionado");
     } catch (e: any) {
-      toast.error("Erro ao adicionar", { description: e.message });
+      toast.error("Erro ao adicionar", { description: traduzErro(e) });
     } finally {
       setSalvando(false);
     }
@@ -154,7 +155,7 @@ const OrcamentoEditor = () => {
       await definirStatusItem(itemId, status);
       await recarregar();
     } catch (e: any) {
-      toast.error("Erro ao atualizar item", { description: e.message });
+      toast.error("Erro ao atualizar item", { description: traduzErro(e) });
     }
   };
 
@@ -167,7 +168,7 @@ const OrcamentoEditor = () => {
         description: "Entrou no funil de vendas como oportunidade em aberto.",
       });
     } catch (e: any) {
-      toast.error("Erro ao publicar", { description: e.message });
+      toast.error("Erro ao publicar", { description: traduzErro(e) });
     }
   };
 
@@ -189,7 +190,7 @@ const OrcamentoEditor = () => {
       }
     } catch (e: any) {
       toast.error(excluindo ? "Não foi possível excluir" : "Não foi possível cancelar", {
-        description: e.message,
+        description: traduzErro(e),
       });
     }
   };
@@ -204,7 +205,7 @@ const OrcamentoEditor = () => {
         description: `${parcelas}x — comissões do profissional já previstas.`,
       });
     } catch (e: any) {
-      toast.error("Não foi possível faturar", { description: e.message });
+      toast.error("Não foi possível faturar", { description: traduzErro(e) });
     } finally {
       setSalvando(false);
     }

@@ -24,6 +24,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { brl } from "@/services/orcamentos";
 import { DespesaFixaDialog, type DespesaFixa } from "@/components/financeiro/DespesaFixaDialog";
 import { toast } from "sonner";
+import { traduzErro } from "@/lib/erros";
 import type { Database } from "@/integrations/supabase/types";
 
 // ============================================================================
@@ -165,7 +166,7 @@ const FinanceiroPagar = () => {
       .order("vencimento", { ascending: true });
 
     if (error) {
-      toast.error("Erro ao carregar contas a pagar", { description: error.message });
+      toast.error("Erro ao carregar contas a pagar", { description: traduzErro(error) });
       return;
     }
     setParcelas((data ?? []) as unknown as ParcelaPagar[]);
@@ -179,7 +180,7 @@ const FinanceiroPagar = () => {
       .eq("clinica_id", clinicaId)
       .order("descricao");
     if (error) {
-      toast.error("Erro ao carregar despesas fixas", { description: error.message });
+      toast.error("Erro ao carregar despesas fixas", { description: traduzErro(error) });
       return;
     }
     setDespesasFixas((data ?? []) as DespesaFixa[]);
@@ -241,7 +242,7 @@ const FinanceiroPagar = () => {
     const { data, error } = await supabase.from("lancamento_parcelas")
       .update({ status: "pago", pago_em: hojeISO(), valor_pago: p.valor })
       .eq("id", p.id).eq("clinica_id", clinicaId).select("id");
-    if (error) { toast.error("Erro ao marcar como pago", { description: error.message }); return; }
+    if (error) { toast.error("Erro ao marcar como pago", { description: traduzErro(error) }); return; }
     if (!data?.length) { toast.error("Nada foi alterado", { description: SEM_PERMISSAO }); return; }
     toast.success("Parcela marcada como paga");
     carregarParcelas();
@@ -252,7 +253,7 @@ const FinanceiroPagar = () => {
     const { data, error } = await supabase.from("lancamento_parcelas")
       .update({ status: "pendente", pago_em: null, valor_pago: null })
       .eq("id", p.id).eq("clinica_id", clinicaId).select("id");
-    if (error) { toast.error("Erro ao desfazer pagamento", { description: error.message }); return; }
+    if (error) { toast.error("Erro ao desfazer pagamento", { description: traduzErro(error) }); return; }
     if (!data?.length) { toast.error("Nada foi alterado", { description: SEM_PERMISSAO }); return; }
     toast.success("Pagamento desfeito");
     carregarParcelas();
@@ -263,7 +264,7 @@ const FinanceiroPagar = () => {
     const { data, error } = await supabase.from("lancamentos")
       .delete().eq("id", excluirLancamento.lancamento_id).eq("clinica_id", clinicaId).select("id");
     setExcluirLancamento(null);
-    if (error) { toast.error("Erro ao excluir lançamento", { description: error.message }); return; }
+    if (error) { toast.error("Erro ao excluir lançamento", { description: traduzErro(error) }); return; }
     if (!data?.length) { toast.error("Nada foi excluído", { description: SEM_PERMISSAO }); return; }
     toast.success("Lançamento excluído");
     carregarParcelas();
@@ -274,7 +275,7 @@ const FinanceiroPagar = () => {
     const { data, error } = await supabase.from("despesas_fixas")
       .delete().eq("id", excluirFixa.id).eq("clinica_id", clinicaId).select("id");
     setExcluirFixa(null);
-    if (error) { toast.error("Erro ao excluir despesa fixa", { description: error.message }); return; }
+    if (error) { toast.error("Erro ao excluir despesa fixa", { description: traduzErro(error) }); return; }
     if (!data?.length) { toast.error("Nada foi excluído", { description: SEM_PERMISSAO }); return; }
     toast.success("Despesa fixa excluída");
     carregarFixas();
