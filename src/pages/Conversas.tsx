@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
   MessageSquare, Search, Send, Loader2, Smartphone, QrCode,
-  MoreVertical, RefreshCw, Settings2,
+  MoreVertical, RefreshCw, Settings2, Paperclip,
 } from "lucide-react";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
@@ -18,7 +18,7 @@ import { AvatarContato } from "@/components/whatsapp/AvatarContato";
 import { MensagemBolha } from "@/components/whatsapp/MensagemBolha";
 import { formatarNumeroWa } from "@/services/whatsapp/instancias";
 import { subscribeChatRealtime, type WaChatRow, type WaMessageRow } from "@/services/whatsapp/realtime";
-import { enqueueText, markChatRead } from "@/services/whatsapp/send";
+import { enqueueText, enqueueMedia, markChatRead } from "@/services/whatsapp/send";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
@@ -62,6 +62,7 @@ const Conversas = () => {
   const [enviando, setEnviando] = useState(false);
   const [carregando, setCarregando] = useState(true);
   const fimRef = useRef<HTMLDivElement>(null);
+  const arquivoRef = useRef<HTMLInputElement>(null);
 
   // --- carga inicial dos chats
   useEffect(() => {
@@ -153,6 +154,25 @@ const Conversas = () => {
       setTexto("");
     } catch (e: any) {
       toast.error("Não foi possível enviar", { description: traduzErro(e) });
+    } finally {
+      setEnviando(false);
+    }
+  };
+
+  const enviarArquivo = async (file: File) => {
+    if (!ativo || enviando) return;
+    // 25 MB é o teto do nosso armazenamento; avisar antes de subir evita o
+    // usuário esperar o upload inteiro para receber uma recusa.
+    if (file.size > 25 * 1024 * 1024) {
+      toast.error("Arquivo muito grande", { description: "O limite é 25 MB." });
+      return;
+    }
+    setEnviando(true);
+    try {
+      await enqueueMedia(ativo, file, texto.trim() || undefined);
+      setTexto("");
+    } catch (e: any) {
+      toast.error("Não foi possível enviar o arquivo", { description: traduzErro(e) });
     } finally {
       setEnviando(false);
     }
@@ -380,12 +400,32 @@ const Conversas = () => {
                 <div ref={fimRef} />
               </div>
 
-              <div className="p-4 border-t border-border bg-white flex gap-2 shrink-0">
+              <div className="p-4 border-t border-border bg-white flex gap-2 shrink-0 items-center">
+                <input
+                  ref={arquivoRef}
+                  type="file"
+                  className="hidden"
+                  accept="image/*,video/*,audio/*,.pdf,.doc,.docx"
+                  onChange={(e) => {
+                    const f = e.target.files?.[0];
+                    if (f) enviarArquivo(f);
+                    e.target.value = ""; // permite reenviar o mesmo arquivo
+                  }}
+                />
+                <Button
+                  variant="ghost" size="icon" className="shrink-0"
+                  onClick={() => arquivoRef.current?.click()}
+                  disabled={enviando}
+                  aria-label="Anexar arquivo"
+                  title="Enviar foto, documento ou áudio"
+                >
+                  <Paperclip className="h-5 w-5 text-muted-foreground" />
+                </Button>
                 <Input value={texto} onChange={(e) => setTexto(e.target.value)}
                   onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); enviar(); } }}
                   placeholder="Escreva uma mensagem..." disabled={enviando} />
                 <Button onClick={enviar} disabled={enviando || !texto.trim()}
-                        className="bg-brand-600 hover:bg-brand-700">
+                        className="bg-brand-600 hover:bg-brand-700 shrink-0">
                   {enviando ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
                 </Button>
               </div>

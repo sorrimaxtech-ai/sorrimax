@@ -34,3 +34,9 @@ verify_jwt = false
 # fail-closed (sem OUTBOX_SECRET configurado devolve 503 e não faz nada).
 [functions.whatsapp-outbox]
 verify_jwt = false
+
+# Serve a mídia por <img src>, que não manda cabeçalho de sessão. A autorização
+# é o próprio UUID da mensagem (122 bits, não enumerável) + URL assinada de 15
+# min gerada na hora — mesmo modelo de um link assinado.
+[functions.whatsapp-media]
+verify_jwt = false

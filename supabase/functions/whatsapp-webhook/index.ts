@@ -363,6 +363,36 @@ async function detalhesContato(
 }
 
 /**
+ * Traduz um endereço mascarado (@lid) para o telefone real.
+ *
+ * O provedor devolve o JID verdadeiro em `wa_chatid`. Sem esta tradução a
+ * conversa não tem número — logo não dá para responder, e a mensagem era
+ * simplesmente descartada.
+ */
+async function resolverLid(
+  apiUrl: string, token: string, lidJid: string,
+): Promise<string | null> {
+  try {
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), 8000);
+    const res = await fetch(`${apiUrl}/chat/details`, {
+      method: "POST",
+      headers: { token, "Content-Type": "application/json" },
+      body: JSON.stringify({ number: lidJid, preview: true }),
+      signal: ctrl.signal,
+    });
+    clearTimeout(t);
+    if (!res.ok) return null;
+    const d = await res.json().catch(() => ({}));
+    const c = d?.chat ?? d;
+    const jid: string | null = c?.wa_chatid ?? c?.id ?? null;
+    // só serve se voltou um endereço discável (não outro @lid)
+    if (!jid || /@lid$/.test(jid)) return null;
+    return jid;
+  } catch { return null; }
+}
+
+/**
  * Um nome só pode ser substituído se o atual não vale nada.
  *
  * Sem esta guarda, uma mensagem posterior sobrescreve um nome bom — inclusive
@@ -506,9 +536,30 @@ Deno.serve(async (req) => {
       for (const raw of items) {
         // `chatid`/`chatId` são a forma da uazapi. Sem eles, toda mensagem dela
         // era descartada aqui — antes mesmo de chegar ao parser.
-        const remoteJid = raw?.key?.remoteJid ?? raw?.remoteJid ?? raw?.chatid ?? raw?.chatId;
-        // ignora grupo, status do WhatsApp, canal e endereçamento LID (não-discável)
-        if (!remoteJid || /@(g\.us|broadcast|newsletter|lid)$/.test(remoteJid)) continue;
+        let remoteJid: string | undefined =
+          raw?.key?.remoteJid ?? raw?.remoteJid ?? raw?.chatid ?? raw?.chatId;
+        // ignora grupo, status do WhatsApp e canal — nada disso é atendimento
+        if (!remoteJid || /@(g\.us|broadcast|newsletter)$/.test(remoteJid)) continue;
+
+        // @lid é endereçamento MASCARADO, não lixo: o provedor entrega uma fatia
+        // crescente das conversas assim, e descartá-las (como era feito aqui)
+        // significava paciente escrevendo e NADA chegando — sem erro em lugar
+        // nenhum. O provedor sabe traduzir para o telefone real.
+        if (/@lid$/.test(remoteJid)) {
+          const apiUrlLid = (inst as any).api_url;
+          const tokenLid = (inst as any).api_token ?? (inst as any).apikey;
+          const real = apiUrlLid && tokenLid
+            ? await resolverLid(apiUrlLid, tokenLid, remoteJid)
+            : null;
+          if (!real) {
+            // não dá para atender quem não se consegue responder; registra para
+            // não sumir em silêncio como antes.
+            console.error(`lid nao resolvido: ${String(remoteJid).slice(0, 12)}…`);
+            continue;
+          }
+          remoteJid = real;
+        }
+
         const p = parseMensagem(raw);
 
         // `senderName` de uma mensagem NOSSA é o nome do dono da linha, não do
