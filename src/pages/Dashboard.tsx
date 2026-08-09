@@ -7,7 +7,12 @@ import { MetricCard } from "@/components/dashboard/MetricCard";
 import { TodaySchedule } from "@/components/dashboard/TodaySchedule";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Users, Calendar, TrendingUp, Activity, Info, UserRoundPlus } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { linkWhatsApp } from "@/services/pacientes";
+import {
+  Users, Calendar, Activity, Info, UserRoundPlus, CalendarClock, Cake,
+  MessageCircle, UserRoundSearch,
+} from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
 // Série do gráfico: vem de `consultas` (banco), NUNCA inventada.
@@ -31,6 +36,58 @@ const Dashboard = () => {
       return { month: MESES_PT[d.getMonth()], agendamentos: 0 };
     }),
   );
+
+  // Painel operacional (sem nada financeiro): contagens e listas de ação.
+  const [pacientesAtivos, setPacientesAtivos] = useState(0);
+  const [consultasHoje, setConsultasHoje] = useState(0);
+  const [semConfirmacao, setSemConfirmacao] = useState<any[]>([]);
+  const [aniversariantes, setAniversariantes] = useState<any[]>([]);
+  const [recall, setRecall] = useState<any[]>([]);
+
+  const carregarPainel = async (clinicaId: string) => {
+    const hoje0 = new Date(); hoje0.setHours(0, 0, 0, 0);
+    const hoje1 = new Date(); hoje1.setHours(23, 59, 59, 999);
+    const ama0 = new Date(hoje0); ama0.setDate(ama0.getDate() + 1);
+    const ama1 = new Date(hoje1); ama1.setDate(ama1.getDate() + 1);
+    const CANCELADAS = "(cancelado,desmarcado,cancelado_pelo_cliente,recusado)";
+
+    const [ativos, hoje, amanha, nasc, inativos] = await Promise.all([
+      supabase.from("pacientes").select("id", { count: "exact", head: true })
+        .eq("clinica_id", clinicaId).eq("ativo", true),
+      supabase.from("consultas").select("id", { count: "exact", head: true })
+        .eq("clinica_id", clinicaId)
+        .gte("inicio", hoje0.toISOString()).lte("inicio", hoje1.toISOString())
+        .not("status", "in", CANCELADAS),
+      supabase.from("consultas")
+        .select("id, inicio, status, pacientes(nome_completo, celular)")
+        .eq("clinica_id", clinicaId)
+        .gte("inicio", ama0.toISOString()).lte("inicio", ama1.toISOString())
+        .in("status", ["pendente", "agendado", "reagendado"])
+        .order("inicio", { ascending: true }),
+      supabase.from("pacientes").select("id, nome_completo, celular, data_nascimento")
+        .eq("clinica_id", clinicaId).eq("ativo", true)
+        .not("data_nascimento", "is", null).limit(2000),
+      supabase.from("vw_pacientes_inativos")
+        .select("paciente_id, nome_completo, celular, dias_sem_vir")
+        .eq("clinica_id", clinicaId)
+        .order("dias_sem_vir", { ascending: true })
+        .limit(6),
+    ]);
+
+    for (const r of [ativos, hoje, amanha, nasc, inativos]) {
+      if (r.error) console.error("[dashboard] painel:", r.error.message);
+    }
+    if (ativos.count !== null) setPacientesAtivos(ativos.count);
+    if (hoje.count !== null) setConsultasHoje(hoje.count);
+    setSemConfirmacao((amanha.data as any[]) ?? []);
+    const agora = new Date();
+    setAniversariantes(((nasc.data as any[]) ?? []).filter((p) => {
+      // meio-dia evita o aniversário escorregar de dia por fuso horário
+      const d = new Date(`${p.data_nascimento}T12:00:00`);
+      return d.getDate() === agora.getDate() && d.getMonth() === agora.getMonth();
+    }));
+    setRecall((inativos.data as any[]) ?? []);
+  };
 
   // Conta consultas reais por mês (últimos 6 meses) para o gráfico.
   const carregarCrescimento = async (clinicaId: string) => {
@@ -74,6 +131,8 @@ const Dashboard = () => {
       if (isDemo) {
         setUserName(demoUsuario.nome);
         setClinicName(demoClinica.nome);
+        setPacientesAtivos(demoMetricas.totalPacientes);
+        setConsultasHoje(demoMetricas.consultasHoje);
         setSerieCrescimento(
           demoConsultas
             ? Array.from({ length: 6 }, (_, i) => {
@@ -120,7 +179,10 @@ const Dashboard = () => {
                 if (!clinicaError && clinica) {
                   setClinicName(clinica.nome_clinica);
                 }
-                await carregarCrescimento(profile.clinica_id);
+                await Promise.all([
+                  carregarCrescimento(profile.clinica_id),
+                  carregarPainel(profile.clinica_id),
+                ]);
             }
         }
 
@@ -133,13 +195,6 @@ const Dashboard = () => {
 
     checkAuthAndFetchData();
   }, [navigate, isDemo]);
-
-  // Usar métricas demo se estiver em modo demo
-  const metricas = isDemo ? demoMetricas : {
-    totalPacientes: 0,
-    consultasHoje: 0,
-    taxaConversao: 0,
-  };
 
   return (
     <div className="flex min-h-full bg-background dashboard-theme">
@@ -182,36 +237,154 @@ const Dashboard = () => {
             </Button>
           </div>
 
-          {/* Metrics Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          {/* Cards operacionais — números REAIS do banco, nada financeiro */}
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
             <MetricCard
-              title="Total de Pacientes"
-              value={metricas.totalPacientes.toString()}
-              change={isDemo ? "+23 este mês" : "Em breve"}
-              changeType={isDemo ? "positive" : "neutral"}
+              title="Pacientes Ativos"
+              value={pacientesAtivos.toString()}
               icon={Users}
               iconColor="text-brand-600"
             />
             <MetricCard
               title="Consultas Hoje"
-              value={metricas.consultasHoje.toString()}
-              change={isDemo ? "4 confirmadas" : undefined}
+              value={consultasHoje.toString()}
               icon={Calendar}
               iconColor="text-brand-600"
             />
             <MetricCard
-              title="Taxa de Conversão"
-              value={`${metricas.taxaConversao}%`}
-              change={isDemo ? "+12% vs mês anterior" : "Em breve"}
-              changeType={isDemo ? "positive" : "neutral"}
-              icon={TrendingUp}
-              iconColor="text-brand-600"
+              title="Amanhã sem confirmação"
+              value={semConfirmacao.length.toString()}
+              change={semConfirmacao.length > 0 ? "precisa de atenção" : "tudo confirmado"}
+              changeType={semConfirmacao.length > 0 ? "negative" : "positive"}
+              icon={CalendarClock}
+              iconColor={semConfirmacao.length > 0 ? "text-amber-600" : "text-emerald-600"}
+            />
+            <MetricCard
+              title="Aniversariantes Hoje"
+              value={aniversariantes.length.toString()}
+              icon={Cake}
+              iconColor="text-purple-600"
             />
           </div>
 
           {/* Agenda do dia em primeiro — é o que o dentista olha ao abrir o sistema */}
           <div className="mb-8">
             <TodaySchedule />
+          </div>
+
+          {/* Listas de ação: o que dá para resolver AGORA com uma mensagem */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <Card className="border-gray-100">
+              <CardContent className="p-5">
+                <div className="flex items-center justify-between mb-4">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                    Amanhã — aguardando confirmação
+                  </p>
+                  {semConfirmacao.length > 0 && (
+                    <Badge className="bg-amber-100 text-amber-800 border-0">{semConfirmacao.length}</Badge>
+                  )}
+                </div>
+                {semConfirmacao.length === 0 ? (
+                  <p className="text-sm text-gray-500 py-4 text-center">
+                    Nenhuma consulta de amanhã pendente de confirmação.
+                  </p>
+                ) : (
+                  <div className="space-y-2">
+                    {semConfirmacao.map((c) => {
+                      const hora = new Date(c.inicio).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+                      const nome = c.pacientes?.nome_completo ?? "Paciente";
+                      const wa = linkWhatsApp(
+                        c.pacientes?.celular ?? "",
+                        `Olá, ${nome.split(" ")[0]}! Podemos confirmar sua consulta de amanhã às ${hora}?`,
+                      );
+                      return (
+                        <div key={c.id} className="flex items-center gap-3 p-3 rounded-lg border border-gray-100">
+                          <span className="w-12 text-sm font-bold text-gray-900 tabular-nums">{hora}</span>
+                          <span className="flex-1 min-w-0 truncate text-sm text-gray-800">{nome}</span>
+                          {wa && (
+                            <Button asChild size="sm" variant="outline" className="gap-1.5 text-emerald-700 border-emerald-200 hover:bg-emerald-50">
+                              <a href={wa} target="_blank" rel="noreferrer">
+                                <MessageCircle className="h-3.5 w-3.5" /> Confirmar
+                              </a>
+                            </Button>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            <div className="space-y-6">
+              {aniversariantes.length > 0 && (
+                <Card className="border-gray-100">
+                  <CardContent className="p-5">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-4">
+                      Aniversariantes de hoje 🎂
+                    </p>
+                    <div className="space-y-2">
+                      {aniversariantes.map((p) => {
+                        const wa = linkWhatsApp(
+                          p.celular ?? "",
+                          `Feliz aniversário, ${p.nome_completo.split(" ")[0]}! 🎉 Toda a equipe deseja um dia incrível!`,
+                        );
+                        return (
+                          <div key={p.id} className="flex items-center gap-3 p-3 rounded-lg border border-gray-100">
+                            <span className="flex-1 min-w-0 truncate text-sm text-gray-800">{p.nome_completo}</span>
+                            {wa && (
+                              <Button asChild size="sm" variant="outline" className="gap-1.5 text-purple-700 border-purple-200 hover:bg-purple-50">
+                                <a href={wa} target="_blank" rel="noreferrer">
+                                  <Cake className="h-3.5 w-3.5" /> Parabenizar
+                                </a>
+                              </Button>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              <Card className="border-gray-100">
+                <CardContent className="p-5">
+                  <div className="flex items-center justify-between mb-4">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                      Pacientes para reativar
+                    </p>
+                    <UserRoundSearch className="h-4 w-4 text-gray-400" />
+                  </div>
+                  {recall.length === 0 ? (
+                    <p className="text-sm text-gray-500 py-4 text-center">
+                      Nenhum paciente sumido — a base está em dia.
+                    </p>
+                  ) : (
+                    <div className="space-y-2">
+                      {recall.map((p) => {
+                        const wa = linkWhatsApp(
+                          p.celular ?? "",
+                          `Olá, ${p.nome_completo.split(" ")[0]}! Sentimos sua falta por aqui. Que tal agendar uma avaliação?`,
+                        );
+                        return (
+                          <div key={p.paciente_id} className="flex items-center gap-3 p-3 rounded-lg border border-gray-100">
+                            <span className="flex-1 min-w-0 truncate text-sm text-gray-800">{p.nome_completo}</span>
+                            <span className="text-xs text-gray-500 whitespace-nowrap">{p.dias_sem_vir} dias</span>
+                            {wa && (
+                              <Button asChild size="sm" variant="outline" className="gap-1.5 text-brand-700 border-brand-200 hover:bg-brand-50">
+                                <a href={wa} target="_blank" rel="noreferrer">
+                                  <MessageCircle className="h-3.5 w-3.5" /> Chamar
+                                </a>
+                              </Button>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
           </div>
 
           {/* Crescimento de agendamentos — dados reais */}
