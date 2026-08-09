@@ -52,7 +52,7 @@ const PRIORIDADE: Record<EstadoOdontograma, number> = {
 // foto-realista sem tocar em código.
 // ---------------------------------------------------------------------------
 const BASE_ARTE_DENTES = '/dentes';
-const EXT_ARTE = 'svg'; // troque para 'png' se o set for raster
+const EXT_ARTE = 'png'; // set realista MIT (bardurt/odontograma) em /public/dentes
 
 function DesenhoDente({ numero, estado }: { numero: number; estado: EstadoOdontograma | null }) {
   const flip = !isArcadaSuperior(numero);
@@ -80,16 +80,21 @@ function ArteDente({ numero, estado }: { numero: number; estado: EstadoOdontogra
   const url = `${BASE_ARTE_DENTES}/${numero}.${EXT_ARTE}`;
   if (semArte) return <DesenhoDente numero={numero} estado={estado} />;
   const cor = estado ? CORES_ESTADO[estado].fill : null;
+  // superior: coroa embaixo → ancora no rodapé; inferior: coroa em cima → topo.
+  // Assim as coroas se alinham na linha do arco e as raízes "sobram" pra fora.
+  const superior = isArcadaSuperior(numero);
+  const posClass = superior ? 'object-bottom' : 'object-top';
   const mask = {
     WebkitMaskImage: `url(${url})`, maskImage: `url(${url})`,
     WebkitMaskSize: 'contain', maskSize: 'contain',
     WebkitMaskRepeat: 'no-repeat', maskRepeat: 'no-repeat',
-    WebkitMaskPosition: 'center', maskPosition: 'center',
+    WebkitMaskPosition: superior ? 'center bottom' : 'center top', maskPosition: superior ? 'center bottom' : 'center top',
   } as const;
   return (
-    <span className="relative block" style={{ width: 30, height: 36 }}>
-      <img src={url} alt="" draggable={false} onError={() => setSemArte(true)} className="h-full w-full object-contain" />
-      {cor && <span className="pointer-events-none absolute inset-0" style={{ backgroundColor: cor, opacity: 0.5, ...mask }} />}
+    <span className="relative block" style={{ width: 34, height: 56 }}>
+      <img src={url} alt="" draggable={false} onError={() => setSemArte(true)} className={cn('h-full w-full object-contain', posClass)} />
+      {/* tint suave do status por cima da arte realista (não chapa o dente) */}
+      {cor && <span className="pointer-events-none absolute inset-0" style={{ backgroundColor: cor, opacity: 0.32, ...mask }} />}
     </span>
   );
 }
