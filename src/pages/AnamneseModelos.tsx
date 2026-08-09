@@ -18,8 +18,9 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import {
-  ClipboardList, Plus, Loader2, Sparkles, Trash2, Pencil, FileText, Search, UserPlus,
+  ClipboardList, Plus, Loader2, Sparkles, Trash2, Pencil, FileText, Search, UserPlus, Link2,
 } from "lucide-react";
+import { LinkOnlineDialog } from "@/components/pacientes/LinkOnlineDialog";
 import { useTenant } from "@/hooks/useTenant";
 import { toast } from "sonner";
 import {
@@ -45,6 +46,7 @@ const AnamneseModelos = () => {
   const [busca, setBusca] = useState("");
 
   const [abrirNovo, setAbrirNovo] = useState(false);
+  const [abrirLink, setAbrirLink] = useState(false);
   const [nome, setNome] = useState("");
   const [especialidade, setEspecialidade] = useState("");
   const [salvando, setSalvando] = useState(false);
@@ -175,6 +177,9 @@ const AnamneseModelos = () => {
             <div className="flex flex-wrap gap-2">
               <Button variant="outline" className="gap-2" onClick={abrirDialogPreencher}>
                 <UserPlus className="h-4 w-4" /> Preencher para paciente
+              </Button>
+              <Button variant="outline" className="gap-2" onClick={() => setAbrirLink(true)}>
+                <Link2 className="h-4 w-4" /> Link online
               </Button>
               <Button variant="outline" className="gap-2" onClick={semear} disabled={semeando}>
                 {semeando ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
@@ -318,6 +323,8 @@ const AnamneseModelos = () => {
       </main>
 
       {/* novo modelo */}
+      <LinkOnlineDialog aberto={abrirLink} onFechar={() => setAbrirLink(false)} />
+
       <Dialog open={abrirNovo} onOpenChange={setAbrirNovo}>
         <DialogContent>
           <DialogHeader>
