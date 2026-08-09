@@ -1,0 +1,10 @@
+Arte dos dentes do odontograma.
+Coloque 1 arquivo por dente, nomeado pelo numero FDI, nesta pasta:
+  18.svg 17.svg ... 11.svg  21.svg ... 28.svg   (superiores)
+  48.svg ... 41.svg  31.svg ... 38.svg          (inferiores)
+  55..51 61..65 71..75 85..81                    (deciduos, se tiver)
+Preferir SVG (escala e tinge melhor). Se for PNG, troque EXT_ARTE p/ 'png'
+em src/components/odontograma/Odontograma.tsx. Fundo transparente.
+A cor do status e aplicada por cima, usando a propria arte como mascara.
+Sem arquivo pra um dente -> cai no desenho vetorial de fallback.
+IMPORTANTE: use arte LICENCIADA ou de dominio publico/CC0 (nao copiar imagem de banco).

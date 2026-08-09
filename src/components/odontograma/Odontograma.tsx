@@ -44,6 +44,56 @@ const PRIORIDADE: Record<EstadoOdontograma, number> = {
   finalizado: 3,
 };
 
+// ---------------------------------------------------------------------------
+// Arte do dente: 1 arquivo por número FDI em `public/dentes/` (ex.: 18.svg,
+// 46.png). Se existir, usa a imagem licenciada e tinge pela cor do status
+// (a própria arte vira máscara). Se NÃO existir, cai no desenho vetorial de
+// fallback abaixo. Assim, dropar um set realista deixa o odontograma
+// foto-realista sem tocar em código.
+// ---------------------------------------------------------------------------
+const BASE_ARTE_DENTES = '/dentes';
+const EXT_ARTE = 'svg'; // troque para 'png' se o set for raster
+
+function DesenhoDente({ numero, estado }: { numero: number; estado: EstadoOdontograma | null }) {
+  const flip = !isArcadaSuperior(numero);
+  const sx = larguraDoDente(numero);
+  const transform =
+    `${flip ? `translate(0,${VB_H}) scale(1,-1) ` : ''}` +
+    `translate(${VB_W / 2},0) scale(${sx},1) translate(${-VB_W / 2},0)`;
+  return (
+    <svg width={30} height={36} viewBox={`0 0 ${VB_W} ${VB_H}`} role="img" aria-hidden>
+      <path
+        d={TOOTH_PATH}
+        transform={transform}
+        fill={estado ? CORES_ESTADO[estado].fill : 'transparent'}
+        fillOpacity={estado ? 0.5 : 0}
+        stroke="currentColor"
+        strokeWidth={1.4}
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function ArteDente({ numero, estado }: { numero: number; estado: EstadoOdontograma | null }) {
+  const [semArte, setSemArte] = useState(false);
+  const url = `${BASE_ARTE_DENTES}/${numero}.${EXT_ARTE}`;
+  if (semArte) return <DesenhoDente numero={numero} estado={estado} />;
+  const cor = estado ? CORES_ESTADO[estado].fill : null;
+  const mask = {
+    WebkitMaskImage: `url(${url})`, maskImage: `url(${url})`,
+    WebkitMaskSize: 'contain', maskSize: 'contain',
+    WebkitMaskRepeat: 'no-repeat', maskRepeat: 'no-repeat',
+    WebkitMaskPosition: 'center', maskPosition: 'center',
+  } as const;
+  return (
+    <span className="relative block" style={{ width: 30, height: 36 }}>
+      <img src={url} alt="" draggable={false} onError={() => setSemArte(true)} className="h-full w-full object-contain" />
+      {cor && <span className="pointer-events-none absolute inset-0" style={{ backgroundColor: cor, opacity: 0.5, ...mask }} />}
+    </span>
+  );
+}
+
 interface DenteProps {
   numero: number;
   registros: RegistroOdontograma[];
@@ -63,13 +113,6 @@ function Dente({ numero, registros, selecionado, onSelecionar }: DenteProps) {
   }, [registros, numero]);
 
   const temAnotacao = registros.some((r) => r.dente === numero && r.anotacao);
-
-  const flip = !isArcadaSuperior(numero);
-  const sx = larguraDoDente(numero);
-  const transform =
-    `${flip ? `translate(0,${VB_H}) scale(1,-1) ` : ''}` +
-    `translate(${VB_W / 2},0) scale(${sx},1) translate(${-VB_W / 2},0)`;
-
   const rotuloEstado = estado ? ` — ${CORES_ESTADO[estado].label}` : '';
 
   return (
@@ -78,23 +121,13 @@ function Dente({ numero, registros, selecionado, onSelecionar }: DenteProps) {
         type="button"
         onClick={() => onSelecionar(numero)}
         aria-label={`Dente ${numero}${rotuloEstado}`}
+        title={`Dente ${numero}${rotuloEstado}`}
         className={cn(
           'rounded-lg p-0.5 text-muted-foreground/70 transition-colors hover:bg-primary/5 hover:text-primary',
           selecionado && 'ring-2 ring-primary',
         )}
       >
-        <svg width={30} height={36} viewBox={`0 0 ${VB_W} ${VB_H}`} role="img">
-          <title>{`Dente ${numero}${rotuloEstado}`}</title>
-          <path
-            d={TOOTH_PATH}
-            transform={transform}
-            fill={estado ? CORES_ESTADO[estado].fill : 'transparent'}
-            fillOpacity={estado ? 0.5 : 0}
-            stroke="currentColor"
-            strokeWidth={1.4}
-            strokeLinejoin="round"
-          />
-        </svg>
+        <ArteDente numero={numero} estado={estado} />
       </button>
 
       <button
