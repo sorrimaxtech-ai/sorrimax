@@ -81,8 +81,8 @@ export const Sidebar = () => {
   };
 
   return (
-    // reserva a largura fechada no layout; o trilho FLUTUA e cresce por cima
-    <aside className="relative shrink-0" style={{ width: LARGURA_FECHADA + 12 }}>
+    // reserva a largura fechada + folga no layout; o trilho FLUTUA e cresce por cima
+    <aside className="relative shrink-0" style={{ width: LARGURA_FECHADA + 20 }}>
       <div
         className="group absolute inset-y-2 left-2 z-40 flex flex-col overflow-hidden rounded-[22px]
                    bg-gradient-to-b from-[#2AA0E8] via-[#1B7FD4] to-[#1466C4] px-2.5 py-4 shadow-lg
