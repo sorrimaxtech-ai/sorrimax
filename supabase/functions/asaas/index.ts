@@ -141,17 +141,36 @@ Deno.serve(async (req) => {
     const pac: any = (parcela as any).lancamentos?.pacientes;
     if (!pac) return erro("Parcela sem paciente vinculado — cobrança precisa de um paciente");
 
-    // cliente Asaas (idempotente por externalReference = paciente_id)
+    // cliente Asaas — reusa o existente por externalReference (senão POST cria
+    // um cliente novo a cada cobrança). notificationDisabled: true em TODO caso:
+    // o NOSSO sistema fala com o paciente (uazapi); sem isto o Asaas dispara
+    // WhatsApp/SMS/e-mail próprios, redundantes e TARIFADOS ("colocando valores
+    // sem necessidade"). A config é por cliente e cascateia pras cobranças.
     const pacienteId = (parcela as any).lancamentos?.paciente_id;
-    const criaCli = await asaas(conexao.api_key, conexao.ambiente, "POST", "/customers", {
+    const corpoCli = {
       name: pac.nome_completo,
       cpfCnpj: soDigitos(pac.cpf) || undefined,
       email: pac.email || undefined,
       mobilePhone: soDigitos(pac.celular) || undefined,
       externalReference: pacienteId,
-    });
-    if (!criaCli.ok) return erro("Falha ao criar cliente no Asaas", 400, erroAsaas(criaCli));
-    const customerId = criaCli.data?.id;
+      notificationDisabled: true,
+    };
+
+    let customerId: string | undefined;
+    const busca = await asaas(conexao.api_key, conexao.ambiente, "GET",
+      `/customers?externalReference=${encodeURIComponent(pacienteId)}`);
+    const existente = busca.ok ? busca.data?.data?.[0] : null;
+    if (existente?.id) {
+      customerId = existente.id;
+      // reforça notificationDisabled caso o cliente antigo estivesse com aviso ligado
+      if (!existente.notificationDisabled) {
+        await asaas(conexao.api_key, conexao.ambiente, "POST", `/customers/${customerId}`, corpoCli);
+      }
+    } else {
+      const criaCli = await asaas(conexao.api_key, conexao.ambiente, "POST", "/customers", corpoCli);
+      if (!criaCli.ok) return erro("Falha ao criar cliente no Asaas", 400, erroAsaas(criaCli));
+      customerId = criaCli.data?.id;
+    }
 
     // cobrança com externalReference = parcela_id (o webhook usa isso pra baixar)
     const venc = String((parcela as any).vencimento);
