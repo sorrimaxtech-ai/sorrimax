@@ -717,6 +717,17 @@ Deno.serve(async (req) => {
           metadata: p.metadata, media_type: p.mimeType, created_at: p.timestamp,
           seqid: typeof raw?.messageTimestamp === "number" ? raw.messageTimestamp : null,
         });
+        // Resposta do paciente ao lembrete: confirma a consulta sozinho, sem
+        // ninguém ler conversa por conversa. Só entrada e só texto — o eco do
+        // nosso próprio envio não confirma nada.
+        if (!p.fromMe && (p.type === "text" || p.type === "system") && p.content) {
+          try {
+            await supabase.rpc("wa_registrar_confirmacao", {
+              p_chat_id: chatId, p_texto: p.content,
+            });
+          } catch { /* confirmação é bônus: nunca derruba a ingestão */ }
+        }
+
         // 23505 = dedupe (já existe) → ok, ignora
         if (!error) saved++;
         else if (error.code !== "23505") console.error("insert msg", error.message);

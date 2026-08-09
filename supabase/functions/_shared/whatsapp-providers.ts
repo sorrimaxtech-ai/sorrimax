@@ -163,3 +163,46 @@ export async function sendMedia(
   if (!r.ok) throw Object.assign(new Error(r.data?.message || `evolution ${r.status}`), { timeout: r.timeout });
   return { externalId: extractExternalId(r.data), raw: r.data };
 }
+
+
+// ============================================================================
+// sendMenu — pergunta com BOTÃO em vez de "responda SIM"
+// ----------------------------------------------------------------------------
+// "Responda SIM para confirmar" depende do paciente digitar certo E de alguém
+// ler a resposta depois. Com botão, ele toca uma vez e o sistema entende
+// sozinho — é o que faz a agenda do dia dizer quem realmente vem.
+//
+// Segue o contrato dos outros envios daqui: lança em falha (o worker traduz em
+// retry/DLQ) e devolve { externalId, raw }.
+// ============================================================================
+export async function sendMenu(
+  cfg: InstanceCfg,
+  to: string,
+  texto: string,
+  opcoes: string[],
+  rodape?: string,
+  opts?: { canonical?: boolean },
+): Promise<SendResult> {
+  const number = opts?.canonical
+    ? String(to).split("@")[0].replace(/\D/g, "")
+    : normalizeBrazilianPhone(to);
+
+  // Só a uazapi tem menu nativo. No outro provedor cai para texto numerado —
+  // o paciente responde o número e o sistema ainda entende, em vez de não sair
+  // mensagem nenhuma.
+  if (cfg.provider !== "uazapi") {
+    const lista = opcoes.map((o, i) => `${i + 1}. ${o}`).join("\n");
+    return sendText(cfg, to, `${texto}\n\n${lista}`, opts);
+  }
+
+  const r = await fetchJson(`${cfg.apiUrl}/send/menu`, {
+    method: "POST",
+    headers: { token: cfg.apiToken, "Content-Type": "application/json" },
+    body: JSON.stringify({
+      number, type: "button", text: texto, choices: opcoes,
+      footerText: rodape, delay: 500, async: false,
+    }),
+  });
+  if (!r.ok) throw Object.assign(new Error(r.data?.error || `uazapi ${r.status}`), { timeout: r.timeout });
+  return { externalId: extractExternalId(r.data), raw: r.data };
+}

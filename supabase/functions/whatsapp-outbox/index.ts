@@ -15,7 +15,7 @@
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import {
-  clearFailure, registerFailure, sendMedia, sendText, splitIntoParts,
+  clearFailure, registerFailure, sendMedia, sendMenu, sendText, splitIntoParts,
   type Provider,
 } from "../_shared/whatsapp-providers.ts";
 
@@ -87,7 +87,19 @@ Deno.serve(async (req) => {
     try {
       let externalId: string | null = null;
 
-      if (row.kind === "text") {
+      const carga = (row.payload ?? {}) as Record<string, unknown>;
+
+      if (Array.isArray(carga.choices) && carga.choices.length > 0) {
+        // Pergunta com botão (confirmação de consulta). Não é um `kind` novo:
+        // o que define é o payload trazer `choices` — assim o enum do banco
+        // não precisou mudar.
+        const r = await sendMenu(
+          cfg, row.to_number, String(carga.text ?? ""),
+          carga.choices as string[], carga.footer as string | undefined,
+          { canonical: true },
+        );
+        externalId = r.externalId;
+      } else if (row.kind === "text") {
         const parts = splitIntoParts(String(row.payload?.text ?? ""));
         if (!parts.length) throw new Error("texto vazio — nada a enviar");
 
