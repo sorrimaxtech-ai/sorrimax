@@ -89,14 +89,18 @@ const Conversas = () => {
   // --- mensagens do chat aberto
   const abrirChat = useCallback(async (chatId: string) => {
     setAtivo(chatId);
+    // DESC + reverse: pega as 50 mais RECENTES e mostra na ordem natural. Antes
+    // era ASC limit(200) — abria as 200 mais ANTIGAS e a conversa parecia
+    // congelada no passado. seqid como desempate para rajadas do mesmo segundo.
     const { data, error } = await supabase
       .from("whatsapp_messages")
       .select("*")
       .eq("chat_id", chatId)
-      .order("created_at", { ascending: true })
-      .limit(200);
+      .order("created_at", { ascending: false })
+      .order("seqid", { ascending: false, nullsFirst: false })
+      .limit(50);
     if (error) { toast.error("Erro ao abrir conversa"); return; }
-    setMensagens((data ?? []) as WaMessageRow[]);
+    setMensagens(((data ?? []) as WaMessageRow[]).reverse());
     await markChatRead(chatId);
     setChats((prev) => prev.map((c) => (c.id === chatId ? { ...c, unread_count: 0 } : c)));
   }, []);
@@ -112,15 +116,24 @@ const Conversas = () => {
     if (!clinicaId) return;
     return subscribeChatRealtime(clinicaId, {
       onNewMessage: (m) => {
-        setMensagens((prev) => (m.chat_id === ativoRef.current && !prev.some((x) => x.id === m.id) ? [...prev, m] : prev));
+        if (m.chat_id === ativoRef.current) {
+          setMensagens((prev) => (prev.some((x) => x.id === m.id) ? prev : [...prev, m]));
+          // chegou mensagem no chat ABERTO: já está sendo lida, então marca lida
+          // no servidor — senão o contador subiria e voltaria a zero na próxima
+          // abertura, piscando um "não-lida" que o atendente já está vendo.
+          if (!m.from_me) void markChatRead(m.chat_id);
+        }
       },
       onMessageUpdated: (m) => {
         setMensagens((prev) => prev.map((x) => (x.id === m.id ? m : x)));
       },
       onChatChanged: (c) => {
         setChats((prev) => {
-          const i = prev.findIndex((x) => x.id === c.id);
-          const novo = i >= 0 ? prev.map((x) => (x.id === c.id ? c : x)) : [c, ...prev];
+          // o trigger incrementa unread_count de todo chat; se este é o que está
+          // aberto, o contador não pode acender — o usuário está olhando pra ele.
+          const cc = c.id === ativoRef.current ? { ...c, unread_count: 0 } : c;
+          const i = prev.findIndex((x) => x.id === cc.id);
+          const novo = i >= 0 ? prev.map((x) => (x.id === cc.id ? cc : x)) : [cc, ...prev];
           return [...novo].sort((a, b) =>
             new Date(b.last_message_time ?? 0).getTime() - new Date(a.last_message_time ?? 0).getTime());
         });
