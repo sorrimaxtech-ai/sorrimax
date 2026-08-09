@@ -18,6 +18,9 @@ export interface WaMessageRow {
   status: string;
   message_type: string;
   media_url: string | null;
+  mime_type: string | null;
+  file_name: string | null;
+  sender_name: string | null;
   external_id: string | null;
   created_at: string;
 }
@@ -27,6 +30,7 @@ export interface WaChatRow {
   clinica_id: string;
   name: string | null;
   contact_phone: string | null;
+  profile_pic_url: string | null;
   last_message_content: string | null;
   last_message_time: string | null;
   unread_count: number;

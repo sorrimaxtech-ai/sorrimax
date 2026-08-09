@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
-  MessageSquare, Search, Send, Loader2, Phone, Smartphone, QrCode,
+  MessageSquare, Search, Send, Loader2, Smartphone, QrCode,
   MoreVertical, RefreshCw, Settings2,
 } from "lucide-react";
 import {
@@ -14,10 +14,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { useTenant } from "@/hooks/useTenant";
 import { useInstanciasWa } from "@/hooks/useInstanciasWa";
 import { GerenciarWhatsAppDialog } from "@/components/whatsapp/GerenciarWhatsAppDialog";
+import { AvatarContato } from "@/components/whatsapp/AvatarContato";
+import { MensagemBolha } from "@/components/whatsapp/MensagemBolha";
 import { formatarNumeroWa } from "@/services/whatsapp/instancias";
 import { subscribeChatRealtime, type WaChatRow, type WaMessageRow } from "@/services/whatsapp/realtime";
 import { enqueueText, markChatRead } from "@/services/whatsapp/send";
-import { statusColor, statusIcon, type WaStatus } from "@/services/whatsapp/status";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
@@ -30,6 +31,22 @@ import { cn } from "@/lib/utils";
 //   · status.ts   → tick de status (✓ / ✓✓ / azul), regra igual à do banco
 // Nenhuma credencial de WhatsApp passa pelo navegador.
 // ============================================================================
+
+/** Hora curta (14:32) para a lista de conversas e as bolhas. */
+function horaCurta(iso: string): string {
+  return new Date(iso).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+}
+
+/** Rótulo de dia para o separador: Hoje / Ontem / 09/08. */
+function rotuloDia(iso: string): string {
+  const d = new Date(iso);
+  const hoje = new Date();
+  const ontem = new Date(); ontem.setDate(hoje.getDate() - 1);
+  const mesmo = (a: Date, b: Date) => a.toDateString() === b.toDateString();
+  if (mesmo(d, hoje)) return "Hoje";
+  if (mesmo(d, ontem)) return "Ontem";
+  return d.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric" });
+}
 
 const Conversas = () => {
   const { clinicaId, carregando: carregandoCtx } = useTenant();
@@ -250,19 +267,34 @@ const Conversas = () => {
               </div>
             ) : visiveis.map((c) => (
               <button key={c.id} onClick={() => abrirChat(c.id)}
-                className={cn("w-full text-left px-4 py-3 border-b border-border/50 hover:bg-muted/50 transition-colors",
+                className={cn("w-full text-left px-3 py-3 border-b border-border/50 hover:bg-muted/50 transition-colors flex items-center gap-3",
                   ativo === c.id && "bg-brand-50")}>
-                <div className="flex items-start justify-between gap-2">
-                  <span className="font-medium text-sm truncate">{c.name ?? c.contact_phone}</span>
-                  {c.unread_count > 0 && (
-                    <Badge className="bg-brand-600 hover:bg-brand-600 text-[10px] h-5 min-w-5 px-1.5">
-                      {c.unread_count}
-                    </Badge>
-                  )}
+                <AvatarContato nome={c.name} telefone={c.contact_phone}
+                               fotoUrl={c.profile_pic_url} tamanho="md" />
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-baseline justify-between gap-2">
+                    <span className={cn("text-sm truncate",
+                      c.unread_count > 0 ? "font-semibold text-gray-900" : "font-medium")}>
+                      {c.name ?? formatarNumeroWa(c.contact_phone)}
+                    </span>
+                    {c.last_message_time && (
+                      <span className="text-[10px] text-muted-foreground shrink-0">
+                        {horaCurta(c.last_message_time)}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex items-center justify-between gap-2 mt-0.5">
+                    <p className={cn("text-xs truncate",
+                      c.unread_count > 0 ? "text-gray-700" : "text-muted-foreground")}>
+                      {c.last_message_content ?? "—"}
+                    </p>
+                    {c.unread_count > 0 && (
+                      <Badge className="bg-brand-600 hover:bg-brand-600 text-[10px] h-5 min-w-5 px-1.5 shrink-0">
+                        {c.unread_count}
+                      </Badge>
+                    )}
+                  </div>
                 </div>
-                <p className="text-xs text-muted-foreground truncate mt-0.5">
-                  {c.last_message_content ?? "—"}
-                </p>
               </button>
             ))}
           </div>
@@ -294,33 +326,40 @@ const Conversas = () => {
           ) : (
             <>
               <div className="h-16 border-b border-border bg-white px-5 flex items-center gap-3 shrink-0">
-                <div className="h-9 w-9 rounded-full bg-brand-100 text-brand-700 flex items-center justify-center">
-                  <Phone className="h-4 w-4" />
-                </div>
+                <AvatarContato nome={chatAtivo.name} telefone={chatAtivo.contact_phone}
+                               fotoUrl={chatAtivo.profile_pic_url} tamanho="md" />
                 <div className="min-w-0">
-                  <p className="font-medium text-sm truncate">{chatAtivo.name ?? chatAtivo.contact_phone}</p>
-                  <p className="text-xs text-muted-foreground">{chatAtivo.contact_phone}</p>
+                  <p className="font-medium text-sm truncate">
+                    {chatAtivo.name ?? formatarNumeroWa(chatAtivo.contact_phone)}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {formatarNumeroWa(chatAtivo.contact_phone)}
+                  </p>
                 </div>
               </div>
 
-              <div className="flex-1 overflow-y-auto p-5 space-y-2">
-                {mensagens.map((m) => (
-                  <div key={m.id} className={cn("flex", m.from_me ? "justify-end" : "justify-start")}>
-                    <div className={cn("max-w-[70%] rounded-2xl px-3.5 py-2 text-sm shadow-sm",
-                      m.from_me ? "bg-brand-600 text-white rounded-br-sm" : "bg-white rounded-bl-sm")}>
-                      {m.content || <em className="opacity-70">[{m.message_type}]</em>}
-                      <div className={cn("flex items-center gap-1 justify-end mt-0.5 text-[10px]",
-                        m.from_me ? "text-white/70" : "text-muted-foreground")}>
-                        <span>{new Date(m.created_at).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}</span>
-                        {m.from_me && (
-                          <span className={m.status === "read" || m.status === "played" ? "text-sky-300" : ""}>
-                            {statusIcon(m.status as WaStatus)}
+              <div className="flex-1 overflow-y-auto px-5 py-4 space-y-1 bg-[#efeae2]/40">
+                {mensagens.map((m, i) => {
+                  const anterior = mensagens[i - 1];
+                  const novoDia = !anterior || rotuloDia(anterior.created_at) !== rotuloDia(m.created_at);
+                  // agrupa: mensagens seguidas do mesmo lado colam, com menos respiro
+                  const mesmaSequencia = anterior && anterior.from_me === m.from_me && !novoDia;
+                  return (
+                    <div key={m.id}>
+                      {novoDia && (
+                        <div className="flex justify-center my-3">
+                          <span className="rounded-full bg-white/80 px-3 py-1 text-[11px] font-medium text-gray-500 shadow-sm">
+                            {rotuloDia(m.created_at)}
                           </span>
-                        )}
+                        </div>
+                      )}
+                      <div className={cn("flex", m.from_me ? "justify-end" : "justify-start",
+                                          mesmaSequencia ? "mt-0.5" : "mt-2")}>
+                        <MensagemBolha m={m} />
                       </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
                 <div ref={fimRef} />
               </div>
 

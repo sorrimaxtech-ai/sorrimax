@@ -280,19 +280,53 @@ function mapAck(raw: any): string | null {
 
 async function findInstance(instanceName: string) {
   const { data } = await supabase.from("whatsapp_instances")
-    .select("id, clinica_id").eq("instance_id", instanceName).maybeSingle();
+    .select("id, clinica_id, api_url, api_token, apikey").eq("instance_id", instanceName).maybeSingle();
   return data;
 }
 
 // upsert do chat (idempotente por instance_id + remote_jid)
-async function upsertChat(instanceId: string, clinicaId: string, remoteJid: string, name?: string | null) {
+async function upsertChat(
+  instanceId: string, clinicaId: string, remoteJid: string,
+  name?: string | null, fotoUrl?: string | null,
+) {
   const phone = remoteJid.split("@")[0];
+  // COALESCE via não-sobrescrever: só manda o campo quando temos valor novo, pra
+  // não apagar um nome/foto já bons com null de uma mensagem posterior que não
+  // trouxe esses dados.
+  const patch: Record<string, unknown> = {
+    instance_id: instanceId, clinica_id: clinicaId, remote_jid: remoteJid, contact_phone: phone,
+  };
+  if (name) patch.name = name;
+  else patch.name = phone; // primeiro insert precisa de algo; upsert reescreve se vier nome depois
+  if (fotoUrl) patch.profile_pic_url = fotoUrl;
+
   const { data } = await supabase.from("whatsapp_chats")
-    .upsert({ instance_id: instanceId, clinica_id: clinicaId, remote_jid: remoteJid,
-              contact_phone: phone, name: name ?? phone },
-            { onConflict: "instance_id,remote_jid" })
-    .select("id").maybeSingle();
-  return data?.id as string | undefined;
+    .upsert(patch, { onConflict: "instance_id,remote_jid", ignoreDuplicates: false })
+    .select("id, profile_pic_url").maybeSingle();
+  return data as { id: string; profile_pic_url: string | null } | null;
+}
+
+// Busca a foto do contato no provedor. Best-effort e com timeout curto: é
+// enriquecimento, não pode segurar a ingestão da mensagem. Endpoint conferido
+// contra o CRM que opera esta mesma conta uazapi (POST /chat/details).
+async function buscarFotoPerfil(
+  apiUrl: string, token: string, remoteJid: string,
+): Promise<string | null> {
+  try {
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), 6000);
+    const res = await fetch(`${apiUrl}/chat/details`, {
+      method: "POST",
+      headers: { token, "Content-Type": "application/json" },
+      body: JSON.stringify({ number: remoteJid, preview: true }),
+      signal: ctrl.signal,
+    });
+    clearTimeout(t);
+    if (!res.ok) return null;
+    const d = await res.json().catch(() => ({}));
+    const chat = d?.chat ?? d;
+    return chat?.imagePreview ?? chat?.image ?? chat?.profilePicUrl ?? null;
+  } catch { return null; }
 }
 
 /** Compara sem vazar o tamanho por tempo de resposta. */
@@ -327,18 +361,20 @@ Deno.serve(async (req) => {
   if (!candidato) return new Response("forbidden", { status: 403 });
 
   // 1) segredo global, quando configurado (compatibilidade com o que já existia)
-  let instPorSegredo: { id: string; clinica_id: string } | null = null;
+  let instPorSegredo:
+    | { id: string; clinica_id: string; api_url: string | null; api_token: string | null; apikey: string | null }
+    | null = null;
   const globalOk = !!WEBHOOK_SECRET && iguala(candidato, WEBHOOK_SECRET);
 
   // 2) senão, o segredo tem de pertencer a uma instância viva
   if (!globalOk) {
     const { data } = await supabase
       .from("whatsapp_instances")
-      .select("id, clinica_id")
+      .select("id, clinica_id, api_url, api_token, apikey")
       .eq("webhook_secret", candidato)
       .maybeSingle();
     if (!data) return new Response("forbidden", { status: 403 });
-    instPorSegredo = data as { id: string; clinica_id: string };
+    instPorSegredo = data as unknown as typeof instPorSegredo;
   }
 
   let body: any;
@@ -349,9 +385,7 @@ Deno.serve(async (req) => {
   // O segredo identifica a instância melhor que o nome vindo no corpo: o nome é
   // dado do remetente, o segredo é nosso. Só cai no nome quando veio pelo
   // segredo global (rota antiga).
-  const inst = instPorSegredo
-    ? { id: instPorSegredo.id, clinica_id: instPorSegredo.clinica_id }
-    : (instanceName ? await findInstance(instanceName) : null);
+  const inst = instPorSegredo ?? (instanceName ? await findInstance(instanceName) : null);
 
   try {
     // ---- conexão: marca estado e limpa "degraded" (dispara sync/flush no worker)
@@ -427,8 +461,21 @@ Deno.serve(async (req) => {
         // ignora grupo, status do WhatsApp, canal e endereçamento LID (não-discável)
         if (!remoteJid || /@(g\.us|broadcast|newsletter|lid)$/.test(remoteJid)) continue;
         const p = parseMensagem(raw);
-        const chatId = await upsertChat(inst.id, inst.clinica_id, remoteJid, p.senderName);
+        // Foto que já veio no payload (alguns eventos trazem), sem custo.
+        const fotoNoPayload = raw?.senderPhoto ?? raw?.imagePreview ?? raw?.chat?.imagePreview ?? null;
+        const chat = await upsertChat(inst.id, inst.clinica_id, remoteJid, p.senderName, fotoNoPayload);
+        const chatId = chat?.id;
         if (!chatId) continue;
+
+        // Sem foto ainda? Busca no provedor UMA vez (best-effort, não bloqueia).
+        // Só para mensagem recebida: a nossa própria não tem foto de contato.
+        const tokenInst = (inst as any).api_token ?? (inst as any).apikey;
+        if (!p.fromMe && !chat?.profile_pic_url && (inst as any).api_url && tokenInst) {
+          const foto = await buscarFotoPerfil((inst as any).api_url, tokenInst, remoteJid);
+          if (foto) {
+            await supabase.from("whatsapp_chats").update({ profile_pic_url: foto }).eq("id", chatId);
+          }
+        }
 
         // eco do que NÓS enviamos: casa com a mensagem otimista em vez de criar
         // uma segunda linha (que ficaria com relógio eterno na tela).
