@@ -4,9 +4,11 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Sparkles, User, Mail, Lock, Phone, CheckCircle2, Eye, EyeOff } from "lucide-react";
+import { User, Mail, Lock, Phone, Eye, EyeOff, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { AuthShell } from "@/components/auth/AuthShell";
+import { Logo } from "@/components/brand/Logo";
 
 const CadastroClinica = () => {
   const navigate = useNavigate();
@@ -127,19 +129,15 @@ const CadastroClinica = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        
+    <AuthShell>
+      <div>
         {/* Logo e Título */}
-        <div className="text-center mb-8">
-          <div className="flex items-center justify-center gap-2 mb-2">
-            <Sparkles className="h-6 w-6 text-brand-600" />
-            <h1 className="text-2xl font-bold text-gray-900">CLINIC.AI</h1>
-          </div>
-          <p className="text-gray-600">Gerencie sua clínica de forma profissional</p>
+        <div className="mb-8 text-center">
+          <Logo className="justify-center" iconClassName="h-8 w-8" />
+          <p className="mt-2 text-gray-600">Gestão para clínicas odontológicas</p>
         </div>
 
-        <Card className="shadow-xl border-gray-100 bg-white">
+        <Card className="border-gray-100 bg-white shadow-xl">
           <CardHeader className="text-center pb-2">
             <CardTitle className="text-xl font-bold text-gray-900">Criar nova conta</CardTitle>
             <CardDescription>Cadastre-se para gerenciar sua clínica</CardDescription>
@@ -236,12 +234,16 @@ const CadastroClinica = () => {
                 </div>
               </div>
 
-              <Button 
-                type="submit" 
-                className="w-full bg-brand-600 hover:bg-brand-700 text-white font-semibold h-11 mt-2"
+              <Button
+                type="submit"
+                className="mt-2 h-11 w-full bg-brand-600 font-semibold text-white shadow-sm transition-all duration-150 hover:bg-brand-700 hover:shadow-md active:scale-[0.98] disabled:opacity-90"
                 disabled={loading}
               >
-                {loading ? 'Criando conta...' : 'Cadastrar'}
+                {loading ? (
+                  <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Criando conta...</>
+                ) : (
+                  "Criar conta grátis"
+                )}
               </Button>
 
             </form>
@@ -261,7 +263,7 @@ const CadastroClinica = () => {
           </CardContent>
         </Card>
       </div>
-    </div>
+    </AuthShell>
   );
 };
 

@@ -9,8 +9,9 @@ import {
   DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
-  ChevronRight, LogOut, Settings, User, MessageSquare, X, Stethoscope,
+  ChevronRight, LogOut, Settings, User, MessageSquare, X,
 } from "lucide-react";
+import { Logo } from "@/components/brand/Logo";
 import { useToast } from "@/hooks/use-toast";
 
 // ============================================================================
@@ -54,8 +55,7 @@ export const TopBar = () => {
         onClick={() => navigate("/dashboard")}
         className="flex items-center gap-2 shrink-0 rounded-md px-1 py-1 hover:bg-white/10 transition-colors"
       >
-        <Stethoscope className="h-5 w-5" />
-        <span className="font-display text-lg font-bold tracking-tight">SORRIMAX</span>
+        <Logo variant="white" iconClassName="h-6 w-6" textClassName="text-lg font-display" />
       </button>
 
       {/* Trilha: módulo › aba. Some no mobile para não competir com o logo. */}

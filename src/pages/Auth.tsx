@@ -5,8 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Sparkles, Mail, Lock, ArrowLeft, Loader2 } from "lucide-react";
+import { Mail, Lock, ArrowLeft, Loader2 } from "lucide-react";
 import { z } from "zod";
+import { AuthShell } from "@/components/auth/AuthShell";
+import { Logo } from "@/components/brand/Logo";
 
 const authSchema = z.object({
   email: z.string().email("Email inválido"),
@@ -130,31 +132,24 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-brand-50/30 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
+    <AuthShell>
+      <div>
         <button
           onClick={() => navigate("/")}
-          className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors mb-8"
+          className="mb-8 flex items-center gap-2 text-gray-600 transition-colors hover:text-gray-900"
         >
           <ArrowLeft className="h-4 w-4" />
           Voltar ao início
         </button>
 
         {/* Logo e título */}
-        <div className="text-center mb-8">
-          <div className="flex items-center justify-center gap-2 mb-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-600 text-white shadow-lg">
-              <Sparkles className="h-6 w-6" />
-            </div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-brand-600 to-brand-500 bg-clip-text text-transparent">
-              SORRIMAX
-            </h1>
-          </div>
-          <p className="text-xl text-gray-600">Bem-vindo de volta</p>
+        <div className="mb-8 text-center">
+          <Logo className="justify-center" iconClassName="h-9 w-9" textClassName="text-3xl" />
+          <p className="mt-3 text-lg text-gray-600">Bem-vindo de volta</p>
         </div>
 
         {/* Card de Login */}
-        <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
+        <div className="rounded-2xl border border-gray-100 bg-white p-8 shadow-xl">
           <h2 className="text-2xl font-bold mb-2">Entrar na sua conta</h2>
           <p className="text-gray-600 mb-6">Digite suas credenciais para acessar o painel</p>
 
@@ -208,13 +203,13 @@ const Auth = () => {
 
             <Button
               type="submit"
-              className="w-full bg-brand-600 hover:bg-brand-700"
+              className="w-full bg-brand-600 shadow-sm transition-all duration-150 hover:bg-brand-700 hover:shadow-md active:scale-[0.98]"
               size="lg"
               disabled={loading}
             >
               {loading ? (
                 <>
-                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Aguarde...
                 </>
               ) : (
@@ -224,19 +219,20 @@ const Auth = () => {
           </form>
 
           {/* Link de cadastro */}
-          <div className="mt-6 text-center">
-            <p className="text-sm text-gray-600 mb-3">Ainda não tem uma conta?</p>
-            <button
+          <div className="mt-6 border-t border-gray-100 pt-6 text-center">
+            <p className="mb-3 text-sm text-gray-600">Ainda não tem uma conta?</p>
+            <Button
               type="button"
+              variant="outline"
               onClick={() => navigate('/cadastro')}
-              className="text-brand-600 hover:text-brand-700 font-semibold transition-colors"
+              className="w-full border-brand-200 font-semibold text-brand-700 transition-all duration-150 hover:bg-brand-50 active:scale-[0.98]"
             >
-              Fazer Cadastro
-            </button>
+              Criar conta grátis
+            </Button>
           </div>
         </div>
       </div>
-    </div>
+    </AuthShell>
   );
 };
 
