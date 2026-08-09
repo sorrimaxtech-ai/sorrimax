@@ -66,11 +66,15 @@ export const AppShell = () => {
       <Sidebar />
       <main className="flex-1 min-w-0 my-2 mr-2 flex flex-col overflow-hidden rounded-2xl border border-border/60 bg-background shadow-sm">
         <ModuloTabs />
-        <div className="flex-1 min-w-0 overflow-auto">
+        <div className="flex-1 min-h-0 min-w-0 overflow-auto">
           <Suspense fallback={<CarregandoConteudo />}>
             {/* key por rota: cada troca remonta e entra com um fade rápido.
-                Chunk em cache = sem loader, só o fade. */}
-            <div key={pathname} className="min-h-full animate-in fade-in duration-150">
+                Chunk em cache = sem loader, só o fade.
+                h-full (NÃO min-h-full): páginas como Conversas usam `h-full` e
+                dependem de altura DEFINIDA no pai; min-h-full colapsava e sobrava
+                mesa cinza embaixo. h-full mantém a cadeia de altura; conteúdo
+                mais alto ainda rola pelo overflow-auto do container acima. */}
+            <div key={pathname} className="h-full animate-in fade-in duration-150">
               <Outlet />
             </div>
           </Suspense>
