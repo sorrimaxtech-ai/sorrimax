@@ -266,16 +266,48 @@ const FRAGMENT_SHADERS: Record<SiriWaveVariant, string> = {
 /**
  * Rewrites the shader's final write so luminance drives alpha. The effect keeps
  * its own look but stops carrying an opaque black box around with it.
+ *
+ * With `tinted`, the shader's own (near-white) color is discarded and the shape
+ * is repainted between two brand colors, ramped by luminance. That inverts the
+ * premise — light-on-black becomes brand-colored mass on a light page — which is
+ * what makes these shaders usable on a light theme at all.
  */
-function withLuminanceAlpha(src: string): string {
-  return src.replace(
-    "void main(){ mainImage(gl_FragColor, gl_FragCoord.xy); }",
-    `void main(){
+function withLuminanceAlpha(src: string, tinted: boolean): string {
+  const body = tinted
+    ? `void main(){
+      vec4 c; mainImage(c, gl_FragCoord.xy);
+      float lum = clamp(max(max(c.r, c.g), c.b), 0.0, 1.0);
+      // Corte por smoothstep em vez de ganho: o brilho residual do shader viraria
+      // uma nevoa cinza no retangulo do canvas, e o miolo precisa fechar solido.
+      float a = smoothstep(0.10, 0.62, lum);
+      // Rampa de cor puxada para o tom claro: se a borda mandar sozinha, cada bola
+      // ganha um contorno quase preto.
+      vec3 rgb = mix(uTintA, uTintB, smoothstep(0.10, 0.55, lum));
+      gl_FragColor = vec4(rgb * a, a);   // premultiplied
+    }`
+    : `void main(){
       vec4 c; mainImage(c, gl_FragCoord.xy);
       float a = clamp(max(max(c.r, c.g), c.b), 0.0, 1.0);
       gl_FragColor = vec4(c.rgb, a);
-    }`,
+    }`
+
+  const withUniforms = tinted
+    ? src.replace(
+        "uniform vec2 iResolution; uniform float iTime;",
+        "uniform vec2 iResolution; uniform float iTime; uniform vec3 uTintA; uniform vec3 uTintB;",
+      )
+    : src
+
+  return withUniforms.replace(
+    "void main(){ mainImage(gl_FragColor, gl_FragCoord.xy); }",
+    body,
   )
+}
+
+/** "#rrggbb" -> [r, g, b] in 0–1. */
+function hexToRgb(hex: string): [number, number, number] {
+  const n = parseInt(hex.replace("#", ""), 16)
+  return [((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255]
 }
 
 export interface SiriWaveProps
@@ -291,6 +323,12 @@ export interface SiriWaveProps
    * Luminance becomes alpha, so the black falls away.
    */
   transparent?: boolean
+  /**
+   * Repaint the effect between two hex colors (dark → light, ramped by
+   * luminance) instead of using the shader's own near-white palette. Requires
+   * `transparent`. This is what lets these shaders live on a light background.
+   */
+  tint?: [string, string]
 }
 
 export function SiriWave({
@@ -298,11 +336,13 @@ export function SiriWave({
   size = 420,
   renderScale = 0.75,
   transparent = false,
+  tint,
   className,
   style,
   ...props
 }: SiriWaveProps) {
   const canvasRef = React.useRef<HTMLCanvasElement>(null)
+  const tintKey = tint ? tint.join("|") : ""
 
   React.useEffect(() => {
     const canvas = canvasRef.current
@@ -322,8 +362,9 @@ export function SiriWave({
       return shader
     }
 
+    const tinted = Boolean(transparent && tint)
     const source = transparent
-      ? withLuminanceAlpha(FRAGMENT_SHADERS[variant])
+      ? withLuminanceAlpha(FRAGMENT_SHADERS[variant], tinted)
       : FRAGMENT_SHADERS[variant]
 
     const program = gl.createProgram()!
@@ -354,6 +395,11 @@ export function SiriWave({
     const uResolution = gl.getUniformLocation(program, "iResolution")
     const uTime = gl.getUniformLocation(program, "iTime")
 
+    if (tinted && tint) {
+      gl.uniform3fv(gl.getUniformLocation(program, "uTintA"), hexToRgb(tint[0]))
+      gl.uniform3fv(gl.getUniformLocation(program, "uTintB"), hexToRgb(tint[1]))
+    }
+
     const dim = Math.round(size * renderScale)
     canvas.width = dim
     canvas.height = dim
@@ -381,7 +427,8 @@ export function SiriWave({
       gl.deleteShader(fs)
       gl.deleteBuffer(buffer)
     }
-  }, [variant, size, renderScale, transparent])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [variant, size, renderScale, transparent, tintKey])
 
   return (
     <canvas
