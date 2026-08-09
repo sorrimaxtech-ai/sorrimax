@@ -1,5 +1,4 @@
 import { Outlet } from "react-router-dom";
-import { TopBar } from "./TopBar";
 import { ModuloTabs } from "./ModuloTabs";
 import { Sidebar } from "@/components/dashboard/Sidebar";
 import { FloatingChat } from "@/components/chat/FloatingChat";
@@ -22,15 +21,12 @@ import { FloatingChat } from "@/components/chat/FloatingChat";
 // em vez de cada página escolher o próprio cinza.
 
 export const AppShell = () => (
-  <div className="dashboard-theme h-screen flex flex-col bg-background overflow-hidden">
-    <TopBar />
-    <div className="flex-1 flex min-h-0">
-      <Sidebar />
-      <div className="flex-1 min-w-0 flex flex-col overflow-hidden">
-        <ModuloTabs />
-        <div className="flex-1 min-w-0 overflow-auto">
-          <Outlet />
-        </div>
+  <div className="dashboard-theme h-screen flex bg-background overflow-hidden">
+    <Sidebar />
+    <div className="flex-1 min-w-0 flex flex-col overflow-hidden">
+      <ModuloTabs />
+      <div className="flex-1 min-w-0 overflow-auto">
+        <Outlet />
       </div>
     </div>
     {/* Chat que acompanha todas as telas (some em /conversas) */}
