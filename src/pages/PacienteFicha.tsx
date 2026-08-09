@@ -79,6 +79,44 @@ const Campo = ({ rotulo, valor }: { rotulo: string; valor?: React.ReactNode }) =
   </div>
 );
 
+// -------------------------------------------------- conteúdo de mensagem WhatsApp
+// Mídia sem texto virava "[image]"/"[audio]" cru. Aqui: miniatura quando é imagem
+// acessível, senão um chip com ícone (Imagem/Áudio/Vídeo/Documento/…).
+const MIDIA_META: Record<string, { icon: typeof ImageIcon; label: string }> = {
+  image: { icon: ImageIcon, label: "Imagem" },
+  sticker: { icon: ImageIcon, label: "Figurinha" },
+  audio: { icon: Mic, label: "Áudio" },
+  ptt: { icon: Mic, label: "Áudio" },
+  voice: { icon: Mic, label: "Áudio" },
+  video: { icon: Video, label: "Vídeo" },
+  document: { icon: FileText, label: "Documento" },
+  location: { icon: MapPin, label: "Localização" },
+};
+
+const ConteudoMensagem = ({ m }: { m: MensagemResumo }) => {
+  const [imgErro, setImgErro] = useState(false);
+  if (m.conteudo) return <p className="whitespace-pre-wrap break-words">{m.conteudo}</p>;
+  const tipo = (m.tipo || "").toLowerCase();
+  if ((tipo === "image" || tipo === "sticker") && m.midiaUrl && !imgErro) {
+    return (
+      <img
+        src={m.midiaUrl}
+        alt="Imagem"
+        loading="lazy"
+        onError={() => setImgErro(true)}
+        className="max-h-44 max-w-[220px] rounded-lg object-cover"
+      />
+    );
+  }
+  const meta = MIDIA_META[tipo] ?? { icon: Paperclip, label: m.tipo || "Anexo" };
+  const Icone = meta.icon;
+  return (
+    <span className="inline-flex items-center gap-1.5 opacity-80">
+      <Icone className="h-4 w-4 shrink-0" /> {meta.label}
+    </span>
+  );
+};
+
 // ---------------------------------------------------------------- aba: Sobre
 const AbaSobre = ({ paciente, clinicaId }: { paciente: PacienteCompleto; clinicaId: string }) => {
   const [consultas, setConsultas] = useState<any[]>([]);
@@ -178,13 +216,13 @@ const AbaSobre = ({ paciente, clinicaId }: { paciente: PacienteCompleto; clinica
               <div className="space-y-2 max-h-80 overflow-y-auto pr-1">
                 {mensagens.map((m) => (
                   <div key={m.id} className={`flex ${m.from_me ? "justify-end" : "justify-start"}`}>
-                    <div className={`max-w-[80%] rounded-lg px-3 py-2 text-sm ${
-                      m.from_me ? "bg-brand-50 text-brand-950" : "bg-muted text-gray-800"}`}
+                    <div className={`max-w-[78%] rounded-2xl px-3 py-2 text-sm shadow-sm ${
+                      m.from_me
+                        ? "rounded-br-md bg-brand-100 text-brand-950"
+                        : "rounded-bl-md bg-white text-gray-800 border border-gray-100"}`}
                     >
-                      <p className="whitespace-pre-wrap break-words">
-                        {m.conteudo || <span className="italic opacity-70">[{m.tipo}]</span>}
-                      </p>
-                      <p className="text-[10px] opacity-60 mt-1">{dataHoraBr(m.quando)}</p>
+                      <ConteudoMensagem m={m} />
+                      <p className="mt-1 text-[10px] opacity-60">{dataHoraBr(m.quando)}</p>
                     </div>
                   </div>
                 ))}
