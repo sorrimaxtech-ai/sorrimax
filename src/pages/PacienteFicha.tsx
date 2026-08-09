@@ -1394,7 +1394,33 @@ const PacienteFicha = () => {
                   <AbaTratamentos clinicaId={clinicaId!} pacienteId={paciente.id} />
                 </TabsContent>
                 <TabsContent value="documentos">
-                  <AbaDocumentos clinicaId={clinicaId!} pacienteId={paciente.id} />
+                  {/* Duas naturezas de documento, duas seções: o que o paciente
+                      TRAZ (uploads) e o que a clínica EMITE (com hash). */}
+                  <div className="space-y-6">
+                    <section>
+                      <div className="mb-3">
+                        <p className="text-sm font-semibold text-gray-900">Documentos pessoais</p>
+                        <p className="text-xs text-gray-500">
+                          RG, CPF, exames, radiografias e fotos do paciente — envie e organize por categoria.
+                        </p>
+                      </div>
+                      <Card className="border-gray-100">
+                        <CardContent className="p-5">
+                          <AbaArquivos clinicaId={clinicaId!} pacienteId={paciente.id} />
+                        </CardContent>
+                      </Card>
+                    </section>
+
+                    <section>
+                      <div className="mb-3">
+                        <p className="text-sm font-semibold text-gray-900">Emitidos pela clínica</p>
+                        <p className="text-xs text-gray-500">
+                          Atestados, receituários, termos de consentimento e orientações, com data e hash de integridade.
+                        </p>
+                      </div>
+                      <AbaDocumentos clinicaId={clinicaId!} pacienteId={paciente.id} />
+                    </section>
+                  </div>
                 </TabsContent>
               </Tabs>
             </>
