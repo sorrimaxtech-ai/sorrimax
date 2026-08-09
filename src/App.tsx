@@ -17,6 +17,7 @@ const ConfigurarClinica = lazy(() => import("./pages/ConfigurarClinica"));
 const Feedback = lazy(() => import("./pages/Feedback"));
 const OnboardingPreview = lazy(() => import("./pages/OnboardingPreview"));
 const RedefinirSenha = lazy(() => import("./pages/RedefinirSenha"));
+const Assinatura = lazy(() => import("./pages/Assinatura"));
 const SiriTest = lazy(() => import("./pages/SiriTest"));
 import NotFound from "./pages/NotFound";
 const EmConstrucao = lazy(() => import("./pages/EmConstrucao"));
@@ -153,6 +154,7 @@ const App = () => (
             <Route path="/rotulos" element={<RotulosAgenda />} />
             <Route path="/permissoes" element={<Adm e={<Permissoes />} />} />
             <Route path="/integracoes" element={<Adm e={<Integracoes />} />} />
+            <Route path="/assinatura" element={<Adm e={<Assinatura />} />} />
             <Route path="/anotacoes" element={<Anotacoes />} />
 
             {/* ainda sem interface própria */}

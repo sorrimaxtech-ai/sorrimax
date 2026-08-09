@@ -54,3 +54,45 @@ export function conectarAsaas(apiKey: string, ambiente: "sandbox" | "production"
 export function cobrarParcela(parcelaId: string, billingType: BillingType) {
   return chamar<CobrancaGerada>({ acao: "cobrar-parcela", parcelaId, billingType });
 }
+
+// ---------------------------------------------------------------- assinatura SaaS
+
+export type PlanoSaas = "essencial" | "profissional" | "premium";
+
+export interface Plano {
+  id: PlanoSaas;
+  nome: string;
+  valor: number;
+  descricao: string;
+  destaque?: boolean;
+}
+
+export const PLANOS: Plano[] = [
+  { id: "essencial", nome: "Essencial", valor: 97, descricao: "Para profissionais liberais que querem organização." },
+  { id: "profissional", nome: "Profissional", valor: 197, destaque: true, descricao: "Para clínicas em crescimento." },
+  { id: "premium", nome: "Premium", valor: 297, descricao: "Automação total, suporte prioritário." },
+];
+
+export interface Assinatura {
+  plano: string;
+  status: "trial" | "ativa" | "atrasada" | "cancelada";
+  proximo_vencimento: string | null;
+  trial_termina_em: string | null;
+}
+
+export async function obterAssinatura(): Promise<Assinatura | null> {
+  const { data, error } = await supabase
+    .from("asaas_assinaturas")
+    .select("plano, status, proximo_vencimento, trial_termina_em")
+    .maybeSingle();
+  if (error) return null;
+  return data as Assinatura | null;
+}
+
+export function assinarPlano(
+  plano: PlanoSaas, valor: number, cpfCnpj: string, billingType: "BOLETO" | "PIX",
+) {
+  return chamar<{ ok: boolean; plano: string; invoiceUrl?: string; pixPayload?: string | null }>({
+    acao: "assinar-plano", plano, valor, cpfCnpj, billingType,
+  });
+}

@@ -52,8 +52,34 @@ Deno.serve(async (req) => {
     payload: body,
   }, { onConflict: "asaas_event_id" }).select("id").maybeSingle();
 
-  // ---- validação: token da clínica dona da referência ----
   const token = req.headers.get("asaas-access-token") ?? "";
+
+  // ================= FLUXO B: assinatura SaaS (externalReference = "saas:<clinica>")
+  // Vem da conta Asaas da SORRIMAX; valida contra um token global (env).
+  if (typeof externalRef === "string" && externalRef.startsWith("saas:")) {
+    const clinicaId = externalRef.slice(5);
+    const esperado = Deno.env.get("ASAAS_SORRIMAX_WEBHOOK_TOKEN") ?? "";
+    if (esperado && token !== esperado) {
+      await marcarErro(log?.id, "token saas inválido");
+      return new Response("unauthorized", { status: 401 });
+    }
+    // pago → assinatura ativa; vencido → atrasada; deletado → cancelada
+    const status = PAGO.has(evento) ? "ativa"
+      : evento === "PAYMENT_OVERDUE" ? "atrasada"
+      : (evento === "SUBSCRIPTION_DELETED" || evento === "PAYMENT_DELETED") ? "cancelada"
+      : null;
+    if (status) {
+      await admin.from("asaas_assinaturas")
+        .update({ status, proximo_vencimento: pg?.dueDate ?? null, updated_at: new Date().toISOString() })
+        .eq("clinica_id", clinicaId);
+      await admin.from("clinicas").update({ assinatura_status: status }).eq("id", clinicaId);
+    }
+    await marcarOk(log?.id, `saas:${status ?? "ignorado"}`);
+    return ok();
+  }
+
+  // ================= FLUXO A: cobrança de paciente (externalReference = parcela_id)
+  // ---- validação: token da clínica dona da referência ----
   if (externalRef) {
     const { data: dono } = await admin.rpc("asaas_clinica_de_referencia", {
       p_external_reference: externalRef,

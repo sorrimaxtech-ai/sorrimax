@@ -219,6 +219,77 @@ Deno.serve(async (req) => {
     });
   }
 
+  // ---------------------------------------------------------------- assinar plano (SaaS)
+  // Fluxo B: a Sorrimax cobra a CLÍNICA. Usa a chave Asaas DA SORRIMAX (env
+  // global) — não a da clínica. externalReference = "saas:<clinica>" para o
+  // webhook separar da cobrança de paciente.
+  if (acao === "assinar-plano") {
+    if (!ehAdmin) return erro("Só administrador assina o plano", 403);
+    const sorrimaxKey = Deno.env.get("ASAAS_SORRIMAX_KEY") ?? "";
+    const sorrimaxAmb = Deno.env.get("ASAAS_SORRIMAX_AMBIENTE") ?? "production";
+    if (!sorrimaxKey) return erro("Billing não configurado no servidor", 503);
+
+    const plano = String(payload.plano ?? "");          // essencial|profissional|premium
+    const valor = Number(payload.valor ?? 0);
+    const cpfCnpj = soDigitos(payload.cpfCnpj);
+    const billingType = payload.billingType === "CREDIT_CARD" ? "CREDIT_CARD"
+      : payload.billingType === "PIX" ? "PIX" : "BOLETO";
+    if (!plano || !valor) return erro("Plano/valor obrigatórios");
+    if (!cpfCnpj) return erro("Informe o CPF/CNPJ do responsável para a nota fiscal");
+
+    const { data: clinica } = await admin
+      .from("clinicas").select("nome_clinica, email_clinica, telefone").eq("id", clinicaId).single();
+
+    // cliente (a clínica) na conta da Sorrimax — sem notificação do Asaas
+    const cli = await asaas(sorrimaxKey, sorrimaxAmb, "POST", "/customers", {
+      name: clinica?.nome_clinica ?? "Clínica",
+      cpfCnpj,
+      email: clinica?.email_clinica || undefined,
+      mobilePhone: soDigitos(clinica?.telefone) || undefined,
+      externalReference: `saas:${clinicaId}`,
+      notificationDisabled: true,
+    });
+    if (!cli.ok) return erro("Falha ao criar cliente de cobrança", 400, erroAsaas(cli));
+
+    const hoje = new Date();
+    const nextDue = new Date(hoje.getTime() + 3 * 864e5).toISOString().slice(0, 10); // 3 dias
+    const sub = await asaas(sorrimaxKey, sorrimaxAmb, "POST", "/subscriptions", {
+      customer: cli.data.id,
+      billingType,
+      value: valor,
+      nextDueDate: nextDue,
+      cycle: "MONTHLY",
+      description: `Sorrimax — plano ${plano}`,
+      externalReference: `saas:${clinicaId}`,
+    });
+    if (!sub.ok) return erro("Falha ao criar assinatura", 400, erroAsaas(sub));
+
+    await admin.from("asaas_assinaturas").upsert({
+      clinica_id: clinicaId,
+      asaas_subscription_id: sub.data.id,
+      asaas_customer_id: cli.data.id,
+      plano,
+      valor,
+      status: "ativa",
+      proximo_vencimento: nextDue,
+    }, { onConflict: "clinica_id" });
+    await admin.from("clinicas").update({ plano, assinatura_status: "ativa" }).eq("id", clinicaId);
+
+    // primeira fatura para pagar já (Pix/boleto)
+    let pixPayload: string | null = null, invoice: string | null = null;
+    const pagamentos = await asaas(sorrimaxKey, sorrimaxAmb, "GET",
+      `/subscriptions/${sub.data.id}/payments`);
+    const primeira = pagamentos.ok ? pagamentos.data?.data?.[0] : null;
+    if (primeira) {
+      invoice = primeira.invoiceUrl ?? null;
+      if (billingType === "PIX") {
+        const qr = await asaas(sorrimaxKey, sorrimaxAmb, "GET", `/payments/${primeira.id}/pixQrCode`);
+        if (qr.ok) pixPayload = qr.data?.payload ?? null;
+      }
+    }
+    return json({ ok: true, plano, invoiceUrl: invoice, pixPayload });
+  }
+
   return erro("Ação desconhecida", 400);
 });
 

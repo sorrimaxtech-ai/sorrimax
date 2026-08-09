@@ -150,7 +150,7 @@ export const MODULOS_RODAPE: Modulo[] = [
     icon: Settings,
     base: [
       "/configuracoes", "/procedimentos", "/especialidades",
-      "/profissionais", "/permissoes", "/rotulos", "/integracoes",
+      "/profissionais", "/permissoes", "/rotulos", "/integracoes", "/assinatura",
     ],
     pronto: true,
     abas: [
@@ -161,6 +161,7 @@ export const MODULOS_RODAPE: Modulo[] = [
       { label: "Rótulos da agenda", href: "/rotulos", pronto: true },
       { label: "Permissões", href: "/permissoes", pronto: true, soAdmin: true },
       { label: "Integrações", href: "/integracoes", pronto: true, soAdmin: true },
+      { label: "Plano", href: "/assinatura", pronto: true, soAdmin: true },
     ],
   },
   {
