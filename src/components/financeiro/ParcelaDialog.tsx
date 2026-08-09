@@ -13,6 +13,7 @@ import {
 import { Loader2, CheckCircle2, Info, CreditCard } from "lucide-react";
 import { toast } from "sonner";
 import {
+import { traduzErro } from "@/lib/erros";
   baixarParcela, criarLancamentoAvulso, acharTaxa, calcularTaxa, ehCartao, brl, dataBR,
   hojeISO, somarDias, FORMA_PAGAMENTO_LABEL, FORMAS_PAGAMENTO, TIPO_CONTA_LABEL,
   type ParcelaComLancamento, type ContaFinanceira, type CategoriaFinanceira,
@@ -123,7 +124,7 @@ export const ParcelaDialog = ({
       onSalvo();
       onFechar();
     } catch (e: any) {
-      toast.error("Erro ao registrar o pagamento", { description: e.message });
+      toast.error("Erro ao registrar o pagamento", { description: traduzErro(e) });
     } finally {
       setSalvando(false);
     }
@@ -347,7 +348,7 @@ export const LancamentoAvulsoDialog = ({
       onCriado();
       onFechar();
     } catch (e: any) {
-      toast.error("Erro ao criar o lançamento", { description: e.message });
+      toast.error("Erro ao criar o lançamento", { description: traduzErro(e) });
     } finally {
       setSalvando(false);
     }

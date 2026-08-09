@@ -18,6 +18,7 @@ import {
 import { useTenant } from "@/hooks/useTenant";
 import { toast } from "sonner";
 import {
+import { traduzErro } from "@/lib/erros";
   listarModelosPublicados, listarPerguntas, obterPaciente, salvarResposta,
   listarRespostasDoPaciente, perguntasVisiveis, calcularScore, faixaDoScore,
   formatarDataHora,
@@ -152,7 +153,7 @@ const AnamnesePreencher = () => {
         setModeloId((atual) =>
           (atual && ms.some((m) => m.id === atual) ? atual : ms[0]?.id) || "");
       } catch (e: any) {
-        if (vivo) toast.error("Erro ao carregar a anamnese", { description: e.message });
+        if (vivo) toast.error("Erro ao carregar a anamnese", { description: traduzErro(e) });
       } finally {
         if (vivo) setCarregando(false);
       }
@@ -173,7 +174,7 @@ const AnamnesePreencher = () => {
         setRespostas({});
         setTentouSalvar(false);
       } catch (e: any) {
-        if (vivo) toast.error("Erro ao carregar perguntas", { description: e.message });
+        if (vivo) toast.error("Erro ao carregar perguntas", { description: traduzErro(e) });
       } finally {
         if (vivo) setCarregandoPerguntas(false);
       }
@@ -237,7 +238,7 @@ const AnamnesePreencher = () => {
       setTentouSalvar(false);
       setHistorico(await listarRespostasDoPaciente(clinicaId, pacienteId));
     } catch (e: any) {
-      toast.error("Erro ao salvar anamnese", { description: e.message });
+      toast.error("Erro ao salvar anamnese", { description: traduzErro(e) });
     } finally {
       setSalvando(false);
     }

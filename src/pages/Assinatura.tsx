@@ -13,6 +13,7 @@ import {
 } from "@/services/asaas";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { traduzErro } from "@/lib/erros";
 
 // ============================================================================
 // Plano e assinatura — a Sorrimax cobra a clínica (fluxo B do Asaas)
@@ -59,7 +60,7 @@ export default function Assinatura() {
       toast.success("Assinatura criada", { description: "Pague a primeira fatura para ativar." });
       await carregar();
     } catch (e: any) {
-      toast.error("Não foi possível assinar", { description: e.message });
+      toast.error("Não foi possível assinar", { description: traduzErro(e) });
     } finally {
       setAssinando(false);
     }

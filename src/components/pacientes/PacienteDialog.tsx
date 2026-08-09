@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import { useTenant } from "@/hooks/useTenant";
 import { listarConvenios } from "@/services/orcamentos";
 import {
+import { traduzErro } from "@/lib/erros";
   atualizarPaciente, buscarCep, cpfValido, criarPaciente, emailValido, ESTADOS_CIVIS,
   formDoPaciente, formVazio, formatarCelular, formatarCep, formatarCpf, GENEROS, soDigitos,
   type PacienteForm, type PacienteRow,
@@ -135,7 +136,7 @@ export const PacienteDialog = ({ aberto, onFechar, paciente, onSalvo }: Props) =
     if (!aberto || !clinicaId) return;
     listarConvenios(clinicaId)
       .then((c) => setConvenios(c as any))
-      .catch((e: any) => toast.error("Erro ao carregar convênios", { description: e.message }));
+      .catch((e: any) => toast.error("Erro ao carregar convênios", { description: traduzErro(e) }));
   }, [aberto, clinicaId]);
 
   const set = <K extends keyof PacienteForm>(campo: K, valor: PacienteForm[K]) =>
@@ -161,7 +162,7 @@ export const PacienteDialog = ({ aberto, onFechar, paciente, onSalvo }: Props) =
         complemento: f.complemento || end.complemento,
       }));
     } catch (e: any) {
-      toast.error("Não deu para consultar o CEP", { description: e.message });
+      toast.error("Não deu para consultar o CEP", { description: traduzErro(e) });
     } finally {
       setBuscandoCep(false);
     }

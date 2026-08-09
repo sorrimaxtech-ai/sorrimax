@@ -10,6 +10,7 @@ import { subscribeChatRealtime, type WaChatRow, type WaMessageRow } from "@/serv
 import { enqueueText, markChatRead } from "@/services/whatsapp/send";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { traduzErro } from "@/lib/erros";
 
 // ============================================================================
 // FloatingChat — o "botãozinho voando"
@@ -118,7 +119,7 @@ export function FloatingChat() {
       await enqueueText(ativo, texto);
       setTexto("");
     } catch (e: any) {
-      toast.error("Não foi possível enviar", { description: e.message });
+      toast.error("Não foi possível enviar", { description: traduzErro(e) });
     } finally {
       setEnviando(false);
     }

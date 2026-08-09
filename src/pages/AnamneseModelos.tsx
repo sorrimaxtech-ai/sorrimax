@@ -22,6 +22,7 @@ import {
 import { useTenant } from "@/hooks/useTenant";
 import { toast } from "sonner";
 import {
+import { traduzErro } from "@/lib/erros";
   listarModelos, criarModelo, excluirModelo, atualizarModelo, semearModeloOdonto,
   listarPacientes, formatarData, TOTAL_BANCO, type ModeloComContagem,
 } from "@/services/anamnese";
@@ -62,7 +63,7 @@ const AnamneseModelos = () => {
     try {
       setModelos(await listarModelos(clinicaId));
     } catch (e: any) {
-      toast.error("Erro ao carregar modelos", { description: e.message });
+      toast.error("Erro ao carregar modelos", { description: traduzErro(e) });
     } finally {
       setCarregando(false);
     }
@@ -90,7 +91,7 @@ const AnamneseModelos = () => {
       setAbrirNovo(false); setNome(""); setEspecialidade("");
       navigate(`/anamnese/modelos/${m.id}`);
     } catch (e: any) {
-      toast.error("Erro ao criar modelo", { description: e.message });
+      toast.error("Erro ao criar modelo", { description: traduzErro(e) });
     } finally {
       setSalvando(false);
     }
@@ -106,7 +107,7 @@ const AnamneseModelos = () => {
       await carregar();
       navigate(`/anamnese/modelos/${id}`);
     } catch (e: any) {
-      toast.error("Erro ao trazer o modelo pronto", { description: e.message });
+      toast.error("Erro ao trazer o modelo pronto", { description: traduzErro(e) });
     } finally {
       setSemeando(false);
     }
@@ -124,7 +125,7 @@ const AnamneseModelos = () => {
       toast.success(valor ? "Modelo publicado" : "Modelo despublicado");
     } catch (e: any) {
       setModelos((ant) => ant.map((x) => (x.id === m.id ? { ...x, publicado: !valor } : x)));
-      toast.error("Erro ao mudar status", { description: e.message });
+      toast.error("Erro ao mudar status", { description: traduzErro(e) });
     }
   };
 
@@ -136,7 +137,7 @@ const AnamneseModelos = () => {
       setModelos((ant) => ant.filter((m) => m.id !== aExcluir.id));
       toast.success("Modelo excluído");
     } catch (e: any) {
-      toast.error("Erro ao excluir", { description: e.message });
+      toast.error("Erro ao excluir", { description: traduzErro(e) });
     } finally {
       setExcluindo(false);
       setAExcluir(null);
@@ -152,7 +153,7 @@ const AnamneseModelos = () => {
     try {
       setPacientes(await listarPacientes(clinicaId) as any);
     } catch (e: any) {
-      toast.error("Erro ao carregar pacientes", { description: e.message });
+      toast.error("Erro ao carregar pacientes", { description: traduzErro(e) });
     } finally {
       setCarregandoPacientes(false);
     }

@@ -56,8 +56,17 @@ export function traduzErro(e: unknown): string {
   return traduzTexto(bruto);
 }
 
+const GENERICO = "Não foi possível concluir. Tente novamente em instantes.";
+
+// Marcadores de texto técnico/inglês que NUNCA podem chegar ao usuário final:
+// nomes de tabela/coluna (snake_case), termos de banco, stack, códigos.
+const PARECE_TECNICO =
+  /[a-z]+_[a-z]+|constraint|column|relation|violates|null value|invalid input|syntax|SQLSTATE|pg_|PGRST|supabase|postgres|duplicate key|foreign key|\bat\b.*\.(ts|js)|undefined|\bnull\b|function .*\(|::[a-z]/i;
+
 function traduzTexto(msg: string): string {
   for (const [re, pt] of POR_TRECHO) if (re.test(msg)) return pt;
-  // mensagens curtas que já parecem pt-BR (do nosso próprio código) passam direto
-  return msg || "Ocorreu um erro. Tente novamente.";
+  // Não reconhecido: só passa adiante se claramente for uma frase pt-BR nossa
+  // (curta, sem cara de erro técnico). Qualquer resquício de jargão vira genérico.
+  if (msg && msg.length <= 120 && !PARECE_TECNICO.test(msg)) return msg;
+  return GENERICO;
 }

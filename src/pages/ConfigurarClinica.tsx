@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { MapPin, Briefcase, Clock, ChevronRight, ChevronLeft, Check } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { traduzErro } from "@/lib/erros";
 
 // Especialidades odontológicas (Sorrimax é odonto)
 const ESPECIALIDADES_LISTA = [
@@ -307,7 +308,7 @@ const ConfigurarClinica = () => {
     } catch (error: any) {
       console.error('Erro ao configurar clínica:', error);
       toast.error('Erro ao salvar dados', {
-        description: error.message || 'Tente novamente mais tarde'
+        description: traduzErro(error) || 'Tente novamente mais tarde'
       });
     } finally {
       setLoading(false);

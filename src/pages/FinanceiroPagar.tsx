@@ -198,8 +198,8 @@ const FinanceiroPagar = () => {
           .eq("clinica_id", clinicaId).eq("ativo", true).order("nome"),
       ]);
       if (!vivo) return;
-      if (cat.error) toast.error("Erro ao carregar categorias", { description: cat.error.message });
-      if (ct.error) toast.error("Erro ao carregar contas", { description: ct.error.message });
+      if (cat.error) toast.error("Erro ao carregar categorias", { description: traduzErro(cat.error) });
+      if (ct.error) toast.error("Erro ao carregar contas", { description: traduzErro(ct.error) });
       setCategorias(cat.data ?? []);
       setContas(ct.data ?? []);
       await Promise.all([carregarParcelas(), carregarFixas()]);

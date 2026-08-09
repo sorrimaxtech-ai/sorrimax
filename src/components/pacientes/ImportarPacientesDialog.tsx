@@ -9,6 +9,7 @@ import {
   type LinhaImport, type ResultadoImport,
 } from "@/services/pacientes";
 import { toast } from "sonner";
+import { traduzErro } from "@/lib/erros";
 
 // ============================================================================
 // Importar pacientes por CSV — a porta de entrada da migração
@@ -53,7 +54,7 @@ export function ImportarPacientesDialog({ clinicaId, aberto, onFechar, onImporta
       if (r.inseridos > 0) { toast.success(`${r.inseridos} paciente(s) importado(s)`); onImportado(); }
       else toast.info("Nenhum paciente novo importado");
     } catch (e: any) {
-      toast.error("Falha na importação", { description: e.message });
+      toast.error("Falha na importação", { description: traduzErro(e) });
     } finally {
       setImportando(false);
     }

@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { Plus, User, Shield, Mail, Phone } from "lucide-react";
 import { NewProfessionalModal } from "@/components/profissionais/NewProfessionalModal";
+import { traduzErro } from "@/lib/erros";
 
 interface Profile {
   id: string;
@@ -114,7 +115,7 @@ const Profissionais = () => {
         console.error("Erro ao salvar profissional:", error);
         toast({
             title: "Erro",
-            description: error.message || "Erro ao salvar.",
+            description: traduzErro(error) || "Erro ao salvar.",
             variant: "destructive"
         });
     }

@@ -27,6 +27,7 @@ import {
   type ConsultaOpcao, type TipoDocumento,
 } from "@/services/documentos";
 import {
+import { traduzErro } from "@/lib/erros";
   GRUPOS_MERGE_FIELDS, analisarMergeFields, montarDocumentoFinal, ROTULO_MERGE_FIELD,
   sanitizarHtmlDocumento, type ContextoMerge,
 } from "@/lib/mergeFields";
@@ -134,7 +135,7 @@ const DocumentoEditor = () => {
         if (eu) setProfissionalId(eu.id);
         else if (profs.length === 1) setProfissionalId(profs[0].id);
       } catch (e: any) {
-        if (vivo) toast.error("Erro ao carregar o modelo", { description: e.message });
+        if (vivo) toast.error("Erro ao carregar o modelo", { description: traduzErro(e) });
       } finally {
         if (vivo) setCarregando(false);
       }
@@ -159,7 +160,7 @@ const DocumentoEditor = () => {
         setConsultas(cs);
         setConsultaId(NENHUMA);
       } catch (e: any) {
-        if (vivo) toast.error("Erro ao carregar consultas", { description: e.message });
+        if (vivo) toast.error("Erro ao carregar consultas", { description: traduzErro(e) });
       }
     })();
     return () => { vivo = false; };
@@ -177,7 +178,7 @@ const DocumentoEditor = () => {
         });
         if (vivo) setContextoMerge(ctx);
       } catch (e: any) {
-        if (vivo) toast.error("Erro ao montar a pré-visualização", { description: e.message });
+        if (vivo) toast.error("Erro ao montar a pré-visualização", { description: traduzErro(e) });
       }
     })();
     return () => { vivo = false; };
@@ -272,7 +273,7 @@ const DocumentoEditor = () => {
       if (avisar) toast.success("Modelo salvo");
       return true;
     } catch (e: any) {
-      toast.error("Erro ao salvar", { description: e.message });
+      toast.error("Erro ao salvar", { description: traduzErro(e) });
       return false;
     } finally {
       setSalvando(false);
@@ -310,7 +311,7 @@ const DocumentoEditor = () => {
       });
       imprimirHtml(html, `${nome.trim()} - ${pacienteEscolhido?.nome_completo ?? ""}`);
     } catch (e: any) {
-      toast.error("Erro ao emitir", { description: e.message });
+      toast.error("Erro ao emitir", { description: traduzErro(e) });
     } finally {
       setEmitindo(false);
     }

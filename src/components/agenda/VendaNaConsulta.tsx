@@ -12,6 +12,7 @@ import {
 import { Loader2, Plus, Trash2, Receipt } from "lucide-react";
 import { toast } from "sonner";
 import { lancarVendaNaConsulta, type ProcedimentoAgenda } from "@/services/agenda";
+import { traduzErro } from "@/lib/erros";
 
 // ============================================================================
 // VendaNaConsulta — a venda nasce na agenda
@@ -127,7 +128,7 @@ export const VendaNaConsulta = ({
       onLancado();
       onFechar();
     } catch (e: any) {
-      toast.error("Erro ao lançar a venda", { description: e.message });
+      toast.error("Erro ao lançar a venda", { description: traduzErro(e) });
     } finally {
       setSalvando(false);
     }

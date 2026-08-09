@@ -13,6 +13,7 @@ import { Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useTenant } from "@/hooks/useTenant";
 import { toast } from "sonner";
+import { traduzErro } from "@/lib/erros";
 
 // ============================================================================
 // DespesaFixaDialog — cadastro do MOLDE, não da conta em si
@@ -92,8 +93,8 @@ export const DespesaFixaDialog = ({ aberto, onFechar, onSalvo, despesa }: Props)
           .eq("clinica_id", clinicaId).eq("ativo", true).order("nome"),
       ]);
       if (!vivo) return;
-      if (cat.error) toast.error("Erro ao carregar categorias", { description: cat.error.message });
-      if (ct.error) toast.error("Erro ao carregar contas", { description: ct.error.message });
+      if (cat.error) toast.error("Erro ao carregar categorias", { description: traduzErro(cat.error) });
+      if (ct.error) toast.error("Erro ao carregar contas", { description: traduzErro(ct.error) });
       setCategorias(cat.data ?? []);
       setContas(ct.data ?? []);
     })();
@@ -136,7 +137,7 @@ export const DespesaFixaDialog = ({ aberto, onFechar, onSalvo, despesa }: Props)
 
     setSalvando(false);
     if (error) {
-      toast.error("Erro ao salvar despesa fixa", { description: error.message });
+      toast.error("Erro ao salvar despesa fixa", { description: traduzErro(error) });
       return;
     }
     // RLS negando UPDATE não gera erro no PostgREST — só devolve zero linhas.

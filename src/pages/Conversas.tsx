@@ -10,6 +10,7 @@ import { enqueueText, markChatRead } from "@/services/whatsapp/send";
 import { statusColor, statusIcon, type WaStatus } from "@/services/whatsapp/status";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { traduzErro } from "@/lib/erros";
 
 // ============================================================================
 // Conversas — inbox de WhatsApp
@@ -48,7 +49,7 @@ const Conversas = () => {
         .order("last_message_time", { ascending: false, nullsFirst: false })
         .limit(100);
       if (!vivo) return;
-      if (error) toast.error("Erro ao carregar conversas", { description: error.message });
+      if (error) toast.error("Erro ao carregar conversas", { description: traduzErro(error) });
       else setChats((data ?? []) as WaChatRow[]);
       setCarregando(false);
     })();
@@ -108,7 +109,7 @@ const Conversas = () => {
       await enqueueText(ativo, texto);
       setTexto("");
     } catch (e: any) {
-      toast.error("Não foi possível enviar", { description: e.message });
+      toast.error("Não foi possível enviar", { description: traduzErro(e) });
     } finally {
       setEnviando(false);
     }

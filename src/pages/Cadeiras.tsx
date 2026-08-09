@@ -210,11 +210,10 @@ const Cadeiras = () => {
               <div className="text-sm text-gray-600">
                 <p className="font-medium text-gray-900 mb-1">Cadeira não aceita duas consultas no mesmo horário</p>
                 <p>
-                  A trava é uma constraint de exclusão no banco de dados
-                  (<code className="text-[11px] bg-gray-100 px-1 py-0.5 rounded">consultas_cadeira_sem_sobreposicao</code>):
-                  se alguém tentar agendar dois pacientes na mesma cadeira em horários que se
-                  encostam, o agendamento é recusado — mesmo que venha do agendamento online,
-                  de outra aba ou de outro usuário ao mesmo tempo.
+                  Se alguém tentar marcar dois pacientes na mesma cadeira em horários que se
+                  encostam, o sistema recusa automaticamente — mesmo que os agendamentos venham do
+                  site, de outra aba ou de dois atendentes ao mesmo tempo. A proteção é garantida,
+                  não depende de ninguém lembrar de conferir.
                 </p>
                 <p className="mt-1">
                   Consultas canceladas, desmarcadas ou com falta liberam a cadeira automaticamente.

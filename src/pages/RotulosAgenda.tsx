@@ -15,6 +15,7 @@ import { Tag, Plus, Loader2, Pencil, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { useTenant } from "@/hooks/useTenant";
 import { supabase } from "@/integrations/supabase/client";
+import { traduzErro } from "@/lib/erros";
 
 // ============================================================================
 // Rótulos da agenda
@@ -59,7 +60,7 @@ const RotulosAgenda = () => {
       .select("id, nome, cor, ordem, ativo")
       .eq("clinica_id", clinicaId)
       .order("ordem");
-    if (error) toast.error("Erro ao carregar rótulos", { description: error.message });
+    if (error) toast.error("Erro ao carregar rótulos", { description: traduzErro(error) });
     else setLista((data ?? []) as Rotulo[]);
     setCarregando(false);
   };
@@ -112,7 +113,7 @@ const RotulosAgenda = () => {
       .delete()
       .eq("id", excluir.id)
       .eq("clinica_id", clinicaId);
-    if (error) toast.error("Erro ao excluir", { description: error.message });
+    if (error) toast.error("Erro ao excluir", { description: traduzErro(error) });
     else { toast.success("Rótulo excluído"); await carregar(); }
     setExcluir(null);
   };

@@ -19,6 +19,7 @@ import { Check, ChevronsUpDown, Loader2, Repeat, User } from "lucide-react";
 import { useTenant } from "@/hooks/useTenant";
 import { toast } from "sonner";
 import {
+import { traduzErro } from "@/lib/erros";
   DIAS_SEMANA, MODALIDADE_LABEL, STATUS_LABEL, STATUS_ORDEM, TIPO_RECORRENCIA_LABEL,
   atualizarConsulta, brl, buscarPacientes, criarConsulta, criarSerieRecorrente,
   gerarDatasRecorrencia, inputLocalParaIso, isoParaInputLocal, listarCadeiras,
@@ -98,7 +99,7 @@ export const ConsultaDialog = ({ aberto, onFechar, onSalvo, consulta, pacienteId
         setProcedimentos(proc);
         setCadeiras(cad);
       } catch (e: any) {
-        if (vivo) toast.error("Erro ao carregar cadastros", { description: e.message });
+        if (vivo) toast.error("Erro ao carregar cadastros", { description: traduzErro(e) });
       } finally {
         if (vivo) setCarregandoApoio(false);
       }
@@ -164,7 +165,7 @@ export const ConsultaDialog = ({ aberto, onFechar, onSalvo, consulta, pacienteId
         const r = await buscarPacientes(clinicaId, buscaPaciente);
         if (vivo) setPacientes(r);
       } catch (e: any) {
-        if (vivo) toast.error("Erro ao buscar pacientes", { description: e.message });
+        if (vivo) toast.error("Erro ao buscar pacientes", { description: traduzErro(e) });
       } finally {
         if (vivo) setBuscandoPacientes(false);
       }
@@ -277,7 +278,7 @@ export const ConsultaDialog = ({ aberto, onFechar, onSalvo, consulta, pacienteId
       }
       onSalvo();
     } catch (e: any) {
-      toast.error("Não foi possível salvar", { description: e.message });
+      toast.error("Não foi possível salvar", { description: traduzErro(e) });
     } finally {
       setSalvando(false);
     }

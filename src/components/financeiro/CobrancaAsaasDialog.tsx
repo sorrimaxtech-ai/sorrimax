@@ -9,6 +9,7 @@ import { enqueueText } from "@/services/whatsapp/send";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { traduzErro } from "@/lib/erros";
 
 // ============================================================================
 // Cobrança por Pix/Boleto (Asaas) sobre uma parcela
@@ -48,7 +49,7 @@ export function CobrancaAsaasDialog({ parcela, onFechar, onGerada }: Props) {
       setCobranca(c);
       onGerada?.();
     } catch (e: any) {
-      toast.error("Não foi possível gerar a cobrança", { description: e.message });
+      toast.error("Não foi possível gerar a cobrança", { description: traduzErro(e) });
     } finally {
       setGerando(false);
     }
@@ -81,7 +82,7 @@ export function CobrancaAsaasDialog({ parcela, onFechar, onGerada }: Props) {
       await enqueueText(chat.id, corpo);
       toast.success("Cobrança enviada pelo WhatsApp");
     } catch (e: any) {
-      toast.error("Não foi possível enviar", { description: e.message });
+      toast.error("Não foi possível enviar", { description: traduzErro(e) });
     }
   };
 

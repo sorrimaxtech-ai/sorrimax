@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { AuthShell } from "@/components/auth/AuthShell";
 import { Logo } from "@/components/brand/Logo";
+import { traduzErro } from "@/lib/erros";
 
 const CadastroClinica = () => {
   const navigate = useNavigate();
@@ -101,7 +102,7 @@ const CadastroClinica = () => {
     } catch (error: any) {
       console.error("Erro no cadastro:", error);
       toast.error("Erro ao criar conta", {
-        description: error.message || "Tente novamente mais tarde",
+        description: traduzErro(error) || "Tente novamente mais tarde",
       });
       return;
     } finally {

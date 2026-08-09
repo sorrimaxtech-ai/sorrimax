@@ -17,6 +17,7 @@ import {
 import { toast } from "sonner";
 import { LembreteConsultaCard } from "@/components/marketing/LembreteConsultaCard";
 import { cn } from "@/lib/utils";
+import { traduzErro } from "@/lib/erros";
 
 // ============================================================================
 // Marketing → Campanhas — a Central de mensagens do Sorrimax
@@ -85,7 +86,7 @@ const Marketing = () => {
       );
       setAlcances(Object.fromEntries(pares));
     } catch (e: any) {
-      toast.error("Erro ao carregar campanhas", { description: e.message });
+      toast.error("Erro ao carregar campanhas", { description: traduzErro(e) });
     } finally {
       setCarregando(false);
     }
@@ -104,7 +105,7 @@ const Marketing = () => {
       toast.success(ativa ? "Campanha ativada — envios diários às 09h" : "Campanha pausada");
       await carregar();
     } catch (e: any) {
-      toast.error("Não foi possível salvar", { description: e.message });
+      toast.error("Não foi possível salvar", { description: traduzErro(e) });
     } finally {
       setSalvando(null);
     }
@@ -118,7 +119,7 @@ const Marketing = () => {
       setEditando(tipo);
       if (!porTipo[tipo]) await carregar();
     } catch (e: any) {
-      toast.error("Erro ao abrir campanha", { description: e.message });
+      toast.error("Erro ao abrir campanha", { description: traduzErro(e) });
     }
   };
 
@@ -131,7 +132,7 @@ const Marketing = () => {
       setEditando(null);
       await carregar();
     } catch (e: any) {
-      toast.error("Não foi possível salvar", { description: e.message });
+      toast.error("Não foi possível salvar", { description: traduzErro(e) });
     }
   };
 

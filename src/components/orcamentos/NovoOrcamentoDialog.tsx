@@ -13,6 +13,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useTenant } from "@/hooks/useTenant";
 import { criarOrcamento, listarConvenios, listarProfissionais } from "@/services/orcamentos";
 import { toast } from "sonner";
+import { traduzErro } from "@/lib/erros";
 
 interface Props {
   aberto: boolean;
@@ -51,7 +52,7 @@ export const NovoOrcamentoDialog = ({ aberto, onFechar, onCriado, pacienteIdFixo
         const particular = conv.find((c: any) => c.tipo === "particular");
         if (particular && !convenioId) setConvenioId(particular.id);
       } catch (e: any) {
-        toast.error("Erro ao carregar dados", { description: e.message });
+        toast.error("Erro ao carregar dados", { description: traduzErro(e) });
       }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -83,7 +84,7 @@ export const NovoOrcamentoDialog = ({ aberto, onFechar, onCriado, pacienteIdFixo
       toast.success("Orçamento criado");
       onCriado(id);
     } catch (e: any) {
-      toast.error("Erro ao criar orçamento", { description: e.message });
+      toast.error("Erro ao criar orçamento", { description: traduzErro(e) });
     } finally {
       setSalvando(false);
     }

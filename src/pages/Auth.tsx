@@ -9,6 +9,7 @@ import { Mail, Lock, ArrowLeft, Loader2 } from "lucide-react";
 import { z } from "zod";
 import { AuthShell } from "@/components/auth/AuthShell";
 import { Logo } from "@/components/brand/Logo";
+import { traduzErro } from "@/lib/erros";
 
 const authSchema = z.object({
   email: z.string().email("Email inválido"),
@@ -88,7 +89,7 @@ const Auth = () => {
       if (error) throw error;
       toast({ title: "Verifique seu e-mail", description: "Se houver conta com esse e-mail, enviamos um link para redefinir a senha." });
     } catch (error: any) {
-      toast({ title: "Não foi possível enviar", description: error.message, variant: "destructive" });
+      toast({ title: "Não foi possível enviar", description: traduzErro(error), variant: "destructive" });
     } finally {
       setLoading(false);
     }
@@ -123,7 +124,7 @@ const Auth = () => {
       console.error('Erro no login:', error);
       toast({
         title: "Erro ao fazer login",
-        description: error.message || "Tente novamente mais tarde",
+        description: traduzErro(error) || "Tente novamente mais tarde",
         variant: "destructive",
       });
     } finally {

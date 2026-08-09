@@ -10,6 +10,7 @@ import { CalendarCheck, Loader2, PencilLine } from "lucide-react";
 import { useTenant } from "@/hooks/useTenant";
 import { obterConfigLembrete, salvarConfigLembrete, type ConfigLembrete } from "@/services/campanhas";
 import { toast } from "sonner";
+import { traduzErro } from "@/lib/erros";
 
 // ============================================================================
 // Confirmação automática de consulta — o toggle da clínica
@@ -45,7 +46,7 @@ export function LembreteConsultaCard() {
       setCfg((c) => (c ? { ...c, ativo } : c));
       toast.success(ativo ? "Confirmação automática ligada" : "Confirmação automática desligada");
     } catch (e: any) {
-      toast.error("Não foi possível salvar", { description: e.message });
+      toast.error("Não foi possível salvar", { description: traduzErro(e) });
     } finally {
       setSalvando(false);
     }
@@ -60,7 +61,7 @@ export function LembreteConsultaCard() {
       setEditando(false);
       toast.success("Mensagem salva");
     } catch (e: any) {
-      toast.error("Não foi possível salvar", { description: e.message });
+      toast.error("Não foi possível salvar", { description: traduzErro(e) });
     } finally {
       setSalvando(false);
     }

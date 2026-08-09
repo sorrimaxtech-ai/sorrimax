@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { CreditCard, Loader2, CheckCircle2, Copy, Check } from "lucide-react";
 import { statusAsaas, conectarAsaas, type StatusAsaas } from "@/services/asaas";
 import { toast } from "sonner";
+import { traduzErro } from "@/lib/erros";
 
 // ============================================================================
 // Conectar Asaas — a clínica cola a PRÓPRIA chave de API (o código nunca a vê
@@ -52,7 +53,7 @@ export function AsaasCard() {
       setChave("");
       await carregar();
     } catch (e: any) {
-      toast.error("Não foi possível conectar", { description: e.message });
+      toast.error("Não foi possível conectar", { description: traduzErro(e) });
     } finally {
       setConectando(false);
     }

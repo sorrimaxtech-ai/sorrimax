@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Lock, Loader2, Sparkles, CheckCircle2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { traduzErro } from "@/lib/erros";
 
 // ============================================================================
 // Redefinir senha — rota pública de destino do e-mail de recuperação
@@ -53,7 +54,7 @@ export default function RedefinirSenha() {
       toast.success("Senha redefinida");
       setTimeout(() => navigate("/agenda"), 1500);
     } catch (error: any) {
-      toast.error("Não foi possível redefinir", { description: error.message });
+      toast.error("Não foi possível redefinir", { description: traduzErro(error) });
     } finally {
       setSalvando(false);
     }

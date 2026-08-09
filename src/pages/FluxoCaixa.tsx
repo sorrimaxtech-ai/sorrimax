@@ -13,6 +13,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { brl } from "@/services/orcamentos";
 import { toast } from "sonner";
 import type { Database } from "@/integrations/supabase/types";
+import { traduzErro } from "@/lib/erros";
 
 // ============================================================================
 // Fluxo de Caixa — previsto x realizado, mês a mês
@@ -123,9 +124,9 @@ const FluxoCaixa = () => {
         supabase.from("categorias_financeiras").select("id, nome").eq("clinica_id", clinicaId),
       ]);
       if (!vivo) return;
-      if (view.error) toast.error("Erro ao carregar fluxo de caixa", { description: view.error.message });
-      if (mov.error) toast.error("Erro ao carregar movimentação", { description: mov.error.message });
-      if (cat.error) toast.error("Erro ao carregar categorias", { description: cat.error.message });
+      if (view.error) toast.error("Erro ao carregar fluxo de caixa", { description: traduzErro(view.error) });
+      if (mov.error) toast.error("Erro ao carregar movimentação", { description: traduzErro(mov.error) });
+      if (cat.error) toast.error("Erro ao carregar categorias", { description: traduzErro(cat.error) });
       setLinhas((view.data ?? []) as unknown as LinhaView[]);
       setMovimentos((mov.data ?? []) as unknown as Movimento[]);
       setCategorias(cat.data ?? []);
