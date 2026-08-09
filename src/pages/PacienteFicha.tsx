@@ -1259,6 +1259,10 @@ const PacienteFicha = () => {
                       >
                         <MessageCircle className="h-4 w-4 text-brand-600" /> WhatsApp
                       </Button>
+                      <Button variant="outline" className="gap-2"
+                        onClick={() => navigate(`/agenda?novo=${paciente.id}`)}>
+                        <CalendarClock className="h-4 w-4" /> Agendar
+                      </Button>
                       <Button onClick={() => setEditando(true)} className="bg-brand-600 hover:bg-brand-700 gap-2">
                         <Pencil className="h-4 w-4" /> Editar
                       </Button>

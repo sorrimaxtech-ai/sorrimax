@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import {
   addDays, addMinutes, addMonths, addWeeks, endOfDay, endOfMonth, endOfWeek,
   format, startOfDay, startOfMonth, startOfWeek,
@@ -99,6 +99,7 @@ const FORM_VAZIO: Formulario = {
 const Agenda = () => {
   const { clinicaId, carregando: carregandoCtx } = useTenant();
 
+  const [searchParams, setSearchParams] = useSearchParams();
   const [visao, setVisao] = useState<VisaoAgenda>("semana");
   const [referencia, setReferencia] = useState<Date>(() => startOfDay(new Date()));
   const [agrupamentoDia, setAgrupamentoDia] = useState<AgrupamentoDia>("nenhum");
@@ -156,6 +157,16 @@ const Agenda = () => {
     })();
     return () => { vivo = false; };
   }, [clinicaId, carregandoCtx]);
+
+  // veio da ficha do paciente (?novo=<id>): abre o dialog ja com o paciente
+  useEffect(() => {
+    const novo = searchParams.get("novo");
+    if (!novo || carregandoBase || !pacientes.some((p) => p.id === novo)) return;
+    abrirNovaConsulta(undefined, { pacienteId: novo });
+    searchParams.delete("novo");
+    setSearchParams(searchParams, { replace: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams, carregandoBase, pacientes]);
 
   // ------------------------------------------------------------- intervalo
   const intervalo = useMemo(() => {
@@ -253,7 +264,7 @@ const Agenda = () => {
   // ------------------------------------------------------------- formulário
   const abrirNovaConsulta = (
     inicio?: Date,
-    ctx?: { profissionalId?: string | null; cadeiraId?: string | null; tipo?: TipoAgendamento },
+    ctx?: { profissionalId?: string | null; cadeiraId?: string | null; tipo?: TipoAgendamento; pacienteId?: string },
   ) => {
     const quando = inicio ?? addMinutes(startOfDay(referencia), faixa.inicioMin);
     const profSugerido = ctx?.profissionalId
@@ -262,6 +273,7 @@ const Agenda = () => {
     setForm({
       ...FORM_VAZIO,
       tipo: ctx?.tipo ?? "consulta",
+      pacienteId: ctx?.pacienteId ?? "",
       profissionalId: profSugerido,
       cadeiraId: cadSugerida || NENHUM,
       data: format(quando, "yyyy-MM-dd"),
@@ -673,6 +685,14 @@ const Agenda = () => {
                     ))}
                   </SelectContent>
                 </Select>
+                {form.pacienteId && (
+                  <Link
+                    to={`/pacientes/${form.pacienteId}`}
+                    className="mt-1 inline-flex items-center gap-1 text-xs font-medium text-brand-600 hover:text-brand-700"
+                  >
+                    <Users className="h-3 w-3" /> Ver ficha do paciente
+                  </Link>
+                )}
               </div>
             )}
 
