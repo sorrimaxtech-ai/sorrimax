@@ -5,9 +5,9 @@ import { useDemoMode } from "@/hooks/useDemoMode";
 import { demoMetricas, demoUsuario, demoClinica, demoConsultas } from "@/data/demoData";
 import { MetricCard } from "@/components/dashboard/MetricCard";
 import { TodaySchedule } from "@/components/dashboard/TodaySchedule";
-import { QuickActions } from "@/components/dashboard/QuickActions";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Users, Calendar, TrendingUp, Activity, Info } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Users, Calendar, TrendingUp, Activity, Info, UserRoundPlus } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
 // Série do gráfico: vem de `consultas` (banco), NUNCA inventada.
@@ -159,18 +159,27 @@ const Dashboard = () => {
           )}
 
           {/* Header */}
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-1">Dashboard</h1>
-            <div className="flex flex-col">
-              <p className="text-xl text-brand-700 font-semibold">
-                Bem-vindo de volta, {userName}!
-              </p>
-              {clinicName && (
-                <p className="text-sm text-gray-500 mt-1">
-                  Gerenciando: <span className="font-medium text-gray-700">{clinicName}</span>
+          <div className="mb-8 flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 mb-1">Dashboard</h1>
+              <div className="flex flex-col">
+                <p className="text-xl text-brand-700 font-semibold">
+                  Bem-vindo de volta, {userName}!
                 </p>
-              )}
+                {clinicName && (
+                  <p className="text-sm text-gray-500 mt-1">
+                    Gerenciando: <span className="font-medium text-gray-700">{clinicName}</span>
+                  </p>
+                )}
+              </div>
             </div>
+            <Button
+              onClick={() => navigate("/pacientes?novo=1")}
+              className="bg-brand-600 hover:bg-brand-700 gap-2"
+            >
+              <UserRoundPlus className="h-4 w-4" />
+              Novo Paciente
+            </Button>
           </div>
 
           {/* Metrics Cards */}
@@ -201,14 +210,8 @@ const Dashboard = () => {
           </div>
 
           {/* Agenda do dia em primeiro — é o que o dentista olha ao abrir o sistema */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-            <div className="lg:col-span-2">
-              <TodaySchedule />
-            </div>
-
-            <div>
-              <QuickActions />
-            </div>
+          <div className="mb-8">
+            <TodaySchedule />
           </div>
 
           {/* Crescimento de agendamentos — dados reais */}

@@ -1,6 +1,6 @@
 import { traduzErro } from "@/lib/erros";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -44,6 +44,17 @@ const Pacientes = () => {
   const [dialogAberto, setDialogAberto] = useState(false);
   const [importar, setImportar] = useState(false);
   const [exportando, setExportando] = useState(false);
+
+  // Chegou com ?novo=1 (botão "Novo Paciente" do Dashboard): abre o cadastro
+  // direto e limpa o parâmetro para o F5 não reabrir o dialog.
+  const [searchParams, setSearchParams] = useSearchParams();
+  useEffect(() => {
+    if (searchParams.get("novo")) {
+      setEmEdicao(null);
+      setDialogAberto(true);
+      setSearchParams({}, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
 
   const exportar = async () => {
     if (!clinicaId) return;
