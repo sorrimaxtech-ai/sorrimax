@@ -25,3 +25,12 @@ verify_jwt = false
 
 [functions.asaas-webhook]
 verify_jwt = false
+
+# Chamada pelo pg_cron/pg_net de dentro do banco, que manda o `x-outbox-secret`
+# e não tem como assinar um JWT do projeto. Com verify_jwt padrão, o gateway
+# devolvia 401 e a fila NUNCA era drenada — toda resposta do atendente ficava
+# com relógio para sempre, sem erro visível em lugar nenhum.
+# A função autentica sozinha: compara o segredo em tempo constante e é
+# fail-closed (sem OUTBOX_SECRET configurado devolve 503 e não faz nada).
+[functions.whatsapp-outbox]
+verify_jwt = false

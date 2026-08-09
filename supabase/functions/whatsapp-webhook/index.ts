@@ -287,46 +287,95 @@ async function findInstance(instanceName: string) {
 // upsert do chat (idempotente por instance_id + remote_jid)
 async function upsertChat(
   instanceId: string, clinicaId: string, remoteJid: string,
-  name?: string | null, fotoUrl?: string | null,
+  nomeCandidato?: string | null, fotoUrl?: string | null,
 ) {
   const phone = remoteJid.split("@")[0];
-  // COALESCE via não-sobrescrever: só manda o campo quando temos valor novo, pra
-  // não apagar um nome/foto já bons com null de uma mensagem posterior que não
-  // trouxe esses dados.
-  const patch: Record<string, unknown> = {
-    instance_id: instanceId, clinica_id: clinicaId, remote_jid: remoteJid, contact_phone: phone,
-  };
-  if (name) patch.name = name;
-  else patch.name = phone; // primeiro insert precisa de algo; upsert reescreve se vier nome depois
-  if (fotoUrl) patch.profile_pic_url = fotoUrl;
+
+  // Lê antes de escrever: o upsert cego apagava nome e foto já bons a cada nova
+  // mensagem, e ainda deixava o nome do DONO da linha virar nome do contato.
+  const { data: atual } = await supabase.from("whatsapp_chats")
+    .select("id, name, profile_pic_url")
+    .eq("instance_id", instanceId).eq("remote_jid", remoteJid)
+    .maybeSingle();
+
+  if (atual) {
+    const patch: Record<string, unknown> = {};
+    if (nomeCandidato && nomeSubstituivel(atual.name, phone)) patch.name = nomeCandidato;
+    if (fotoUrl && fotoUrl !== atual.profile_pic_url) patch.profile_pic_url = fotoUrl;
+    if (Object.keys(patch).length > 0) {
+      await supabase.from("whatsapp_chats").update(patch).eq("id", atual.id);
+    }
+    return {
+      id: atual.id as string,
+      name: (patch.name as string) ?? atual.name,
+      profile_pic_url: (patch.profile_pic_url as string) ?? atual.profile_pic_url,
+    };
+  }
 
   const { data } = await supabase.from("whatsapp_chats")
-    .upsert(patch, { onConflict: "instance_id,remote_jid", ignoreDuplicates: false })
-    .select("id, profile_pic_url").maybeSingle();
-  return data as { id: string; profile_pic_url: string | null } | null;
+    .insert({
+      instance_id: instanceId, clinica_id: clinicaId, remote_jid: remoteJid,
+      contact_phone: phone,
+      name: nomeCandidato || phone,
+      ...(fotoUrl ? { profile_pic_url: fotoUrl } : {}),
+    })
+    .select("id, name, profile_pic_url").maybeSingle();
+  return data as { id: string; name: string | null; profile_pic_url: string | null } | null;
 }
 
-// Busca a foto do contato no provedor. Best-effort e com timeout curto: é
-// enriquecimento, não pode segurar a ingestão da mensagem. Endpoint conferido
-// contra o CRM que opera esta mesma conta uazapi (POST /chat/details).
-async function buscarFotoPerfil(
+/**
+ * Busca nome real e foto do contato no provedor (POST /chat/details).
+ *
+ * Best-effort com timeout curto: é enriquecimento, não pode segurar a ingestão.
+ * Endpoint e prioridade de campos conferidos contra o CRM que opera esta mesma
+ * conta uazapi em produção.
+ *
+ * `wa_contactName` vem primeiro de propósito: é o nome que está na AGENDA do
+ * celular conectado ("Ivan Sócio"), que é como a clínica conhece a pessoa.
+ * `wa_name` é o apelido que o próprio contato escolheu ("Ivan Santana") — útil,
+ * mas menos confiável para quem atende.
+ */
+async function detalhesContato(
   apiUrl: string, token: string, remoteJid: string,
-): Promise<string | null> {
+): Promise<{ nome: string | null; foto: string | null }> {
   try {
+    // só dígitos: o provedor aceita os dois, mas é o formato que o CRM usa
+    const numero = remoteJid.includes("@g.us")
+      ? remoteJid
+      : remoteJid.replace(/@.*/, "").replace(/\D/g, "");
     const ctrl = new AbortController();
-    const t = setTimeout(() => ctrl.abort(), 6000);
+    const t = setTimeout(() => ctrl.abort(), 8000);
     const res = await fetch(`${apiUrl}/chat/details`, {
       method: "POST",
       headers: { token, "Content-Type": "application/json" },
-      body: JSON.stringify({ number: remoteJid, preview: true }),
+      body: JSON.stringify({ number: numero, preview: true }),
       signal: ctrl.signal,
     });
     clearTimeout(t);
-    if (!res.ok) return null;
+    if (!res.ok) return { nome: null, foto: null };
     const d = await res.json().catch(() => ({}));
-    const chat = d?.chat ?? d;
-    return chat?.imagePreview ?? chat?.image ?? chat?.profilePicUrl ?? null;
-  } catch { return null; }
+    const c = d?.chat ?? d;
+    return {
+      nome: c?.wa_contactName || c?.name || c?.wa_name || c?.wa_verifiedName || null,
+      foto: c?.imagePreview || c?.image || c?.profilePicUrl || null,
+    };
+  } catch { return { nome: null, foto: null }; }
+}
+
+/**
+ * Um nome só pode ser substituído se o atual não vale nada.
+ *
+ * Sem esta guarda, uma mensagem posterior sobrescreve um nome bom — inclusive
+ * com o nome do DONO da linha, que é o que vem em `pushName` quando a mensagem
+ * é enviada por nós.
+ */
+function nomeSubstituivel(atual: string | null | undefined, telefone: string): boolean {
+  if (!atual) return true;
+  const a = atual.trim();
+  if (!a) return true;
+  if (a === telefone) return true;
+  if (/^\+?\d[\d\s()\-]*$/.test(a)) return true; // só dígitos/pontuação de telefone
+  return false;
 }
 
 /** Compara sem vazar o tamanho por tempo de resposta. */
@@ -461,19 +510,32 @@ Deno.serve(async (req) => {
         // ignora grupo, status do WhatsApp, canal e endereçamento LID (não-discável)
         if (!remoteJid || /@(g\.us|broadcast|newsletter|lid)$/.test(remoteJid)) continue;
         const p = parseMensagem(raw);
-        // Foto que já veio no payload (alguns eventos trazem), sem custo.
+
+        // `senderName` de uma mensagem NOSSA é o nome do dono da linha, não do
+        // contato. Usá-lo batizava toda conversa com o nome da clínica — foi
+        // exatamente o que apareceu na tela. Só mensagem RECEBIDA sugere nome.
+        const nomeSugerido = p.fromMe ? null : p.senderName;
         const fotoNoPayload = raw?.senderPhoto ?? raw?.imagePreview ?? raw?.chat?.imagePreview ?? null;
-        const chat = await upsertChat(inst.id, inst.clinica_id, remoteJid, p.senderName, fotoNoPayload);
+
+        const chat = await upsertChat(inst.id, inst.clinica_id, remoteJid, nomeSugerido, fotoNoPayload);
         const chatId = chat?.id;
         if (!chatId) continue;
 
-        // Sem foto ainda? Busca no provedor UMA vez (best-effort, não bloqueia).
-        // Só para mensagem recebida: a nossa própria não tem foto de contato.
+        // Enriquecimento: nome real da agenda + foto. Roda independente de quem
+        // escreveu — quando a clínica inicia a conversa, é o ÚNICO caminho para
+        // o contato ter nome e foto (a mensagem enviada não traz nada dele).
+        // Só quando ainda falta algo, para não bater no provedor a cada mensagem.
         const tokenInst = (inst as any).api_token ?? (inst as any).apikey;
-        if (!p.fromMe && !chat?.profile_pic_url && (inst as any).api_url && tokenInst) {
-          const foto = await buscarFotoPerfil((inst as any).api_url, tokenInst, remoteJid);
-          if (foto) {
-            await supabase.from("whatsapp_chats").update({ profile_pic_url: foto }).eq("id", chatId);
+        const apiUrl = (inst as any).api_url;
+        const faltaNome = nomeSubstituivel(chat.name, remoteJid.split("@")[0]);
+        const faltaFoto = !chat.profile_pic_url;
+        if (apiUrl && tokenInst && (faltaNome || faltaFoto) && !remoteJid.includes("@g.us")) {
+          const det = await detalhesContato(apiUrl, tokenInst, remoteJid);
+          const patch: Record<string, unknown> = {};
+          if (det.nome && faltaNome) patch.name = det.nome;
+          if (det.foto && faltaFoto) patch.profile_pic_url = det.foto;
+          if (Object.keys(patch).length > 0) {
+            await supabase.from("whatsapp_chats").update(patch).eq("id", chatId);
           }
         }
 
