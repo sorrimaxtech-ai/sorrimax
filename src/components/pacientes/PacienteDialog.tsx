@@ -1,3 +1,4 @@
+import { traduzErro } from "@/lib/erros";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
@@ -15,7 +16,6 @@ import { toast } from "sonner";
 import { useTenant } from "@/hooks/useTenant";
 import { listarConvenios } from "@/services/orcamentos";
 import {
-import { traduzErro } from "@/lib/erros";
   atualizarPaciente, buscarCep, cpfValido, criarPaciente, emailValido, ESTADOS_CIVIS,
   formDoPaciente, formVazio, formatarCelular, formatarCep, formatarCpf, GENEROS, soDigitos,
   type PacienteForm, type PacienteRow,

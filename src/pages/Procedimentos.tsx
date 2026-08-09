@@ -1,3 +1,4 @@
+import { traduzErro } from "@/lib/erros";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -18,7 +19,6 @@ import {
   Stethoscope, Users, Tag,
 } from "lucide-react";
 import { toast } from "sonner";
-import { traduzErro } from "@/lib/erros";
 import { useTenant } from "@/hooks/useTenant";
 import { ProcedimentoDialog } from "@/components/procedimentos/ProcedimentoDialog";
 import {

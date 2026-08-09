@@ -1,3 +1,4 @@
+import { traduzErro } from "@/lib/erros";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -7,7 +8,6 @@ import { OnboardingTextStep } from "@/components/onboarding/OnboardingTextStep";
 import { ClaraOrb } from "@/components/onboarding/ClaraOrb";
 import { Loader2 } from "lucide-react";
 import "@/components/onboarding/onboarding.css";
-import { traduzErro } from "@/lib/erros";
 
 // ============================================================================
 // Onboarding conversacional (Clara / orbe) — /configurar-clinica

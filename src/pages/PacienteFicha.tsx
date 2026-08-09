@@ -1,3 +1,4 @@
+import { traduzErro } from "@/lib/erros";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
@@ -21,7 +22,6 @@ import {
 } from "lucide-react";
 import { AbaArquivos } from "@/components/arquivos/AbaArquivos";
 import { toast } from "sonner";
-import { traduzErro } from "@/lib/erros";
 import { useTenant } from "@/hooks/useTenant";
 import { Odontograma } from "@/components/odontograma/Odontograma";
 import { CORES_ESTADO } from "@/types/odonto";

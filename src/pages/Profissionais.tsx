@@ -1,3 +1,4 @@
+import { traduzErro } from "@/lib/erros";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,7 +7,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { Plus, User, Shield, Mail, Phone } from "lucide-react";
 import { NewProfessionalModal } from "@/components/profissionais/NewProfessionalModal";
-import { traduzErro } from "@/lib/erros";
 
 interface Profile {
   id: string;

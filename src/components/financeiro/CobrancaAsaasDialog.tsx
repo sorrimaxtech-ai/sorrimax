@@ -1,3 +1,4 @@
+import { traduzErro } from "@/lib/erros";
 import { useState } from "react";
 import {
   Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle,
@@ -9,7 +10,6 @@ import { enqueueText } from "@/services/whatsapp/send";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { traduzErro } from "@/lib/erros";
 
 // ============================================================================
 // Cobrança por Pix/Boleto (Asaas) sobre uma parcela

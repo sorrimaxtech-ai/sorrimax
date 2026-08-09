@@ -1,3 +1,4 @@
+import { traduzErro } from "@/lib/erros";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -17,7 +18,6 @@ import {
 import { toast } from "sonner";
 import { LembreteConsultaCard } from "@/components/marketing/LembreteConsultaCard";
 import { cn } from "@/lib/utils";
-import { traduzErro } from "@/lib/erros";
 
 // ============================================================================
 // Marketing → Campanhas — a Central de mensagens do Sorrimax

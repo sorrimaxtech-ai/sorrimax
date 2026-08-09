@@ -1,3 +1,4 @@
+import { traduzErro } from "@/lib/erros";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -9,7 +10,6 @@ import { Mail, Lock, ArrowLeft, Loader2 } from "lucide-react";
 import { z } from "zod";
 import { AuthShell } from "@/components/auth/AuthShell";
 import { Logo } from "@/components/brand/Logo";
-import { traduzErro } from "@/lib/erros";
 
 const authSchema = z.object({
   email: z.string().email("Email inválido"),

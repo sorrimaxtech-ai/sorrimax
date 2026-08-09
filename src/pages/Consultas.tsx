@@ -1,3 +1,4 @@
+import { traduzErro } from "@/lib/erros";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -27,7 +28,6 @@ import {
 } from "lucide-react";
 import { useTenant } from "@/hooks/useTenant";
 import { toast } from "sonner";
-import { traduzErro } from "@/lib/erros";
 import { ConsultaDialog } from "@/components/consultas/ConsultaDialog";
 import {
   MODALIDADE_LABEL, STATUS_CANCELAMENTO, STATUS_CLASSE, STATUS_EM_ABERTO,

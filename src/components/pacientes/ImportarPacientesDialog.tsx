@@ -1,3 +1,4 @@
+import { traduzErro } from "@/lib/erros";
 import { useRef, useState } from "react";
 import {
   Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
@@ -9,7 +10,6 @@ import {
   type LinhaImport, type ResultadoImport,
 } from "@/services/pacientes";
 import { toast } from "sonner";
-import { traduzErro } from "@/lib/erros";
 
 // ============================================================================
 // Importar pacientes por CSV — a porta de entrada da migração

@@ -1,3 +1,4 @@
+import { traduzErro } from "@/lib/erros";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
@@ -27,7 +28,6 @@ import {
   type ConsultaOpcao, type TipoDocumento,
 } from "@/services/documentos";
 import {
-import { traduzErro } from "@/lib/erros";
   GRUPOS_MERGE_FIELDS, analisarMergeFields, montarDocumentoFinal, ROTULO_MERGE_FIELD,
   sanitizarHtmlDocumento, type ContextoMerge,
 } from "@/lib/mergeFields";

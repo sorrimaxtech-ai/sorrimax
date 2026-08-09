@@ -1,3 +1,4 @@
+import { traduzErro } from "@/lib/erros";
 import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -15,7 +16,6 @@ import { Tag, Plus, Loader2, Pencil, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { useTenant } from "@/hooks/useTenant";
 import { supabase } from "@/integrations/supabase/client";
-import { traduzErro } from "@/lib/erros";
 
 // ============================================================================
 // Rótulos da agenda

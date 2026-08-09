@@ -1,3 +1,4 @@
+import { traduzErro } from "@/lib/erros";
 import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -13,7 +14,6 @@ import {
 } from "@/services/asaas";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { traduzErro } from "@/lib/erros";
 
 // ============================================================================
 // Plano e assinatura — a Sorrimax cobra a clínica (fluxo B do Asaas)

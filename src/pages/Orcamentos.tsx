@@ -1,3 +1,4 @@
+import { traduzErro } from "@/lib/erros";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
@@ -14,7 +15,6 @@ import {
 } from "@/services/orcamentos";
 import { NovoOrcamentoDialog } from "@/components/orcamentos/NovoOrcamentoDialog";
 import { toast } from "sonner";
-import { traduzErro } from "@/lib/erros";
 
 // ============================================================================
 // Orçamentos — lista + KPIs

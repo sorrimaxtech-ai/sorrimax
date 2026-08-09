@@ -1,3 +1,4 @@
+import { traduzErro } from "@/lib/erros";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -24,7 +25,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { brl } from "@/services/orcamentos";
 import { DespesaFixaDialog, type DespesaFixa } from "@/components/financeiro/DespesaFixaDialog";
 import { toast } from "sonner";
-import { traduzErro } from "@/lib/erros";
 import type { Database } from "@/integrations/supabase/types";
 
 // ============================================================================

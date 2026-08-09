@@ -1,3 +1,4 @@
+import { traduzErro } from "@/lib/erros";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
@@ -22,7 +23,6 @@ import {
 import { useTenant } from "@/hooks/useTenant";
 import { toast } from "sonner";
 import {
-import { traduzErro } from "@/lib/erros";
   listarModelos, criarModelo, excluirModelo, atualizarModelo, semearModeloOdonto,
   listarPacientes, formatarData, TOTAL_BANCO, type ModeloComContagem,
 } from "@/services/anamnese";

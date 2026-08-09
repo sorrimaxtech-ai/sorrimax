@@ -1,3 +1,4 @@
+import { traduzErro } from "@/lib/erros";
 import { useEffect, useMemo, useState } from "react";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter,
@@ -13,7 +14,6 @@ import {
 import { Loader2, CheckCircle2, Info, CreditCard } from "lucide-react";
 import { toast } from "sonner";
 import {
-import { traduzErro } from "@/lib/erros";
   baixarParcela, criarLancamentoAvulso, acharTaxa, calcularTaxa, ehCartao, brl, dataBR,
   hojeISO, somarDias, FORMA_PAGAMENTO_LABEL, FORMAS_PAGAMENTO, TIPO_CONTA_LABEL,
   type ParcelaComLancamento, type ContaFinanceira, type CategoriaFinanceira,

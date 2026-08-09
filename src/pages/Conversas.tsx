@@ -1,3 +1,4 @@
+import { traduzErro } from "@/lib/erros";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -10,7 +11,6 @@ import { enqueueText, markChatRead } from "@/services/whatsapp/send";
 import { statusColor, statusIcon, type WaStatus } from "@/services/whatsapp/status";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { traduzErro } from "@/lib/erros";
 
 // ============================================================================
 // Conversas — inbox de WhatsApp

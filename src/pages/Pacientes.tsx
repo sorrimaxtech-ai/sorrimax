@@ -1,3 +1,4 @@
+import { traduzErro } from "@/lib/erros";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
@@ -16,7 +17,6 @@ import {
   UserRoundX, UserRoundCheck, Trash2, EyeOff, Eye, Eraser, Upload, Download,
 } from "lucide-react";
 import { toast } from "sonner";
-import { traduzErro } from "@/lib/erros";
 import { useTenant } from "@/hooks/useTenant";
 import { PacienteDialog } from "@/components/pacientes/PacienteDialog";
 import { ImportarPacientesDialog } from "@/components/pacientes/ImportarPacientesDialog";

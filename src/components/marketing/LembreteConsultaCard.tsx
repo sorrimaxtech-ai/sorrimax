@@ -1,3 +1,4 @@
+import { traduzErro } from "@/lib/erros";
 import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
@@ -10,7 +11,6 @@ import { CalendarCheck, Loader2, PencilLine } from "lucide-react";
 import { useTenant } from "@/hooks/useTenant";
 import { obterConfigLembrete, salvarConfigLembrete, type ConfigLembrete } from "@/services/campanhas";
 import { toast } from "sonner";
-import { traduzErro } from "@/lib/erros";
 
 // ============================================================================
 // Confirmação automática de consulta — o toggle da clínica

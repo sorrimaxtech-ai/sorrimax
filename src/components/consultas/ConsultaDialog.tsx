@@ -1,3 +1,4 @@
+import { traduzErro } from "@/lib/erros";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
@@ -19,7 +20,6 @@ import { Check, ChevronsUpDown, Loader2, Repeat, User } from "lucide-react";
 import { useTenant } from "@/hooks/useTenant";
 import { toast } from "sonner";
 import {
-import { traduzErro } from "@/lib/erros";
   DIAS_SEMANA, MODALIDADE_LABEL, STATUS_LABEL, STATUS_ORDEM, TIPO_RECORRENCIA_LABEL,
   atualizarConsulta, brl, buscarPacientes, criarConsulta, criarSerieRecorrente,
   gerarDatasRecorrencia, inputLocalParaIso, isoParaInputLocal, listarCadeiras,

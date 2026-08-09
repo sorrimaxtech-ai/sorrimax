@@ -1,3 +1,4 @@
+import { traduzErro } from "@/lib/erros";
 import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,7 +8,6 @@ import { Badge } from "@/components/ui/badge";
 import { CreditCard, Loader2, CheckCircle2, Copy, Check } from "lucide-react";
 import { statusAsaas, conectarAsaas, type StatusAsaas } from "@/services/asaas";
 import { toast } from "sonner";
-import { traduzErro } from "@/lib/erros";
 
 // ============================================================================
 // Conectar Asaas — a clínica cola a PRÓPRIA chave de API (o código nunca a vê

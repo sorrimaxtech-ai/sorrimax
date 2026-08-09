@@ -1,3 +1,4 @@
+import { traduzErro } from "@/lib/erros";
 import { useEffect, useState } from "react";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
@@ -13,7 +14,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { useTenant } from "@/hooks/useTenant";
 import { criarOrcamento, listarConvenios, listarProfissionais } from "@/services/orcamentos";
 import { toast } from "sonner";
-import { traduzErro } from "@/lib/erros";
 
 interface Props {
   aberto: boolean;

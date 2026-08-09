@@ -1,3 +1,4 @@
+import { traduzErro } from "@/lib/erros";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -12,7 +13,6 @@ import {
 import { Loader2, Plus, Trash2, Receipt } from "lucide-react";
 import { toast } from "sonner";
 import { lancarVendaNaConsulta, type ProcedimentoAgenda } from "@/services/agenda";
-import { traduzErro } from "@/lib/erros";
 
 // ============================================================================
 // VendaNaConsulta — a venda nasce na agenda

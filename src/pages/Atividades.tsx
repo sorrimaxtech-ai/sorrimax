@@ -1,10 +1,10 @@
+import { traduzErro } from "@/lib/erros";
 import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Loader2, History, Trash2, RefreshCw } from "lucide-react";
 import { useTenant } from "@/hooks/useTenant";
 import { listarAuditoria, ROTULO_TABELA, type RegistroAuditoria } from "@/services/auditoria";
-import { traduzErro } from "@/lib/erros";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 

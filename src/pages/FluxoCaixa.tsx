@@ -1,3 +1,4 @@
+import { traduzErro } from "@/lib/erros";
 import { useEffect, useMemo, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -13,7 +14,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { brl } from "@/services/orcamentos";
 import { toast } from "sonner";
 import type { Database } from "@/integrations/supabase/types";
-import { traduzErro } from "@/lib/erros";
 
 // ============================================================================
 // Fluxo de Caixa — previsto x realizado, mês a mês

@@ -1,3 +1,4 @@
+import { traduzErro } from "@/lib/erros";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -10,7 +11,6 @@ import { Badge } from "@/components/ui/badge";
 import { MapPin, Briefcase, Clock, ChevronRight, ChevronLeft, Check } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { traduzErro } from "@/lib/erros";
 
 // Especialidades odontológicas (Sorrimax é odonto)
 const ESPECIALIDADES_LISTA = [

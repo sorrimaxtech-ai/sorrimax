@@ -1,3 +1,4 @@
+import { traduzErro } from "@/lib/erros";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -9,7 +10,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { AuthShell } from "@/components/auth/AuthShell";
 import { Logo } from "@/components/brand/Logo";
-import { traduzErro } from "@/lib/erros";
 
 const CadastroClinica = () => {
   const navigate = useNavigate();

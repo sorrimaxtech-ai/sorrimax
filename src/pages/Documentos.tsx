@@ -1,3 +1,4 @@
+import { traduzErro } from "@/lib/erros";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
@@ -22,7 +23,6 @@ import {
 } from "lucide-react";
 import { useTenant } from "@/hooks/useTenant";
 import { toast } from "sonner";
-import { traduzErro } from "@/lib/erros";
 import {
   listarModelos, listarEmitidos, contarEmitidos, criarModelo, duplicarModelo, excluirModelo,
   excluirEmitido, semearModelosPadrao, imprimirHtml, dataHoraBr,

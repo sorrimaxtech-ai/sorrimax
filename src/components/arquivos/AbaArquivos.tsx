@@ -1,3 +1,4 @@
+import { traduzErro } from "@/lib/erros";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -7,7 +8,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Loader2, Upload, Trash2, FileText, ImageIcon, ExternalLink, Paperclip } from "lucide-react";
 import { toast } from "sonner";
-import { traduzErro } from "@/lib/erros";
 import { cn } from "@/lib/utils";
 import {
   listarArquivos, subirArquivo, urlDoArquivo, excluirArquivo, tamanhoLegivel, ehImagem,

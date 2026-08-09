@@ -1,3 +1,4 @@
+import { traduzErro } from "@/lib/erros";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
@@ -10,7 +11,6 @@ import { subscribeChatRealtime, type WaChatRow, type WaMessageRow } from "@/serv
 import { enqueueText, markChatRead } from "@/services/whatsapp/send";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { traduzErro } from "@/lib/erros";
 
 // ============================================================================
 // FloatingChat — o "botãozinho voando"

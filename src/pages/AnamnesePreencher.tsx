@@ -1,3 +1,4 @@
+import { traduzErro } from "@/lib/erros";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
@@ -18,7 +19,6 @@ import {
 import { useTenant } from "@/hooks/useTenant";
 import { toast } from "sonner";
 import {
-import { traduzErro } from "@/lib/erros";
   listarModelosPublicados, listarPerguntas, obterPaciente, salvarResposta,
   listarRespostasDoPaciente, perguntasVisiveis, calcularScore, faixaDoScore,
   formatarDataHora,
