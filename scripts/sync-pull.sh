@@ -33,7 +33,8 @@ STATUS=$(bash scripts/sync-check.sh --quiet | grep '^STATUS=' | cut -d= -f2)
 
 case "$STATUS" in
   ERRO)  echo "❌ vigia falhou (rede/credencial). Nao mexi em nada."; exit 3 ;;
-  LIMPO) echo "✅ Ja esta em dia. Nada pra puxar."; exit 0 ;;
+  LIMPO)    echo "✅ Ja esta em dia. Nada pra puxar."; exit 0 ;;
+  NOVIDADE) echo "✅ Os commits novos ja estao no seu disco (mesma pasta). Nada pra puxar."; exit 0 ;;
   RISCO)
     if [[ "$FORCAR" -eq 0 ]]; then
       echo "⛔ Tem colisao de arquivo. Nao vou puxar no automatico."

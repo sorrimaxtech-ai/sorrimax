@@ -23,8 +23,18 @@ Faz só um `git fetch` e compara. Nunca faz merge, rebase, checkout ou push. Tr�
 | Status | Significa | O que fazer |
 |---|---|---|
 | `LIMPO` | nada novo no GitHub | nada |
+| `NOVIDADE` | entrou commit **que já está no seu disco** | nada a puxar — é só aviso (ver abaixo) |
 | `SEGURO` | entrou commit, e **não toca em nenhum arquivo que você mexeu** | `sync-pull.sh` sem medo |
 | `RISCO` | entrou commit **no mesmo arquivo que você está mexendo** | não puxa no automático — ver abaixo |
+
+### Por que existe o status `NOVIDADE`
+Comparar só *local × remoto* não basta. Se o outro dev commita **na mesma pasta** que você (outro
+terminal ou outro agente na mesma máquina), o commit já nasce local — `HEAD` nunca fica atrás do
+`origin`, e um vigia ingênuo diz "nada novo" para sempre, mesmo com 3 commits recém-criados.
+
+Por isso o script também guarda **o ponto que já foi reportado**, na ref `refs/sorrimax-sync/visto`,
+e responde "o que entrou desde a última vez que eu te avisei". Funciona nos dois arranjos: dev em
+outra máquina (`SEGURO`/`RISCO`) e dev na mesma pasta (`NOVIDADE`).
 
 A colisão é calculada de verdade: arquivos que os commits dele tocaram × arquivos que você tem
 modificados (working tree, staged, untracked e commits seus ainda não pushados).

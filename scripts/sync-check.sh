@@ -47,12 +47,28 @@ ARQ_MEUS=$( { git diff --name-only HEAD;
 
 COLISAO=$(comm -12 <(echo "$ARQ_DELES") <(echo "$ARQ_MEUS") | grep -v '^$' || true)
 
-if [[ "$ATRAS" -eq 0 ]]; then
-  STATUS=LIMPO
-elif [[ -n "$COLISAO" ]]; then
-  STATUS=RISCO
+# --- "o que entrou desde a ultima vez que eu olhei" -------------------------
+# Comparar so local x remoto nao basta: se o outro dev commita na MESMA pasta
+# (outro agente/terminal na mesma maquina), o commit ja nasce local e HEAD nunca
+# fica atras do origin. Entao guardamos o ponto que ja foi reportado.
+VISTO_REF="refs/sorrimax-sync/visto"
+if git rev-parse --verify -q "$VISTO_REF" >/dev/null; then
+  VISTO=$(git rev-parse "$VISTO_REF")
+  NOVIDADES=$(git rev-list --count "$VISTO..$UPSTREAM" 2>/dev/null || echo 0)
 else
-  STATUS=SEGURO
+  VISTO=""            # primeira execucao: marca o ponto atual e nao alarma
+  NOVIDADES=0
+  git update-ref "$VISTO_REF" "$UPSTREAM"
+fi
+
+if [[ "$ATRAS" -gt 0 && -n "$COLISAO" ]]; then
+  STATUS=RISCO        # precisa puxar E bate no que eu estou mexendo
+elif [[ "$ATRAS" -gt 0 ]]; then
+  STATUS=SEGURO       # precisa puxar, sem colisao
+elif [[ "$NOVIDADES" -gt 0 ]]; then
+  STATUS=NOVIDADE     # ja esta no meu disco (mesma pasta), mas eu nao te contei
+else
+  STATUS=LIMPO
 fi
 
 N_COLISAO=$(echo "$COLISAO" | grep -c . || true)
@@ -62,16 +78,29 @@ echo "BRANCH=$BRANCH"
 echo "COMMITS_NOVOS=$ATRAS"
 echo "MEUS_NAO_PUSHADOS=$FRENTE"
 echo "ARQUIVOS_EM_COLISAO=$N_COLISAO"
+echo "NOVIDADES_DESDE_ULTIMO_AVISO=$NOVIDADES"
 
 if [[ "$QUIET" -eq 1 ]]; then
   [[ -n "$COLISAO" ]] && echo "$COLISAO" | sed 's/^/COLIDE=/'
   exit 0
 fi
 
+# marca que estes commits ja foram reportados (so no modo humano)
+git update-ref "$VISTO_REF" "$UPSTREAM"
+
 echo
 case "$STATUS" in
   LIMPO)
     echo "✅ Nada novo no GitHub. Segue o baile."
+    ;;
+  NOVIDADE)
+    echo "📥 $NOVIDADES commit(s) entraram desde o ultimo aviso — e ja estao no seu disco."
+    echo "   (o outro dev commitou nesta mesma pasta, entao nao ha nada pra puxar)"
+    echo
+    git log --format="   %h  %s" "$VISTO..$UPSTREAM"
+    echo
+    echo "   Arquivos tocados:"
+    git diff --name-only "$VISTO..$UPSTREAM" | sed 's/^/     /'
     ;;
   SEGURO)
     echo "🔄 $ATRAS commit(s) novo(s) no GitHub, e nenhum toca no que voce esta mexendo."
