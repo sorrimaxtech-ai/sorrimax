@@ -246,6 +246,100 @@ function parseUazapi(raw: any): Parsed {
   return { externalId, fromMe, type, content, mediaUrl, mimeType, fileName, senderName, replyTo, timestamp, metadata };
 }
 
+// ==========================================================================
+// Tipos especiais — normalizados ANTES de qualquer ramo genérico
+// --------------------------------------------------------------------------
+// Sem isto, o texto cru do provedor vaza direto na bolha e na prévia da lista:
+//   "[Undecryptable] [media] [view_once] Não foi possível descriptografar a
+//    mensagem. Abra o WhatsApp no seu celular para visualizá-la."
+// Aconteceu de verdade na tela. Quebra a regra de produto (nada de jargão para
+// quem atende) e ainda deixa a recepção sem saber o que fazer.
+//
+// A detecção olha o objeto inteiro, não só o campo de tipo: o provedor sinaliza
+// visualização única e falha de decriptação em lugares diferentes conforme a
+// versão, e um `messageType` conhecido pode vir junto de um corpo indecifrável.
+// ==========================================================================
+interface Especial { conteudo: string; tipo: WaType; metadata: Record<string, unknown> }
+
+/** Campos comuns (id, autor, hora) que todo tipo de mensagem carrega. */
+function parseBase(raw: any): Parsed {
+  const externalId = normId(
+    raw?.messageid ?? raw?.messageId ?? raw?.id ?? raw?.key?.id,
+  );
+  const fromMe = raw?.fromMe === true || raw?.key?.fromMe === true ||
+    (typeof raw?.fromMe === "string" && raw.fromMe.toLowerCase() === "true");
+  const tsRaw = raw?.messageTimestamp ?? raw?.timestamp ?? raw?.date_time ?? Date.now();
+  return {
+    externalId,
+    fromMe,
+    type: "unknown",
+    content: "",
+    mediaUrl: null,
+    mimeType: null,
+    fileName: null,
+    senderName: raw?.senderName ?? raw?.pushName ?? raw?.name ?? null,
+    replyTo: null,
+    timestamp: new Date(
+      typeof tsRaw === "number" ? (tsRaw > 1e12 ? tsRaw : tsRaw * 1000) : tsRaw,
+    ).toISOString(),
+    metadata: {},
+  };
+}
+
+function normalizarEspecial(raw: any): Especial | null {
+  const mt = String(raw?.messageType ?? raw?.type ?? "").toLowerCase();
+  const texto = String(raw?.text ?? raw?.body ?? raw?.content?.text ?? "");
+  let blob = "";
+  try { blob = JSON.stringify(raw ?? {}).toLowerCase(); } catch { /* payload gigante */ }
+
+  const indecifravel =
+    texto.toLowerCase().includes("undecryptable") ||
+    texto.toLowerCase().includes("descriptografar") ||
+    blob.includes("undecryptable") ||
+    blob.includes("failed to decrypt") ||
+    blob.includes("no session found");
+
+  if (indecifravel) {
+    return {
+      // Diz o que houve e o que fazer, em linguagem de recepção.
+      conteudo: "🔒 Mensagem protegida — abra no celular da clínica para ver",
+      tipo: "system",
+      metadata: { especial: "indecifravel", tipo_original: raw?.messageType ?? raw?.type ?? null },
+    };
+  }
+
+  const visualizacaoUnica =
+    mt.includes("viewonce") || blob.includes("viewoncemessage") || blob.includes("view_once");
+  if (visualizacaoUnica) {
+    return {
+      conteudo: "🔒 Foto de visualização única — abra no celular da clínica",
+      tipo: "system",
+      metadata: { especial: "visualizacao_unica", tipo_original: raw?.messageType ?? raw?.type ?? null },
+    };
+  }
+
+  const interativa =
+    mt.includes("interactive") || mt.includes("buttonsresponse") ||
+    mt.includes("listresponse") || mt.includes("templatebuttonreply") ||
+    blob.includes("interactiveresponsemessage") || blob.includes("buttonsresponsemessage") ||
+    blob.includes("listresponsemessage") || blob.includes("templatebuttonreplymessage");
+
+  if (interativa) {
+    // O paciente clicou num botão (ex.: "Confirmar consulta"). Sem normalizar,
+    // a recepção vê um rótulo técnico em vez da escolha dele.
+    const escolha =
+      raw?.selectedDisplayText ?? raw?.selectedButtonId ?? raw?.selectedRowId ??
+      raw?.title ?? raw?.buttonText ?? raw?.displayText ?? raw?.text ?? null;
+    return {
+      conteudo: escolha ? `☑️ Respondeu: ${escolha}` : "☑️ Respondeu pelo botão",
+      tipo: "text",
+      metadata: { especial: "resposta_interativa", escolha: escolha ?? null },
+    };
+  }
+
+  return null;
+}
+
 /**
  * Escolhe o dialeto pelo formato do payload, não por configuração.
  *
@@ -255,6 +349,21 @@ function parseUazapi(raw: any): Parsed {
  * evidência mais confiável: o Baileys aninha em `message.*`, a uazapi é chata.
  */
 function parseMensagem(raw: any): Parsed {
+  // Prioridade máxima: se cair nos ramos genéricos, o texto cru do provedor
+  // ("[Undecryptable] [view_once] …") vira o conteúdo da bolha E a prévia da
+  // conversa na lista.
+  const especial = normalizarEspecial(raw);
+  if (especial) {
+    const base = parseBase(raw);
+    return {
+      ...base,
+      type: especial.tipo,
+      content: especial.conteudo,
+      mediaUrl: null,
+      metadata: { ...base.metadata, ...especial.metadata },
+    };
+  }
+
   const aninhado = raw?.message && typeof raw.message === "object" &&
     (raw.message.conversation != null || raw.message.extendedTextMessage ||
      raw.message.imageMessage || raw.message.videoMessage || raw.message.audioMessage ||

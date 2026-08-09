@@ -83,7 +83,10 @@ async function resgatarUma(msg: any): Promise<"ok" | "sem-provedor" | "falhou"> 
   });
   if (!res.ok) return "falhou";
   const d = await res.json().catch(() => ({}));
-  const b64: string | null = d?.base64 ?? d?.fileBase64 ?? d?.data ?? null;
+  // `base64Data` é o nome real na resposta (conferido contra o provedor); as
+  // outras variantes ficam como rede de segurança para mudança de versão.
+  const b64: string | null =
+    d?.base64Data ?? d?.base64 ?? d?.fileBase64 ?? d?.data ?? null;
   if (!b64) return "falhou";
 
   const mime: string = d?.mimetype ?? msg.mime_type ?? "application/octet-stream";
@@ -133,14 +136,19 @@ Deno.serve(async (req) => {
     return json({ erro: "armazenamento nao configurado no servidor" }, 503);
   }
 
+  // media_url NULO também entra: o eco de mídia enviada do celular chega SEM
+  // url nenhuma (o provedor só manda o id). Filtrar por "url efêmera" deixava
+  // justamente esses de fora — áudio e foto ficavam mudos para sempre.
   const { data: pendentes } = await supabase.from("whatsapp_messages")
     .select("id, chat_id, clinica_id, external_id, media_url, mime_type, metadata, message_type")
     .in("message_type", ["image", "video", "audio", "ptt", "document", "sticker"])
-    .not("media_url", "is", null)
+    .not("external_id", "is", null)
     .order("created_at", { ascending: false })
     .limit(LOTE * 4);
 
-  const alvos = (pendentes ?? []).filter((m: any) => precisaResgate(m.media_url)).slice(0, LOTE);
+  const alvos = (pendentes ?? [])
+    .filter((m: any) => !m.media_url || precisaResgate(m.media_url))
+    .slice(0, LOTE);
   let ok = 0, falhou = 0, sem = 0;
   for (const m of alvos) {
     const r = await resgatarUma(m).catch(() => "falhou" as const);
