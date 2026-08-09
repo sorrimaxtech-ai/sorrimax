@@ -138,8 +138,8 @@ const solutions = [
   },
   {
     icon: Bot,
-    title: "Assistente de IA personalizável",
-    description: "Agenda, reagenda, responde dúvidas e sabe a hora de passar para você ou sua secretária.",
+    title: "Automação no WhatsApp",
+    description: "Confirma consultas, dispara lembretes e campanhas de retorno, e chama a recepção na hora de falar com gente.",
     color: "bg-primary/10 text-primary"
   },
   {
@@ -191,11 +191,11 @@ const PricingSection = () => (
             features: ["Tudo do Essencial", "Confirmação Automática", "Disparo de Mensagens em Massa", "Múltiplos Profissionais", "Relatórios Avançados"]
           },
           {
-            name: "SORRIMAX AI",
+            name: "Avançado",
             price: "R$ 297",
             period: "/mês",
-            description: "Automação total com nossa Inteligência Artificial.",
-            features: ["Tudo do Profissional", "Assistente de IA 24/7", "Reagendamento Automático", "Análise Preditiva de Faltas", "Suporte Prioritário"]
+            description: "Fecha o ciclo: agenda, cobrança e retorno do paciente no automático.",
+            features: ["Tudo do Profissional", "Cobrança digital com baixa automática (Pix/boleto)", "Página pública de agendamento", "Campanhas automáticas de retorno e cobrança", "Suporte prioritário"]
           }
         ].map((plan, index) => (
           <div 
