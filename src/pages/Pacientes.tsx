@@ -14,13 +14,14 @@ import {
 import {
   Users, Plus, Search, Loader2, MessageCircle, MoreVertical, Pencil,
   UserRoundX, UserRoundCheck, Trash2, EyeOff, Eye,
+  Eraser,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useTenant } from "@/hooks/useTenant";
 import { PacienteDialog } from "@/components/pacientes/PacienteDialog";
 import {
   definirAtivo, excluirPaciente, formatarCelular, formatarCpf, idadeEmAnos,
-  linkWhatsApp, listarPacientes, soDigitos, type PacienteLista,
+  linkWhatsApp, listarPacientes, soDigitos, limparDadosExemplo, type PacienteLista,
 } from "@/services/pacientes";
 
 // ============================================================================
@@ -170,6 +171,20 @@ const Pacientes = () => {
                 onChange={(e) => setBusca(e.target.value)}
               />
             </div>
+            {lista.some((p) => p.nome_completo === "Paciente de Exemplo") && (
+              <Button variant="outline" className="gap-2 text-muted-foreground"
+                onClick={async () => {
+                  try {
+                    await limparDadosExemplo();
+                    toast.success("Dados de exemplo removidos");
+                    carregar();
+                  } catch (e: any) {
+                    toast.error("Erro ao limpar exemplo", { description: e.message });
+                  }
+                }}>
+                <Eraser className="h-4 w-4" /> Limpar dados de exemplo
+              </Button>
+            )}
             <Button
               variant={mostrarInativos ? "default" : "outline"}
               onClick={() => setMostrarInativos((v) => !v)}

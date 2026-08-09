@@ -640,3 +640,9 @@ export async function ultimasMensagens(
     }))
     .reverse();
 }
+
+/** Remove o paciente de exemplo e toda a sua cadeia (consultas, orçamento, parcelas). */
+export async function limparDadosExemplo(): Promise<void> {
+  const { error } = await supabase.rpc("limpar_dados_exemplo");
+  if (error) throw error;
+}
