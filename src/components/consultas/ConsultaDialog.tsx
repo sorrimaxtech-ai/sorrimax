@@ -5,6 +5,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { CampoMoeda } from "@/components/ui/campo-moeda";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
@@ -461,14 +462,14 @@ export const ConsultaDialog = ({ aberto, onFechar, onSalvo, consulta, pacienteId
           {/* Dinheiro ------------------------------------------------------- */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div className="space-y-1.5">
-              <Label>Valor (R$)</Label>
-              <Input type="number" min="0" step="0.01" value={valor}
-                     onChange={(e) => setValor(e.target.value)} />
+              <Label>Valor</Label>
+              <CampoMoeda value={valor === "" ? null : Number(valor)}
+                     onChange={(r) => setValor(r == null ? "" : String(r))} />
             </div>
             <div className="space-y-1.5">
-              <Label>Desconto (R$)</Label>
-              <Input type="number" min="0" step="0.01" value={desconto}
-                     onChange={(e) => setDesconto(e.target.value)} />
+              <Label>Desconto</Label>
+              <CampoMoeda value={desconto === "" ? null : Number(desconto)}
+                     onChange={(r) => setDesconto(r == null ? "" : String(r))} />
             </div>
             <div className="space-y-1.5">
               <Label>Total</Label>

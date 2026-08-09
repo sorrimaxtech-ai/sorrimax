@@ -6,6 +6,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { CampoMoeda } from "@/components/ui/campo-moeda";
 import { Label } from "@/components/ui/label";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
@@ -187,9 +188,9 @@ export const VendaNaConsulta = ({
                 </div>
                 <div>
                   {i === 0 && <Label className="text-xs">Valor unit.</Label>}
-                  <Input
-                    className="mt-1" type="number" min={0} step="0.01" value={l.valorUnitario}
-                    onChange={(e) => alterar(i, "valorUnitario", e.target.value)}
+                  <CampoMoeda
+                    className="mt-1" value={l.valorUnitario === "" ? null : Number(l.valorUnitario)}
+                    onChange={(r) => alterar(i, "valorUnitario", r == null ? "" : String(r))}
                   />
                 </div>
                 <Button

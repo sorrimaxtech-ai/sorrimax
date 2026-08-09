@@ -5,6 +5,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { CampoMoeda } from "@/components/ui/campo-moeda";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
@@ -159,8 +160,8 @@ export const ParcelaDialog = ({
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="valorPago">Valor pago *</Label>
-              <Input id="valorPago" type="number" min="0" step="0.01" value={valorPago}
-                onChange={(e) => setValorPago(e.target.value)} />
+              <CampoMoeda id="valorPago" value={valorPago === "" ? null : Number(valorPago)}
+                onChange={(r) => setValorPago(r == null ? "" : String(r))} />
             </div>
           </div>
 
@@ -229,11 +230,11 @@ export const ParcelaDialog = ({
                   </div>
                 )}
                 <div className="space-y-1.5">
-                  <Label htmlFor="taxa">Taxa (R$)</Label>
-                  <Input
-                    id="taxa" type="number" min="0" step="0.01"
-                    value={taxaEditada ? taxaManual : String(taxaCalculada.toFixed(2))}
-                    onChange={(e) => { setTaxaEditada(true); setTaxaManual(e.target.value); }}
+                  <Label htmlFor="taxa">Taxa</Label>
+                  <CampoMoeda
+                    id="taxa"
+                    value={taxaEditada ? (taxaManual === "" ? null : Number(taxaManual)) : taxaCalculada}
+                    onChange={(r) => { setTaxaEditada(true); setTaxaManual(r == null ? "" : String(r)); }}
                   />
                 </div>
               </div>
@@ -377,8 +378,8 @@ export const LancamentoAvulsoDialog = ({
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div className="space-y-1.5 sm:col-span-1">
               <Label htmlFor="valor">Valor total *</Label>
-              <Input id="valor" type="number" min="0" step="0.01" value={valor}
-                onChange={(e) => setValor(e.target.value)} placeholder="0,00" />
+              <CampoMoeda id="valor" value={valor === "" ? null : Number(valor)}
+                onChange={(r) => setValor(r == null ? "" : String(r))} />
             </div>
             <div className="space-y-1.5 sm:col-span-1">
               <Label htmlFor="venc">1º vencimento *</Label>

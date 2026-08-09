@@ -4,6 +4,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { CampoMoeda } from "@/components/ui/campo-moeda";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -272,14 +273,11 @@ export const ProcedimentoDialog = ({ aberto, onFechar, onSalvo, clinicaId, proce
             </div>
 
             <div>
-              <Label htmlFor="valor">Valor particular (R$)</Label>
-              <Input
+              <Label htmlFor="valor">Valor particular</Label>
+              <CampoMoeda
                 id="valor"
-                type="number"
-                min={0}
-                step="0.01"
                 value={form.valor}
-                onChange={(e) => set("valor", Number(e.target.value))}
+                onChange={(r) => set("valor", r ?? 0)}
               />
               {msg("valor")}
             </div>

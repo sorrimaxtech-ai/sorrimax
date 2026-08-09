@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { CampoMoeda } from "@/components/ui/campo-moeda";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -787,9 +788,9 @@ const Agenda = () => {
             {form.tipo === "consulta" && (
               <div>
                 <Label htmlFor="valor">Valor</Label>
-                <Input
-                  id="valor" type="number" min={0} step="0.01" className="mt-1" value={form.valor}
-                  onChange={(e) => setForm((f) => ({ ...f, valor: e.target.value }))}
+                <CampoMoeda
+                  id="valor" className="mt-1" value={form.valor === "" ? null : Number(form.valor)}
+                  onChange={(r) => setForm((f) => ({ ...f, valor: r == null ? "" : String(r) }))}
                 />
                 <p className="mt-1 text-[11px] text-gray-400">
                   {brl(Number(String(form.valor).replace(",", ".")) || 0)} · estimativa. A venda é lançada no atendimento.

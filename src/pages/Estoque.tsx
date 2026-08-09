@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { CampoMoeda } from "@/components/ui/campo-moeda";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
@@ -650,16 +651,11 @@ const Estoque = () => {
                 />
               </div>
               <div className="grid gap-1.5">
-                <Label htmlFor="p-custo">Custo médio (R$)</Label>
-                <Input
-                  id="p-custo" type="number" min={0} step="0.01"
-                  value={formProduto.custoMedio ?? ""}
-                  onChange={(e) =>
-                    setFormProduto({
-                      ...formProduto,
-                      custoMedio: e.target.value === "" ? null : Number(e.target.value),
-                    })
-                  }
+                <Label htmlFor="p-custo">Custo médio</Label>
+                <CampoMoeda
+                  id="p-custo"
+                  value={formProduto.custoMedio}
+                  onChange={(r) => setFormProduto({ ...formProduto, custoMedio: r })}
                   placeholder="Opcional"
                 />
               </div>
@@ -755,11 +751,11 @@ const Estoque = () => {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-1.5">
-                <Label htmlFor="m-custo">Custo unitário (R$)</Label>
-                <Input
-                  id="m-custo" type="number" min={0} step="0.01"
-                  value={formMovimento.custoUnitario}
-                  onChange={(e) => setFormMovimento({ ...formMovimento, custoUnitario: e.target.value })}
+                <Label htmlFor="m-custo">Custo unitário</Label>
+                <CampoMoeda
+                  id="m-custo"
+                  value={formMovimento.custoUnitario === "" ? null : Number(formMovimento.custoUnitario)}
+                  onChange={(r) => setFormMovimento({ ...formMovimento, custoUnitario: r == null ? "" : String(r) })}
                   placeholder="Opcional"
                 />
                 {formMovimento.tipo === "entrada" && (

@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { CampoMoeda } from "@/components/ui/campo-moeda";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
@@ -689,12 +690,10 @@ const Procedimentos = () => {
                             </div>
 
                             <div>
-                              <Label className="text-xs text-gray-500">Valor (R$)</Label>
-                              <Input
-                                type="number" min={0} step="0.01"
-                                value={formPreco.valor}
-                                onChange={(e) => setFormPreco((f) => ({ ...f, valor: e.target.value }))}
-                                placeholder="0,00"
+                              <Label className="text-xs text-gray-500">Valor</Label>
+                              <CampoMoeda
+                                value={formPreco.valor === "" ? null : Number(formPreco.valor)}
+                                onChange={(r) => setFormPreco((f) => ({ ...f, valor: r == null ? "" : String(r) }))}
                               />
                             </div>
 
@@ -851,11 +850,10 @@ const Procedimentos = () => {
                             </div>
 
                             <div>
-                              <Label className="text-xs text-gray-500">Valor específico (R$)</Label>
-                              <Input
-                                type="number" min={0} step="0.01"
-                                value={formHab.valor_override}
-                                onChange={(e) => setFormHab((f) => ({ ...f, valor_override: e.target.value }))}
+                              <Label className="text-xs text-gray-500">Valor específico</Label>
+                              <CampoMoeda
+                                value={formHab.valor_override === "" ? null : Number(formHab.valor_override)}
+                                onChange={(r) => setFormHab((f) => ({ ...f, valor_override: r == null ? "" : String(r) }))}
                                 placeholder="Opcional"
                               />
                             </div>
