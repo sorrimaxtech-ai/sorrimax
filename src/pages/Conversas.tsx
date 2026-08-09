@@ -20,6 +20,7 @@ import { useNotificacaoChat } from "@/hooks/useNotificacaoChat";
 import { MensagemBolha } from "@/components/whatsapp/MensagemBolha";
 import { VincularPacienteBotao } from "@/components/whatsapp/VincularPacienteBotao";
 import { RespostasRapidas } from "@/components/whatsapp/RespostasRapidas";
+import { GravadorAudio } from "@/components/whatsapp/GravadorAudio";
 import { formatarNumeroWa } from "@/services/whatsapp/instancias";
 import { subscribeChatRealtime, type WaChatRow, type WaMessageRow } from "@/services/whatsapp/realtime";
 import { enqueueText, enqueueMedia, markChatRead } from "@/services/whatsapp/send";
@@ -502,7 +503,7 @@ const Conversas = () => {
                 />
               </div>
 
-              <div className="flex-1 overflow-y-auto px-5 py-4 space-y-1 bg-[#efeae2]/40">
+              <div className="flex-1 overflow-y-auto px-5 py-4 space-y-1 bg-[#efeae2]/60">
                 {mensagens.map((m, i) => {
                   const anterior = mensagens[i - 1];
                   const novoDia = !anterior || rotuloDia(anterior.created_at) !== rotuloDia(m.created_at);
@@ -512,7 +513,7 @@ const Conversas = () => {
                     <div key={m.id}>
                       {novoDia && (
                         <div className="flex justify-center my-3">
-                          <span className="rounded-full bg-white/80 px-3 py-1 text-[11px] font-medium text-gray-500 shadow-sm">
+                          <span className="rounded-lg bg-white px-3 py-1 text-[11.5px] font-medium text-[#54656f] shadow-sm">
                             {rotuloDia(m.created_at)}
                           </span>
                         </div>
@@ -527,12 +528,15 @@ const Conversas = () => {
                 <div ref={fimRef} />
               </div>
 
-              <div className="relative p-4 border-t border-border bg-white flex gap-2 shrink-0 items-center">
+              <div
+                className="relative px-4 pt-3 pb-3 bg-[#f0f2f5] border-t border-slate-200/60 shrink-0"
+              >
                 <RespostasRapidas
                   valor={texto}
                   nomeContato={chatAtivo.name}
                   onEscolher={(t) => setTexto(t)}
                 />
+
                 <input
                   ref={arquivoRef}
                   type="file"
@@ -541,25 +545,57 @@ const Conversas = () => {
                   onChange={(e) => {
                     const f = e.target.files?.[0];
                     if (f) enviarArquivo(f);
-                    e.target.value = ""; // permite reenviar o mesmo arquivo
+                    e.target.value = "";
                   }}
                 />
-                <Button
-                  variant="ghost" size="icon" className="shrink-0"
-                  onClick={() => arquivoRef.current?.click()}
-                  disabled={enviando}
-                  aria-label="Anexar arquivo"
-                  title="Enviar foto, documento ou áudio"
-                >
-                  <Paperclip className="h-5 w-5 text-muted-foreground" />
-                </Button>
-                <Input value={texto} onChange={(e) => setTexto(e.target.value)}
-                  onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); enviar(); } }}
-                  placeholder="Mensagem (/ para respostas rápidas)" disabled={enviando} />
-                <Button onClick={enviar} disabled={enviando || !texto.trim()}
-                        className="bg-brand-600 hover:bg-brand-700 shrink-0">
-                  {enviando ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-                </Button>
+
+                {/* items-end: os botões ficam colados no fundo quando o campo
+                    cresce em várias linhas, como no WhatsApp. */}
+                <div className="flex items-end gap-1">
+                  <button
+                    onClick={() => arquivoRef.current?.click()}
+                    disabled={enviando}
+                    aria-label="Anexar arquivo"
+                    title="Foto, documento ou áudio"
+                    className="p-2 rounded-full text-slate-500 hover:text-slate-700 hover:bg-slate-200/60 transition-all shrink-0 disabled:opacity-50"
+                  >
+                    <Paperclip className="h-[22px] w-[22px]" />
+                  </button>
+
+                  <div className="flex-1 relative">
+                    <textarea
+                      value={texto}
+                      onChange={(e) => {
+                        setTexto(e.target.value);
+                        // cresce até um teto e depois rola por dentro
+                        const el = e.currentTarget;
+                        el.style.height = "auto";
+                        el.style.height = `${Math.min(el.scrollHeight, 136)}px`;
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); enviar(); }
+                      }}
+                      rows={1}
+                      disabled={enviando}
+                      placeholder="Mensagem (/ para respostas rápidas)"
+                      className="w-full py-2.5 px-4 bg-white border-none rounded-lg text-[15px] leading-[1.45] text-[#111b21] placeholder:text-slate-400 focus:ring-0 outline-none resize-none overflow-y-auto max-h-[136px] block shadow-sm"
+                    />
+                  </div>
+
+                  {/* Campo vazio mostra o microfone; com texto, o avião. É o
+                      gesto do WhatsApp — a mão já sabe onde clicar. */}
+                  {texto.trim() ? (
+                    <Button onClick={enviar} disabled={enviando}
+                            className="h-10 w-10 p-0 rounded-full bg-brand-600 hover:bg-brand-700 shrink-0 shadow-sm">
+                      {enviando ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                    </Button>
+                  ) : (
+                    <GravadorAudio
+                      enviando={enviando}
+                      onEnviar={async (arquivo) => { await enviarArquivo(arquivo); }}
+                    />
+                  )}
+                </div>
               </div>
             </>
           )}

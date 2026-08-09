@@ -157,6 +157,69 @@ Deno.serve(async (req) => {
   });
 
   try {
+    // ------------------------------------------------- verificação periódica
+    // Chamada pelo agendador do banco, que não tem sessão de usuário: autentica
+    // pelo mesmo segredo do envio. Vem ANTES do bloco de sessão de propósito.
+    //
+    // Existe porque o pior modo de falha deste canal é o silencioso: o WhatsApp
+    // cai e a linha continua marcada como conectada, então lembrete de consulta
+    // some sem ninguém perceber até a cadeira ficar vazia.
+    {
+      const corpoPre = await req.clone().json().catch(() => ({}));
+      if (corpoPre?.acao === "sincronizar_todas") {
+        const OUTBOX_SECRET = Deno.env.get("OUTBOX_SECRET") ?? "";
+        const enviado = req.headers.get("x-outbox-secret") ?? "";
+        if (!OUTBOX_SECRET || enviado !== OUTBOX_SECRET) {
+          return json({ erro: "não autorizado" }, 403);
+        }
+
+        const { data: linhas } = await admin
+          .from("whatsapp_instances")
+          .select("id, name, clinica_id, provider, api_url, api_token, apikey, status")
+          .neq("shared_external", true)
+          .in("status", ["connected", "connecting"]);
+
+        let caiu = 0, ok = 0, semResposta = 0;
+        for (const i of linhas ?? []) {
+          const prov = (i.provider ?? "uazapi") as Provider;
+          const tok = i.api_token ?? i.apikey;
+          if (!i.api_url || !tok) continue;
+          const cab: Record<string, string> = prov === "uazapi"
+            ? { token: String(tok), "Content-Type": "application/json" }
+            : { apikey: String(tok), "Content-Type": "application/json" };
+          const r = prov === "uazapi"
+            ? await api(`${i.api_url}/instance/status`, { method: "GET", headers: cab }, 12000)
+            : await api(`${i.api_url}/instance/connectionState/${encodeURIComponent(i.id)}`,
+                        { method: "GET", headers: cab }, 12000);
+
+          if (!r.ok) {
+            // Provedor mudo é indisponibilidade DELE. Marcar a linha como caída
+            // aqui faria a tela mentir na direção oposta.
+            semResposta++;
+            continue;
+          }
+
+          const novo = normalizarStatus(prov, r.data);
+          const numero = extrairNumero(r.data);
+          const patch: Record<string, unknown> = {
+            status: novo, last_seen_at: new Date().toISOString(),
+          };
+          if (numero) patch.owner_number = numero;
+          await admin.from("whatsapp_instances").update(patch).eq("id", i.id);
+
+          if (novo !== i.status) {
+            await admin.from("whatsapp_instance_eventos").insert({
+              instancia_id: i.id, clinica_id: i.clinica_id, nome: i.name,
+              acao: novo === "connected" ? "conectada" : "falha",
+              detalhe: `verificação automática: ${i.status} → ${novo}`,
+            });
+          }
+          if (novo === "connected") ok++; else caiu++;
+        }
+        return json({ ok: true, verificadas: (linhas ?? []).length, conectadas: ok, caidas: caiu, sem_resposta: semResposta });
+      }
+    }
+
     // ---------------------------------------------------------------- quem é
     const authHeader = req.headers.get("Authorization") ?? "";
     const jwt = authHeader.replace(/^Bearer\s+/i, "");

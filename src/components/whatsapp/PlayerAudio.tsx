@@ -92,7 +92,7 @@ export function PlayerAudio({ url, meu, transcricao, onTranscrever }: Props) {
           aria-label={tocando ? "Pausar" : "Ouvir"}
           className={cn(
             "h-9 w-9 rounded-full flex items-center justify-center shrink-0 transition-colors",
-            meu ? "bg-white/20 hover:bg-white/30 text-white" : "bg-brand-600 hover:bg-brand-700 text-white",
+            "bg-brand-600 hover:bg-brand-700 text-white",
           )}
         >
           {tocando ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4 ml-0.5" />}
@@ -102,16 +102,16 @@ export function PlayerAudio({ url, meu, transcricao, onTranscrever }: Props) {
           <div
             onClick={irPara}
             className={cn("h-1.5 rounded-full cursor-pointer",
-              meu ? "bg-white/25" : "bg-gray-200")}
+              "bg-black/10")}
           >
             <div
               className={cn("h-full rounded-full transition-[width] duration-100",
-                meu ? "bg-white" : "bg-brand-600")}
+                "bg-brand-600")}
               style={{ width: `${pct}%` }}
             />
           </div>
           <div className={cn("flex items-center justify-between mt-1 text-[10px]",
-            meu ? "text-white/70" : "text-muted-foreground")}>
+            "text-[#667781]")}>
             <span>{tempo(pos)}{dur > 0 && ` / ${tempo(dur)}`}</span>
           </div>
         </div>
@@ -121,7 +121,7 @@ export function PlayerAudio({ url, meu, transcricao, onTranscrever }: Props) {
           aria-label="Velocidade de reprodução"
           className={cn(
             "shrink-0 rounded-full px-1.5 py-0.5 text-[10px] font-bold tabular-nums transition-colors",
-            meu ? "bg-white/20 hover:bg-white/30 text-white" : "bg-gray-100 hover:bg-gray-200 text-gray-700",
+            "bg-black/5 hover:bg-black/10 text-[#54656f]",
           )}
         >
           {String(vel).replace(".", ",")}x
@@ -130,7 +130,7 @@ export function PlayerAudio({ url, meu, transcricao, onTranscrever }: Props) {
 
       {transcricao ? (
         <p className={cn("mt-1.5 text-[12.5px] italic leading-snug",
-          meu ? "text-white/90" : "text-gray-700")}>
+          "text-gray-700")}>
           "{transcricao}"
         </p>
       ) : onTranscrever ? (
@@ -139,7 +139,7 @@ export function PlayerAudio({ url, meu, transcricao, onTranscrever }: Props) {
           disabled={transcrevendo}
           className={cn(
             "mt-1.5 inline-flex items-center gap-1 text-[11px] font-medium transition-colors",
-            meu ? "text-white/80 hover:text-white" : "text-brand-700 hover:text-brand-800",
+            "text-brand-700 hover:text-brand-800",
           )}
         >
           {transcrevendo

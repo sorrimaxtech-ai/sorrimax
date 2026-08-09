@@ -32,10 +32,10 @@ export function MensagemBolha({ m }: { m: WaMessageRow }) {
 
   const rodape = (
     <div className={cn("flex items-center gap-1 justify-end mt-0.5 text-[10px] leading-none",
-      meu ? "text-white/70" : "text-muted-foreground")}>
+      meu ? "text-[#667781]" : "text-[#667781]")}>
       <span>{horaCurta(m.created_at)}</span>
       {meu && (
-        <span className={m.status === "read" || m.status === "played" ? "text-sky-300" : ""}>
+        <span className={m.status === "read" || m.status === "played" ? "text-[#53bdeb]" : "text-[#667781]"}>
           {statusIcon(m.status as WaStatus)}
         </span>
       )}
@@ -49,7 +49,9 @@ export function MensagemBolha({ m }: { m: WaMessageRow }) {
     <div className={cn(
       "max-w-[75%] rounded-2xl text-sm shadow-sm break-words",
       midiaLarga ? "overflow-hidden p-1" : "px-3.5 py-2",
-      meu ? "bg-brand-600 text-white rounded-br-sm" : "bg-white rounded-bl-sm",
+      // Cores do WhatsApp: a nossa mensagem em verde-claro com texto escuro
+      // (não branco sobre azul) — é o que a recepção reconhece de imediato.
+      meu ? "bg-[#d9fdd3] text-[#111b21] rounded-tr-sm" : "bg-white text-[#111b21] rounded-tl-sm",
     )}>
       {tipo === "image" && m.media_url ? (
         <>
@@ -89,14 +91,14 @@ export function MensagemBolha({ m }: { m: WaMessageRow }) {
       ) : tipo === "document" ? (
         <a href={m.media_url ?? undefined} target="_blank" rel="noreferrer"
            className={cn("flex items-center gap-3 min-w-[220px] rounded-lg p-1",
-             meu ? "hover:bg-white/10" : "hover:bg-muted")}>
+             meu ? "hover:bg-black/5" : "hover:bg-muted")}>
           <span className={cn("h-10 w-10 rounded-lg flex items-center justify-center shrink-0",
-            meu ? "bg-white/20" : "bg-brand-100 text-brand-700")}>
+            "bg-brand-100 text-brand-700")}>
             <FileText className="h-5 w-5" />
           </span>
           <span className="min-w-0 flex-1">
             <span className="block truncate font-medium">{m.file_name ?? m.content ?? "Documento"}</span>
-            <span className={cn("text-[11px]", meu ? "text-white/70" : "text-muted-foreground")}>
+            <span className={cn("text-[11px]", meu ? "text-[#667781]" : "text-[#667781]")}>
               Abrir arquivo
             </span>
           </span>
