@@ -15,13 +15,12 @@ import {
 } from "@/components/ui/dropdown-menu";
 import {
   Users, Plus, Search, Loader2, MessageCircle, MoreVertical, Pencil,
-  UserRoundX, UserRoundCheck, Trash2, EyeOff, Eye, Eraser, Upload, Download, Link2,
+  UserRoundX, UserRoundCheck, Trash2, EyeOff, Eye, Eraser, Upload, Download,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useTenant } from "@/hooks/useTenant";
 import { PacienteDialog } from "@/components/pacientes/PacienteDialog";
 import { ImportarPacientesDialog } from "@/components/pacientes/ImportarPacientesDialog";
-import { LinkOnlineDialog } from "@/components/pacientes/LinkOnlineDialog";
 import {
   definirAtivo, excluirPaciente, formatarCelular, formatarCpf, idadeEmAnos,
   linkWhatsApp, listarPacientes, soDigitos, limparDadosExemplo, exportarPacientesCSV, type PacienteLista,
@@ -45,7 +44,6 @@ const Pacientes = () => {
   const [mostrarInativos, setMostrarInativos] = useState(false);
   const [dialogAberto, setDialogAberto] = useState(false);
   const [importar, setImportar] = useState(false);
-  const [linkOnline, setLinkOnline] = useState(false);
   const [exportando, setExportando] = useState(false);
 
   // Chegou com ?novo=1 (botão "Novo Paciente" do Dashboard): abre o cadastro
@@ -184,9 +182,6 @@ const Pacientes = () => {
               </p>
             </div>
             <div className="flex flex-wrap gap-2">
-              <Button variant="outline" className="gap-2" onClick={() => setLinkOnline(true)}>
-                <Link2 className="h-4 w-4" /> Link online
-              </Button>
               <Button
                 onClick={() => { setEmEdicao(null); setDialogAberto(true); }}
                 className="bg-brand-600 hover:bg-brand-700 gap-2"
@@ -392,8 +387,6 @@ const Pacientes = () => {
         onFechar={() => setImportar(false)}
         onImportado={carregar}
       />
-
-      <LinkOnlineDialog aberto={linkOnline} onFechar={() => setLinkOnline(false)} />
 
       <PacienteDialog
         aberto={dialogAberto}
