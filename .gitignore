@@ -31,3 +31,6 @@ graphify-out/
 # Vite temp
 vite.config.ts.timestamp-*.mjs
 supabase/.temp/
+
+# Credencial local do banco (nunca versionar)
+.pgpass.local
