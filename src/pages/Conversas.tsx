@@ -19,6 +19,7 @@ import { AvatarContato } from "@/components/whatsapp/AvatarContato";
 import { useNotificacaoChat } from "@/hooks/useNotificacaoChat";
 import { MensagemBolha } from "@/components/whatsapp/MensagemBolha";
 import { VincularPacienteBotao } from "@/components/whatsapp/VincularPacienteBotao";
+import { RespostasRapidas } from "@/components/whatsapp/RespostasRapidas";
 import { formatarNumeroWa } from "@/services/whatsapp/instancias";
 import { subscribeChatRealtime, type WaChatRow, type WaMessageRow } from "@/services/whatsapp/realtime";
 import { enqueueText, enqueueMedia, markChatRead } from "@/services/whatsapp/send";
@@ -526,7 +527,12 @@ const Conversas = () => {
                 <div ref={fimRef} />
               </div>
 
-              <div className="p-4 border-t border-border bg-white flex gap-2 shrink-0 items-center">
+              <div className="relative p-4 border-t border-border bg-white flex gap-2 shrink-0 items-center">
+                <RespostasRapidas
+                  valor={texto}
+                  nomeContato={chatAtivo.name}
+                  onEscolher={(t) => setTexto(t)}
+                />
                 <input
                   ref={arquivoRef}
                   type="file"
@@ -549,7 +555,7 @@ const Conversas = () => {
                 </Button>
                 <Input value={texto} onChange={(e) => setTexto(e.target.value)}
                   onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); enviar(); } }}
-                  placeholder="Escreva uma mensagem..." disabled={enviando} />
+                  placeholder="Mensagem (/ para respostas rápidas)" disabled={enviando} />
                 <Button onClick={enviar} disabled={enviando || !texto.trim()}
                         className="bg-brand-600 hover:bg-brand-700 shrink-0">
                   {enviando ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}

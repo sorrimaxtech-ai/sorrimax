@@ -26,7 +26,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { useTenant } from "@/hooks/useTenant";
-import { DENTES_PERMANENTES, DENTES_DECIDUOS, isArcadaSuperior } from "@/types/odonto";
+import { SeletorDentes } from "@/components/odontograma/SeletorDentes";
 import { CampoMoeda } from "@/components/ui/campo-moeda";
 import {
   listarProteses, listarPacientesResumo, criarProtese, atualizarProtese, moverEtapa,
@@ -429,7 +429,6 @@ const Protese = () => {
   // ------------------------------------------------------------ render
 
   const semClinica = !carregandoCtx && !clinicaId;
-  const grupos = denticaoDecidua ? DENTES_DECIDUOS : DENTES_PERMANENTES;
 
   return (
     <div className="flex min-h-full bg-gray-50">
@@ -566,7 +565,7 @@ const Protese = () => {
 
       {/* ------------------------------------------------ dialog de serviço */}
       <Dialog open={dialogAberto} onOpenChange={setDialogAberto}>
-        <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{editandoId ? "Editar serviço de prótese" : "Novo serviço de prótese"}</DialogTitle>
             <DialogDescription>
@@ -660,37 +659,11 @@ const Protese = () => {
                   </Button>
                 </div>
               </div>
-              <div className="rounded-md border border-gray-200 p-2 space-y-1">
-                {(["supDireito", "supEsquerdo", "infEsquerdo", "infDireito"] as const).map((q, idx) => (
-                  <div key={q} className={`flex flex-wrap gap-1 ${idx === 2 ? "pt-1 border-t border-gray-100" : ""}`}>
-                    {grupos[q].map((dente) => {
-                      const marcado = form.dentes.includes(dente);
-                      return (
-                        <button
-                          key={dente}
-                          type="button"
-                          onClick={() => alternarDente(dente)}
-                          title={`Dente ${dente}`}
-                          className={`flex w-[42px] flex-col items-center rounded-lg border p-1 transition-colors ${
-                            marcado ? "border-brand-500 bg-brand-50" : "border-gray-200 bg-white hover:border-brand-400"
-                          }`}
-                        >
-                          <img
-                            src={`/dentes/${dente}.png`}
-                            alt=""
-                            loading="lazy"
-                            onError={(e) => { (e.currentTarget.style.visibility = "hidden"); }}
-                            className={`h-9 w-full object-contain ${isArcadaSuperior(dente) ? "object-bottom" : "object-top"}`}
-                          />
-                          <span className={`mt-0.5 text-[11px] font-medium tabular-nums ${marcado ? "text-brand-700" : "text-gray-500"}`}>
-                            {dente}
-                          </span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                ))}
-              </div>
+              <SeletorDentes
+                selecionados={form.dentes}
+                onToggle={alternarDente}
+                decidua={denticaoDecidua}
+              />
               <p className="text-[11px] text-gray-400">
                 Notação FDI. Deixe vazio se a peça não é ligada a dente específico (placa, total).
               </p>
