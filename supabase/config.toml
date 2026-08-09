@@ -1,1 +1,27 @@
 project_id = "vcaloytujryxaqutxpgy"
+
+# ============================================================================
+# Funções que recebem chamada de FORA (webhooks de provedor)
+# ----------------------------------------------------------------------------
+# Por padrão o gateway do Supabase exige um JWT do projeto em toda Edge
+# Function. Serviço externo não tem esse JWT: a uazapi e o Asaas chamam com o
+# header de segredo DELES, não com o nosso. Sem `verify_jwt = false` a chamada
+# morre no gateway com "Missing authorization header" (401) e o código nem
+# executa — o sintoma é exatamente "conecta, o provedor diz que enviou, e a
+# caixa de conversas fica vazia para sempre", sem nenhum erro visível.
+#
+# Isto fica aqui, versionado, e não como flag `--no-verify-jwt` na linha de
+# comando: flag depende de alguém lembrar em todo deploy, e esquecer derruba a
+# entrada de mensagens em silêncio.
+#
+# Não é afrouxar segurança: as duas funções autenticam por conta própria.
+#   · whatsapp-webhook confere o segredo POR INSTÂNCIA (fail-closed: sem
+#     segredo válido devolve 403 antes de tocar no banco).
+#   · asaas-webhook confere o token do webhook do Asaas.
+# ============================================================================
+
+[functions.whatsapp-webhook]
+verify_jwt = false
+
+[functions.asaas-webhook]
+verify_jwt = false
