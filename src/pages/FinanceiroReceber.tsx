@@ -13,11 +13,12 @@ import {
 } from "@/components/ui/alert-dialog";
 import {
   ArrowDownCircle, Plus, Loader2, Search, Trash2, Undo2, CheckCircle2,
-  AlertTriangle, Wallet, TrendingUp, Info, Ban,
+  AlertTriangle, Wallet, TrendingUp, Info, Ban, QrCode,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useTenant } from "@/hooks/useTenant";
 import { ParcelaDialog, LancamentoAvulsoDialog } from "@/components/financeiro/ParcelaDialog";
+import { CobrancaAsaasDialog } from "@/components/financeiro/CobrancaAsaasDialog";
 import {
   listarParcelas, listarContasFinanceiras, listarCategorias, listarTaxasCartao,
   listarPacientesResumo, totalEmAtraso, calcularKpis, estornarParcela, excluirLancamento,
@@ -71,6 +72,7 @@ const FinanceiroReceber = () => {
   const [aExcluir, setAExcluir] = useState<ParcelaComLancamento | null>(null);
   const [aEstornar, setAEstornar] = useState<ParcelaComLancamento | null>(null);
   const [aCancelar, setACancelar] = useState<ParcelaComLancamento | null>(null);
+  const [parcelaCobrar, setParcelaCobrar] = useState<ParcelaComLancamento | null>(null);
   const [agindo, setAgindo] = useState(false);
 
   // cadastros auxiliares mudam pouco: carregam uma vez por clínica
@@ -505,6 +507,15 @@ const FinanceiroReceber = () => {
                                   <span className="text-xs text-gray-400">Sem ação</span>
                                 ) : (
                                   <>
+                                    {/* Cobrança digital: gera Pix/boleto e o pagamento
+                                        dá baixa sozinho pelo webhook do Asaas. */}
+                                    <Button
+                                      size="sm" variant="outline"
+                                      className="gap-1.5 border-brand-200 text-brand-700 hover:bg-brand-50"
+                                      onClick={() => setParcelaCobrar(p)}
+                                    >
+                                      <QrCode className="h-3.5 w-3.5" /> Cobrar
+                                    </Button>
                                     <Button
                                       size="sm"
                                       className="bg-brand-600 hover:bg-brand-700 gap-1.5"
@@ -547,7 +558,7 @@ const FinanceiroReceber = () => {
             <Info className="h-3.5 w-3.5 mt-0.5 shrink-0 text-gray-400" />
             Ao marcar uma parcela como paga, o banco calcula o valor líquido (valor pago menos a taxa)
             e, se houver comissão vinculada a ela, muda essa comissão de prevista para liberada.
-            O estorno desfaz a baixa, mas não desfaz a liberação da comissão.
+            O estorno desfaz a baixa e reverte a comissão liberada de volta para prevista.
           </p>
         </div>
       </main>
@@ -559,6 +570,16 @@ const FinanceiroReceber = () => {
         taxas={taxas}
         onFechar={() => setParcelaBaixa(null)}
         onSalvo={carregar}
+      />
+
+      <CobrancaAsaasDialog
+        parcela={parcelaCobrar ? {
+          id: parcelaCobrar.id,
+          valor: Number(parcelaCobrar.valor),
+          contato_phone: (parcelaCobrar as any).lancamentos?.pacientes?.celular ?? null,
+        } : null}
+        onFechar={() => setParcelaCobrar(null)}
+        onGerada={carregar}
       />
 
       <LancamentoAvulsoDialog

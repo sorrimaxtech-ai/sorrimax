@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
+import { AsaasCard } from "@/components/integracoes/AsaasCard";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -425,6 +426,12 @@ const Integracoes = () => {
               )}
             </div>
           )}
+
+          {/* Pagamentos — Asaas (cobrança de paciente por Pix/boleto) */}
+          <div className="mt-8 max-w-xl">
+            <h2 className="mb-3 text-lg font-semibold text-gray-900">Pagamentos</h2>
+            <AsaasCard />
+          </div>
         </div>
       </main>
 
