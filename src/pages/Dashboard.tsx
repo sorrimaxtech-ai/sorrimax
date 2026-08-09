@@ -39,11 +39,10 @@ const Dashboard = () => {
     inicio.setDate(1);
     inicio.setHours(0, 0, 0, 0);
 
-    const { data, error } = await supabase
-      .from("consultas")
-      .select("inicio")
-      .eq("clinica_id", clinicaId)
-      .gte("inicio", inicio.toISOString());
+    // Agrega no banco (RPC): antes baixava as linhas cruas e o PostgREST cortava
+    // em 1000, subcontando o gráfico de clínica movimentada. count() no SQL não
+    // tem esse teto e não trafega linha.
+    const { data, error } = await supabase.rpc("dashboard_crescimento", { p_meses: 6 });
 
     if (error) {
       console.error("[dashboard] crescimento:", error.message);
@@ -56,10 +55,9 @@ const Dashboard = () => {
       d.setMonth(inicio.getMonth() + i);
       balde.set(`${d.getFullYear()}-${d.getMonth()}`, 0);
     }
-    (data ?? []).forEach((c) => {
-      const d = new Date(c.inicio as string);
-      const k = `${d.getFullYear()}-${d.getMonth()}`;
-      if (balde.has(k)) balde.set(k, (balde.get(k) ?? 0) + 1);
+    (data ?? []).forEach((r: { ano: number; mes: number; total: number }) => {
+      const k = `${r.ano}-${r.mes - 1}`; // mes vem 1-12 do SQL; a chave usa 0-11
+      if (balde.has(k)) balde.set(k, Number(r.total));
     });
 
     setSerieCrescimento(
