@@ -392,7 +392,11 @@ export interface BaixaParcela {
  * `comissoes` — o trigger do banco libera a comissão vinculada sozinho.
  */
 export async function baixarParcela(input: BaixaParcela): Promise<void> {
-  const { error } = await supabase
+  // Guarda de concorrência: a baixa só se aplica se a parcela AINDA não está
+  // paga. Duas recepcionistas dando baixa na mesma parcela — sem o `neq` a 2ª
+  // sobrescrevia a 1ª (valor/taxa/data trocados) em silêncio. Com o filtro, a 2ª
+  // afeta 0 linhas; conferimos e avisamos em vez de fingir sucesso.
+  const { data, error } = await supabase
     .from("lancamento_parcelas")
     .update({
       status: "pago",
@@ -404,8 +408,13 @@ export async function baixarParcela(input: BaixaParcela): Promise<void> {
       previsao_credito: input.previsaoCredito,
     })
     .eq("id", input.parcelaId)
-    .eq("clinica_id", input.clinicaId);
+    .eq("clinica_id", input.clinicaId)
+    .neq("status", "pago")
+    .select("id");
   if (error) throw error;
+  if (!data || data.length === 0) {
+    throw new Error("Esta parcela já foi baixada (por outra pessoa ou aba). Atualize a lista.");
+  }
 }
 
 /**

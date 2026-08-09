@@ -70,12 +70,18 @@ const Conversas = () => {
     setChats((prev) => prev.map((c) => (c.id === chatId ? { ...c, unread_count: 0 } : c)));
   }, []);
 
-  // --- realtime: substitui o polling
+  // O chat aberto muda o tempo todo; o canal não pode. Ref deixa o callback ler
+  // o chat atual sem o effect depender de `ativo` — senão cada troca de conversa
+  // derrubava e reassinava o canal (perde mensagem em trânsito, induz reenvio).
+  const ativoRef = useRef<string | null>(null);
+  useEffect(() => { ativoRef.current = ativo; }, [ativo]);
+
+  // --- realtime: substitui o polling (assina UMA vez por clínica)
   useEffect(() => {
     if (!clinicaId) return;
     return subscribeChatRealtime(clinicaId, {
       onNewMessage: (m) => {
-        setMensagens((prev) => (m.chat_id === ativo && !prev.some((x) => x.id === m.id) ? [...prev, m] : prev));
+        setMensagens((prev) => (m.chat_id === ativoRef.current && !prev.some((x) => x.id === m.id) ? [...prev, m] : prev));
       },
       onMessageUpdated: (m) => {
         setMensagens((prev) => prev.map((x) => (x.id === m.id ? m : x)));
@@ -89,7 +95,7 @@ const Conversas = () => {
         });
       },
     });
-  }, [clinicaId, ativo]);
+  }, [clinicaId]);
 
   // rola só quando CHEGA mensagem (não a cada render) — o bug do chat antigo
   // era rolar a tela pro fim a cada poll, impedindo ler o histórico.
