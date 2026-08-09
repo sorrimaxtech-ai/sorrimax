@@ -162,6 +162,110 @@ function parseEvolution(raw: any): Parsed {
   return { externalId, fromMe, type, content, mediaUrl, mimeType, fileName, senderName, replyTo, timestamp, metadata };
 }
 
+// ------------------------------------------------------------ parser uazapi
+// A uazapi manda um objeto CHATO, não a árvore aninhada do Baileys: o texto vem
+// em `text`, o tipo em `messageType`, o id em `messageid` (minúsculo). Passar
+// esse payload pelo parser do Baileys resultava em bolha vazia ou "unknown" —
+// a mensagem entrava, mas chegava suja na tela do atendente.
+//
+// Formato conferido contra o CRM que consome esta mesma API em produção.
+// O id passa pelo MESMO `normId` do parser Baileys: é o que mantém o dedupe
+// simétrico com o envio. Um id cru aqui faria cada mensagem aparecer duas vezes.
+function parseUazapi(raw: any): Parsed {
+  const externalId = normId(raw?.messageid ?? raw?.messageId ?? raw?.id ?? raw?.key?.id);
+  const fromMe = raw?.fromMe === true || raw?.key?.fromMe === true ||
+    (typeof raw?.fromMe === "string" && raw.fromMe.toLowerCase() === "true");
+  const senderName = raw?.senderName ?? raw?.pushName ?? raw?.name ?? null;
+
+  const tsRaw = raw?.messageTimestamp ?? raw?.timestamp ?? raw?.date_time ?? Date.now();
+  const timestamp = new Date(
+    typeof tsRaw === "number" ? (tsRaw > 1e12 ? tsRaw : tsRaw * 1000) : tsRaw,
+  ).toISOString();
+
+  const bruto = String(raw?.messageType ?? raw?.type ?? "text").toLowerCase();
+  const texto: string = raw?.text ?? raw?.content ?? raw?.caption ?? "";
+
+  let type: WaType = "unknown";
+  let content = "";
+  let mediaUrl: string | null = raw?.file ?? raw?.mediaUrl ?? raw?.url ?? null;
+  let mimeType: string | null = raw?.mimetype ?? raw?.mimeType ?? null;
+  let fileName: string | null = raw?.fileName ?? raw?.filename ?? null;
+  let replyTo: string | null = normId(raw?.quoted?.messageid ?? raw?.contextInfo?.stanzaId ?? null);
+  const metadata: Record<string, unknown> = {};
+
+  if (bruto.includes("conversation") || bruto === "text" || bruto.includes("extendedtext")) {
+    type = "text";
+    content = texto;
+  } else if (bruto.includes("image")) {
+    type = "image"; content = texto; mimeType = mimeType ?? "image/jpeg";
+  } else if (bruto.includes("video")) {
+    type = "video"; content = texto; mimeType = mimeType ?? "video/mp4";
+  } else if (bruto.includes("audio") || bruto.includes("ptt")) {
+    // ptt = mensagem de voz; audio = arquivo de música. A tela mostra diferente.
+    type = bruto.includes("ptt") || raw?.ptt === true ? "ptt" : "audio";
+    mimeType = mimeType ?? "audio/ogg";
+  } else if (bruto.includes("document")) {
+    type = "document";
+    content = texto || fileName || "";
+    mimeType = mimeType ?? "application/octet-stream";
+    fileName = fileName ?? "documento";
+  } else if (bruto.includes("sticker")) {
+    type = "sticker"; mimeType = mimeType ?? "image/webp";
+  } else if (bruto.includes("location")) {
+    type = "location";
+    const lat = raw?.latitude ?? raw?.content?.degreesLatitude;
+    const lng = raw?.longitude ?? raw?.content?.degreesLongitude;
+    content = raw?.name ?? texto ?? `${lat},${lng}`;
+    metadata.lat = lat; metadata.lng = lng;
+  } else if (bruto.includes("contact")) {
+    type = "contact";
+    const vcard = raw?.content?.vcard ?? (typeof texto === "string" ? texto : "");
+    const nome = (vcard.match(/FN:(.+)/)?.[1] ?? raw?.content?.displayName ?? "").trim();
+    content = `📇 ${nome || "Contato"}`;
+    metadata.vcard = vcard || null; metadata.displayName = nome || null;
+  } else if (bruto.includes("reaction")) {
+    type = "reaction"; content = texto;
+    replyTo = normId(raw?.quoted?.messageid ?? raw?.reactionMessage?.key?.id ?? null);
+  } else if (bruto.includes("buttons") || bruto.includes("list") || bruto.includes("template")) {
+    // resposta a botão/lista: sem isto o atendente vê bolha vazia
+    type = "text";
+    content = texto || raw?.selectedDisplayText || "(resposta)";
+    metadata.resposta_interativa = true;
+  } else if (bruto.includes("protocol") || bruto.includes("revoke")) {
+    type = "system"; content = "";
+    metadata.protocol = bruto;
+  } else if (bruto.includes("call")) {
+    type = "call"; content = "📞 Chamada";
+  } else if (texto) {
+    // dialeto novo que ainda não mapeamos, mas veio texto: melhor mostrar o
+    // texto do que uma bolha vazia.
+    type = "text"; content = texto;
+    metadata.tipo_original = bruto;
+  }
+
+  return { externalId, fromMe, type, content, mediaUrl, mimeType, fileName, senderName, replyTo, timestamp, metadata };
+}
+
+/**
+ * Escolhe o dialeto pelo formato do payload, não por configuração.
+ *
+ * A instância guarda o provedor, mas confiar nisso quebraria quando o provedor
+ * muda de formato entre versões ou quando a linha foi cadastrada errada — e o
+ * sintoma seria mensagem vazia, difícil de rastrear. A forma do objeto é a
+ * evidência mais confiável: o Baileys aninha em `message.*`, a uazapi é chata.
+ */
+function parseMensagem(raw: any): Parsed {
+  const aninhado = raw?.message && typeof raw.message === "object" &&
+    (raw.message.conversation != null || raw.message.extendedTextMessage ||
+     raw.message.imageMessage || raw.message.videoMessage || raw.message.audioMessage ||
+     raw.message.documentMessage || raw.message.stickerMessage);
+  if (aninhado) return parseEvolution(raw);
+  if (raw?.messageType != null || raw?.messageid != null || raw?.chatid != null) {
+    return parseUazapi(raw);
+  }
+  return parseEvolution(raw);
+}
+
 // status ack da Evolution → nosso enum (trigger garante que não rebaixa)
 function mapAck(raw: any): string | null {
   const s = String(raw?.status ?? raw?.update?.status ?? "").toUpperCase();
@@ -304,10 +408,12 @@ Deno.serve(async (req) => {
       const items = Array.isArray(body?.data) ? body.data : [body?.data ?? body];
       let saved = 0;
       for (const raw of items) {
-        const remoteJid = raw?.key?.remoteJid ?? raw?.remoteJid;
+        // `chatid`/`chatId` são a forma da uazapi. Sem eles, toda mensagem dela
+        // era descartada aqui — antes mesmo de chegar ao parser.
+        const remoteJid = raw?.key?.remoteJid ?? raw?.remoteJid ?? raw?.chatid ?? raw?.chatId;
         // ignora grupo, status do WhatsApp, canal e endereçamento LID (não-discável)
         if (!remoteJid || /@(g\.us|broadcast|newsletter|lid)$/.test(remoteJid)) continue;
-        const p = parseEvolution(raw);
+        const p = parseMensagem(raw);
         const chatId = await upsertChat(inst.id, inst.clinica_id, remoteJid, p.senderName);
         if (!chatId) continue;
 
