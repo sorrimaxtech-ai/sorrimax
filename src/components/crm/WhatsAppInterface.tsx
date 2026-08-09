@@ -34,8 +34,9 @@ export function WhatsAppInterface({ isOpen, onClose, initialPatient }: WhatsAppI
       <div className="bg-background w-full max-w-[1400px] h-[85vh] rounded-2xl shadow-2xl overflow-hidden flex flex-col md:flex-row relative animate-scale-up">
         
         {/* Close Button (Global) */}
-        <button 
+        <button
             onClick={onClose}
+            aria-label="Fechar"
             className="absolute top-4 right-4 z-50 p-2 bg-white/80 hover:bg-white rounded-full shadow-md transition-all md:hidden"
         >
             <X className="h-5 w-5 text-gray-600" />

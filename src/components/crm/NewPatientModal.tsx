@@ -92,6 +92,7 @@ export function NewPatientModal({ isOpen, onClose, onAddPatient }: NewPatientMod
           <button
             type="button"
             onClick={handleClose}
+            aria-label="Fechar"
             className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
           >
             <X className="h-5 w-5 text-gray-500" />

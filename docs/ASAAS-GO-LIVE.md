@@ -71,6 +71,7 @@ paciente), então **um endpoint só** serve os dois.
 | `ASAAS_SORRIMAX_AMBIENTE` | edge secret | `production` / `sandbox` |
 | `ASAAS_SORRIMAX_WEBHOOK_TOKEN` | edge secret + painel Asaas Sorrimax | validar webhook de assinatura |
 | `ASAAS_BASE_PROD` / `ASAAS_BASE_SANDBOX` | edge secret (opcional) | override da URL base da API |
+| `ALLOWED_ORIGINS` | edge secret (opcional, recomendado) | trava CORS: lista separada por vírgula das origens do app (ex.: `https://app.sorrimax.com.br,https://sorrimax.com.br`). Sem ela, as funções respondem `*` (aberto). |
 | chave da clínica | digitada na UI, guardada em `clinica_integracao_asaas` | cobrança de paciente |
 
 ## Teste rápido (sandbox)
