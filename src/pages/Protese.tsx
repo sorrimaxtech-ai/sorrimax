@@ -26,7 +26,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { useTenant } from "@/hooks/useTenant";
-import { DENTES_PERMANENTES, DENTES_DECIDUOS } from "@/types/odonto";
+import { DENTES_PERMANENTES, DENTES_DECIDUOS, isArcadaSuperior } from "@/types/odonto";
 import {
   listarProteses, listarPacientesResumo, criarProtese, atualizarProtese, moverEtapa,
   excluirProtese, validarProtese, laboratoriosConhecidos, resumirProteses,
@@ -661,13 +661,21 @@ const Protese = () => {
                           key={dente}
                           type="button"
                           onClick={() => alternarDente(dente)}
-                          className={`h-7 w-9 rounded text-[11px] font-mono border transition-colors ${
-                            marcado
-                              ? "bg-brand-600 text-white border-brand-600"
-                              : "bg-white text-gray-600 border-gray-200 hover:border-brand-400"
+                          title={`Dente ${dente}`}
+                          className={`flex w-[42px] flex-col items-center rounded-lg border p-1 transition-colors ${
+                            marcado ? "border-brand-500 bg-brand-50" : "border-gray-200 bg-white hover:border-brand-400"
                           }`}
                         >
-                          {dente}
+                          <img
+                            src={`/dentes/${dente}.png`}
+                            alt=""
+                            loading="lazy"
+                            onError={(e) => { (e.currentTarget.style.visibility = "hidden"); }}
+                            className={`h-9 w-full object-contain ${isArcadaSuperior(dente) ? "object-bottom" : "object-top"}`}
+                          />
+                          <span className={`mt-0.5 text-[11px] font-medium tabular-nums ${marcado ? "text-brand-700" : "text-gray-500"}`}>
+                            {dente}
+                          </span>
                         </button>
                       );
                     })}
