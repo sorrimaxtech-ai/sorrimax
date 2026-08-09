@@ -13,8 +13,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import {
   ArrowDownCircle, Plus, Loader2, Search, Trash2, Undo2, CheckCircle2,
-  AlertTriangle, Wallet, TrendingUp, Info,
-, Ban,
+  AlertTriangle, Wallet, TrendingUp, Info, Ban,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useTenant } from "@/hooks/useTenant";
