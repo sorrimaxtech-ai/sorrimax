@@ -1,0 +1,28 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+body{margin:0;background:#fff;font-family:system-ui;padding:30px}
+.row{display:flex;gap:10px;align-items:flex-end;margin:10px 0}
+.t{display:flex;flex-direction:column;align-items:center}
+svg{color:#94a3b8}
+.lbl{font-size:11px;color:#64748b;margin-top:4px}
+h3{color:#334155;font-size:13px;margin:20px 0 4px}
+</style></head><body>
+<h3>SUPERIORES (coroa pra baixo) — raiz única (incisivo/canino/pré) e molar (2 raízes)</h3>
+<div class="row" id="sup"></div>
+<h3>INFERIORES (coroa pra cima, espelhado)</h3>
+<div class="row" id="inf"></div>
+<h3>COLORIDOS por status (planejado/execução/finalizado/condição)</h3>
+<div class="row" id="cor"></div>
+<script>
+const P = {
+  incisivo: "M20 5 C14 5 14 13 15 21 C16 28 12 31 12 39 C12 49 15 55 20 55 C25 55 28 49 28 39 C28 31 24 28 25 21 C26 13 26 5 20 5 Z",
+  canino:   "M20 4 C14 4 14 12 15 20 C16 27 12 31 12 40 C12 50 16 57 20 57 C24 57 28 50 28 40 C28 31 24 27 25 20 C26 12 26 4 20 4 Z",
+  premolar: "M20 6 C14 6 14 14 15 21 C16 27 12 30 12 37 C12 46 15 51 20 50 C25 51 28 46 28 37 C28 30 24 27 25 21 C26 14 26 6 20 6 Z",
+  molar:    "M11 6 C8 6 7 14 9 21 C10 27 8 30 8 36 C8 46 13 52 20 52 C27 52 32 46 32 36 C32 30 30 27 31 21 C33 14 32 6 29 6 C26 6 25 13 24 19 C22 17 18 17 16 19 C15 13 14 6 11 6 Z",
+};
+const svg=(d,fill,flip)=>`<svg width="40" height="60" viewBox="0 0 40 60"><path d="${d}" fill="${fill||'transparent'}" stroke="currentColor" stroke-width="1.4" ${flip?'transform="translate(0,60) scale(1,-1)"':''} stroke-linejoin="round"/></svg>`;
+const set=[["incisivo","11"],["incisivo","12"],["canino","13"],["premolar","14"],["premolar","15"],["molar","16"],["molar","17"],["molar","18"]];
+document.getElementById('sup').innerHTML=set.map(([k,n])=>`<div class="t">${svg(P[k])}<span class="lbl">${n}</span></div>`).join('');
+document.getElementById('inf').innerHTML=set.map(([k,n])=>`<div class="t">${svg(P[k],'',true)}<span class="lbl">${(+n)+30}</span></div>`).join('');
+const cores=["#facc15","#3b82f6","#22c55e","#ef4444"];
+document.getElementById('cor').innerHTML=set.map(([k,n],i)=>`<div class="t">${svg(P[k],cores[i%4]+'55')}<span class="lbl">${n}</span></div>`).join('');
+</script></body></html>
