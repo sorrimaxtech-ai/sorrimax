@@ -26,6 +26,35 @@ echo "Connection string do Postgres (Supabase → Connect → URI):"
 read -rs CONN; echo
 [[ -n "$CONN" ]] || { echo "erro: string vazia"; exit 1; }
 
+# Erro mais comum: colar a URL da API em vez do DSN do Postgres.
+if [[ "$CONN" == https://* || "$CONN" == *.supabase.co ]]; then
+  cat <<'AJUDA'
+
+erro: isso é a URL da API REST, não a connection string do Postgres.
+
+  o que você colou   →  https://<ref>.supabase.co
+  o que é preciso    →  postgresql://postgres.<ref>:<SENHA>@<host>:5432/postgres
+
+Onde achar: no painel do projeto, botão "Connect" (topo da página) →
+aba "Connection string" → "URI". Copie a linha inteira.
+
+A string vem com [YOUR-PASSWORD] no lugar da senha — troque pela senha do
+banco. Não é a sua senha do Supabase; é a do Postgres, definida na criação do
+projeto. Esqueceu? Settings → Database → Reset database password.
+AJUDA
+  exit 1
+fi
+
+if [[ "$CONN" != postgres://* && "$CONN" != postgresql://* ]]; then
+  echo "erro: a string precisa começar com postgresql:// (Connect → Connection string → URI)."
+  exit 1
+fi
+
+if [[ "$CONN" == *"[YOUR-PASSWORD]"* || "$CONN" == *"YOUR-PASSWORD"* ]]; then
+  echo "erro: a string ainda tem o placeholder [YOUR-PASSWORD] — troque pela senha real do banco."
+  exit 1
+fi
+
 echo
 echo "▸ Verificando se o banco está vazio…"
 EXISTENTES="$("$PSQL" "$CONN" -tAc \
