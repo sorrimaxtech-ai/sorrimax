@@ -1,6 +1,6 @@
 import {
   LayoutDashboard, Users, Calendar, TrendingUp, Wallet, MessageSquare,
-  Boxes, Megaphone, Package, Store, Settings, HelpCircle,
+  Boxes, Megaphone, Package, Settings, HelpCircle,
   type LucideIcon,
 } from "lucide-react";
 
@@ -133,12 +133,6 @@ export const MODULOS: Modulo[] = [
     icon: Package,
     base: ["/estoque"],
     pronto: true,
-  },
-  {
-    label: "Loja",
-    href: "/loja",
-    icon: Store,
-    base: ["/loja"],
   },
 ];
 

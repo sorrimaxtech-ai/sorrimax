@@ -167,7 +167,6 @@ const App = () => (
             <Route path="/anotacoes" element={<Anotacoes />} />
 
             {/* ainda sem interface própria */}
-            <Route path="/loja" element={<EmConstrucao />} />
             <Route path="/suporte" element={<EmConstrucao />} />
           </Route>
 
