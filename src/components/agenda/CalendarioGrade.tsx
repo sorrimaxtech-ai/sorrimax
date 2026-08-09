@@ -35,6 +35,9 @@ interface Props {
  *  em duas linhas sem cortar. */
 const COR_COMPROMISSO = "#94a3b8";
 const PX_POR_MIN = 1.7;
+// Grade visual em passos de 15 min — independe da duração da consulta (que vem
+// de faixa.slotMin). Permite marcar em :15/:45 e deixa a agenda mais fina.
+const PASSO_GRADE = 15;
 const LARGURA_REGUA = 60;
 const SEM_CADEIRA = "__sem_cadeira__";
 
@@ -156,9 +159,8 @@ export const CalendarioGrade = ({
   }, [visao, referencia, agrupamentoDia, profissionais, cadeiras]);
 
   const linhasDeSlot = useMemo(() => {
-    const passo = faixa.slotMin > 0 ? faixa.slotMin : 30;
     const out: number[] = [];
-    for (let m = faixa.inicioMin; m < faixa.fimMin; m += passo) out.push(m);
+    for (let m = faixa.inicioMin; m < faixa.fimMin; m += PASSO_GRADE) out.push(m);
     return out;
   }, [faixa]);
 
@@ -284,11 +286,15 @@ export const CalendarioGrade = ({
                 const h = Math.floor(m / 60);
                 // rótulo curto no estilo de agenda clínica: "07h", "12h" = "Meio dia"
                 const rot = m === 720 ? "Meio dia" : `${String(h).padStart(2, "0")}h`;
+                const topPx = (m - faixa.inicioMin) * PX_POR_MIN;
+                // o 1º rótulo (topo) não pode subir metade da altura pra fora — o
+                // overflow cortava o "07h". Fixa ele no topo; os demais centram na linha.
+                const noTopo = topPx < 8;
                 return (
                   <span
                     key={m}
-                    className="absolute right-2 -translate-y-1/2 text-[11px] font-medium tabular-nums text-gray-400"
-                    style={{ top: (m - faixa.inicioMin) * PX_POR_MIN }}
+                    className={`absolute right-2 text-[11px] font-medium tabular-nums text-gray-400 ${noTopo ? "" : "-translate-y-1/2"}`}
+                    style={{ top: noTopo ? 1 : topPx }}
                   >
                     {rot}
                   </span>
@@ -367,11 +373,15 @@ export const CalendarioGrade = ({
                         });
                       }}
                       className={`group absolute left-0 right-0 w-full border-t transition-colors hover:bg-brand-50 ${
-                        m % 60 === 0 ? "border-gray-200" : "border-gray-100 border-dashed"
+                        m % 60 === 0
+                          ? "border-gray-200"
+                          : m % 30 === 0
+                            ? "border-gray-200 border-dashed"
+                            : "border-gray-100 border-dashed"
                       }`}
                       style={{
                         top: (m - faixa.inicioMin) * PX_POR_MIN,
-                        height: (faixa.slotMin || 30) * PX_POR_MIN,
+                        height: PASSO_GRADE * PX_POR_MIN,
                       }}
                     >
                       <span className="pointer-events-none absolute left-1 top-1 rounded-md border border-brand-300 bg-white px-1.5 py-0.5 text-[10px] font-semibold tabular-nums text-brand-700 opacity-0 shadow-sm transition-opacity group-hover:opacity-100">
