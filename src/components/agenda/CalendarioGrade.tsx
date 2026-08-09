@@ -374,10 +374,10 @@ export const CalendarioGrade = ({
                       }}
                       className={`group absolute left-0 right-0 w-full border-t transition-colors hover:bg-brand-50 ${
                         m % 60 === 0
-                          ? "border-gray-200"
+                          ? "border-gray-200"            // hora cheia: linha clara
                           : m % 30 === 0
-                            ? "border-gray-200 border-dashed"
-                            : "border-gray-100 border-dashed"
+                            ? "border-gray-100 border-dashed"  // meia hora: bem levinha
+                            : "border-transparent"       // :15/:45: sem linha (só clicável)
                       }`}
                       style={{
                         top: (m - faixa.inicioMin) * PX_POR_MIN,
