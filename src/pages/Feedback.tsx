@@ -75,7 +75,7 @@ const Feedback = () => {
             </div>
             <CardTitle className="text-2xl font-display font-bold">Obrigado!</CardTitle>
             <CardDescription className="text-lg">
-              Seu feedback é fundamental para o crescimento do Meu Auxiliar.
+              Seu feedback é fundamental para o crescimento do Sorrimax.
             </CardDescription>
           </CardHeader>
           <CardFooter className="flex justify-center">
@@ -101,7 +101,7 @@ const Feedback = () => {
             <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-primary-foreground">
               <Sparkles className="h-3 w-3" />
             </div>
-            <span className="font-display text-sm font-bold text-foreground uppercase tracking-widest">Meu Auxiliar</span>
+            <span className="font-display text-sm font-bold text-foreground uppercase tracking-widest">Sorrimax</span>
           </div>
           <h1 className="text-4xl font-display font-extrabold text-slate-900 mb-4">
             Como estamos indo?
@@ -119,7 +119,7 @@ const Feedback = () => {
                 Sua Opinião
               </CardTitle>
               <CardDescription>
-                Conte-nos sobre sua experiência com o Meu Auxiliar.
+                Conte-nos sobre sua experiência com o Sorrimax.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -166,7 +166,7 @@ const Feedback = () => {
               </div>
 
               <div className="space-y-3">
-                <label className="text-sm font-medium text-slate-700">Como você avalia o Meu Auxiliar hoje?</label>
+                <label className="text-sm font-medium text-slate-700">Como você avalia o Sorrimax hoje?</label>
                 <div className="flex justify-between items-center gap-2 px-2">
                   {[1, 2, 3, 4, 5].map((star) => (
                     <button
@@ -205,7 +205,7 @@ const Feedback = () => {
         </Card>
 
         <footer className="mt-12 text-center text-muted-foreground text-sm animate-fade-in animation-delay-500">
-          © 2024 Meu Auxiliar — Inteligência que Cuida da sua Clínica.
+          © 2026 Sorrimax — Inteligência que Cuida da sua Clínica.
         </footer>
       </div>
     </div>

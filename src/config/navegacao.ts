@@ -39,7 +39,7 @@ export interface Modulo {
 
 export const MODULOS: Modulo[] = [
   {
-    label: "Inteligência",
+    label: "Início",
     href: "/dashboard",
     icon: LayoutDashboard,
     base: ["/dashboard", "/relatorios"],
