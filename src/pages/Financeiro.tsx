@@ -181,7 +181,7 @@ const Financeiro = () => {
 
   if (!isAuthenticated) {
     return (
-      <div className="flex min-h-full bg-gray-50 dashboard-theme">
+      <div className="flex min-h-full bg-background dashboard-theme">
         <main className="flex-1 flex items-center justify-center">
           <Card className="w-full max-w-md">
             <CardHeader>
@@ -205,7 +205,7 @@ const Financeiro = () => {
   }
 
   return (
-    <div className="flex min-h-full bg-gradient-to-br from-gray-50 to-brand-50/30 dashboard-theme">
+    <div className="flex min-h-full bg-background dashboard-theme">
       <main className="flex-1 min-w-0 overflow-auto">
         {/* Demo Mode Banner */}
         {isDemo && (

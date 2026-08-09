@@ -144,12 +144,12 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="flex min-h-full bg-gradient-to-br from-gray-50 to-brand-50/30 dashboard-theme">
+    <div className="flex min-h-full bg-background dashboard-theme">
       <main className="flex-1 min-w-0 overflow-auto">
         <div className="p-8">
           {/* Demo Mode Banner */}
           {isDemo && (
-            <div className="mb-6 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg p-4 shadow-lg">
+            <div className="mb-6 bg-gradient-to-r from-brand-700 to-brand-500 text-white rounded-lg p-4 shadow-lg">
               <div className="flex items-center gap-3">
                 <Info className="h-5 w-5" />
                 <div>
@@ -190,7 +190,7 @@ const Dashboard = () => {
               value={metricas.consultasHoje.toString()}
               change={isDemo ? "4 confirmadas" : undefined}
               icon={Calendar}
-              iconColor="text-blue-600"
+              iconColor="text-brand-600"
             />
             <MetricCard
               title="Taxa de Conversão"
@@ -198,7 +198,7 @@ const Dashboard = () => {
               change={isDemo ? "+12% vs mês anterior" : "Em breve"}
               changeType={isDemo ? "positive" : "neutral"}
               icon={TrendingUp}
-              iconColor="text-purple-600"
+              iconColor="text-brand-600"
             />
           </div>
 

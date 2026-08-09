@@ -42,7 +42,7 @@ const Anotacoes = () => {
   );
 
   return (
-    <div className="flex min-h-full bg-gray-50 dashboard-theme">
+    <div className="flex min-h-full bg-background dashboard-theme">
       <main className="flex-1 min-w-0 overflow-auto">
         <div className="p-8">
           {/* Header */}

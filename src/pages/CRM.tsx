@@ -412,7 +412,7 @@ const CRM = () => {
   };
 
   return (
-    <div className="flex min-h-full bg-muted/30 dashboard-theme">
+    <div className="flex min-h-full bg-background dashboard-theme">
       <main className="flex-1 min-w-0 flex flex-col overflow-hidden relative">
         {/* Demo Mode Banner */}
         {isDemo && (

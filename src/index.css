@@ -128,17 +128,18 @@
     --sidebar-ring: 190 90% 55%;
   }
 
-  /* Scoped Dashboard Theme (Diamond Blue & White) */
+  /* Scoped Dashboard Theme (Diamond Blue & White)
+     Fundo cinza-azulado, card branco puro. O contraste entre os dois é o que faz
+     o card existir — quando ambos eram brancos, o card sumia no fundo. */
   .dashboard-theme {
-    /* Pure White Backgrounds */
-    --background: 0 0% 100%;
-    --foreground: 0 0% 0%; /* Black text */
+    --background: 210 29% 97%; /* #f6f8fa — a "mesa" atrás dos cards */
+    --foreground: 215 45% 12%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 0%;
+    --card: 0 0% 100%; /* branco puro, sempre acima do fundo */
+    --card-foreground: 215 45% 12%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 0%;
+    --popover-foreground: 215 45% 12%;
 
     /* Azul Diamond (#00b4d8) */
     --primary: 190 100% 42%;     
@@ -147,8 +148,8 @@
     --secondary: 190 71% 96%; /* Azul bem claro */   
     --secondary-foreground: 201 100% 30%;
 
-    --muted: 0 0% 98%;
-    --muted-foreground: 0 0% 40%;
+    --muted: 210 24% 94%;   /* um degrau abaixo do fundo */
+    --muted-foreground: 215 16% 46%;
 
     --accent: 190 71% 96%;
     --accent-foreground: 201 100% 30%;
@@ -156,21 +157,21 @@
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 0 0% 90%;
-    --input: 0 0% 90%;
+    --border: 212 22% 91%;  /* borda azulada, casa com o fundo cinza */
+    --input: 212 22% 91%;
     --ring: 190 100% 42%;
 
     /* Sidebar specific - Blue accent */
     --sidebar-background: 0 0% 100%;
-    --sidebar-foreground: 0 0% 20%;
+    --sidebar-foreground: 215 25% 27%;
     --sidebar-primary: 190 100% 42%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 190 71% 95%;
     --sidebar-accent-foreground: 201 100% 30%;
-    --sidebar-border: 0 0% 92%;
+    --sidebar-border: 212 22% 91%;
     --sidebar-ring: 190 100% 42%;
 
-    --shadow-card: 0 1px 3px 0 rgb(0 0 0 / 0.05), 0 1px 2px -1px rgb(0 0 0 / 0.05);
+    --shadow-card: 0 1px 2px 0 hsl(215 40% 20% / 0.04), 0 6px 16px -4px hsl(215 40% 20% / 0.07);
   }
 }
 

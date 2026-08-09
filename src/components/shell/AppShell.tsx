@@ -16,8 +16,12 @@ import { Sidebar } from "@/components/dashboard/Sidebar";
 // barra superior e abas ficam fixas, como em software de agenda de verdade.
 // ============================================================================
 
+// O tema fica aqui, na moldura, e não página a página: assim o app inteiro herda
+// o fundo cinza com card branco por cima (a "mesa" que faz o card se destacar),
+// em vez de cada página escolher o próprio cinza.
+
 export const AppShell = () => (
-  <div className="h-screen flex flex-col bg-gray-50 overflow-hidden">
+  <div className="dashboard-theme h-screen flex flex-col bg-background overflow-hidden">
     <TopBar />
     <div className="flex-1 flex min-h-0">
       <Sidebar />

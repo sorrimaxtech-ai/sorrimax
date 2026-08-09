@@ -131,7 +131,7 @@ const Profissionais = () => {
   };
 
   return (
-    <div className="flex min-h-full bg-muted/30 dashboard-theme">
+    <div className="flex min-h-full bg-background dashboard-theme">
       <main className="flex-1 overflow-auto p-8">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
