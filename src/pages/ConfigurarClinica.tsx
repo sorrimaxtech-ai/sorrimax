@@ -11,17 +11,12 @@ import { MapPin, Briefcase, Clock, ChevronRight, ChevronLeft, Check } from "luci
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
-// Lista completa de especialidades para clínicas e consultórios
+// Especialidades odontológicas (Sorrimax é odonto)
 const ESPECIALIDADES_LISTA = [
-  "Acupuntura", "Alergologia", "Anestesiologia", "Cardiologia",
-  "Cirurgia Geral", "Cirurgia Plástica", "Clínica Geral", "Dermatologia",
-  "Endocrinologia", "Estética", "Fisioterapia", "Fonoaudiologia",
-  "Gastroenterologia", "Geriatria", "Ginecologia", "Hematologia",
-  "Homeopatia", "Infectologia", "Mastologia", "Nefrologia",
-  "Neurologia", "Nutrição", "Obstetrícia", "Odontologia",
-  "Oftalmologia", "Oncologia", "Ortopedia", "Otorrinolaringologia",
-  "Pediatria", "Pneumologia", "Psicologia", "Psiquiatria",
-  "Quiropraxia", "Radiologia", "Reumatologia", "Urologia"
+  "Clínico Geral", "Ortodontia", "Implantodontia", "Endodontia",
+  "Periodontia", "Odontopediatria", "Prótese Dentária", "Cirurgia Oral",
+  "Dentística / Estética", "Harmonização Orofacial", "Radiologia Odontológica",
+  "Odontogeriatria", "Disfunção Temporomandibular (DTM)", "Odontologia do Sono",
 ];
 
 const DIAS_SEMANA = [

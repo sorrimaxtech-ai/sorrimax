@@ -14,6 +14,7 @@ import Auth from "./pages/Auth";
 const DemoLoader = lazy(() => import("./pages/DemoLoader"));
 const CadastroClinica = lazy(() => import("./pages/CadastroClinica"));
 const ConfigurarClinica = lazy(() => import("./pages/ConfigurarClinica"));
+const OnboardingClinica = lazy(() => import("./pages/OnboardingClinica"));
 const Feedback = lazy(() => import("./pages/Feedback"));
 const OnboardingPreview = lazy(() => import("./pages/OnboardingPreview"));
 const RedefinirSenha = lazy(() => import("./pages/RedefinirSenha"));
@@ -100,7 +101,7 @@ const App = () => (
           <Route path="/c/:slug" element={<AgendamentoPublico />} />
           <Route path="/demo" element={<DemoLoader />} />
           <Route path="/cadastro" element={<CadastroClinica />} />
-          <Route path="/configurar-clinica" element={<ConfigurarClinica />} />
+          <Route path="/configurar-clinica" element={<OnboardingClinica />} />
           <Route path="/feedback" element={<Feedback />} />
           <Route path="/onboarding-preview" element={<OnboardingPreview />} />
           <Route path="/siri-test" element={<SiriTest />} />
