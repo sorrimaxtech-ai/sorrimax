@@ -21,8 +21,8 @@ import { useToast } from "@/hooks/use-toast";
 // migrou da antiga TopBar).
 // ============================================================================
 
-const LARGURA_FECHADA = 60;   // px — só ícone
-const LARGURA_ABERTA = 224;   // px — ícone + rótulo
+const LARGURA_FECHADA = 76;   // px — só ícone
+const LARGURA_ABERTA = 236;   // px — ícone + rótulo
 
 export const Sidebar = () => {
   const navigate = useNavigate();
@@ -69,9 +69,9 @@ export const Sidebar = () => {
           emBreve && "opacity-60",
         )}
       >
-        <span className="grid w-6 shrink-0 place-items-center">
-          <m.icon className="h-[20px] w-[20px]" />
-          {m.badge && <span className="absolute left-[26px] top-2 h-2 w-2 rounded-full bg-emerald-400 ring-2 ring-[#1B7FD4] group-hover:hidden" />}
+        <span className="grid w-7 shrink-0 place-items-center">
+          <m.icon className="h-[22px] w-[22px]" />
+          {m.badge && <span className="absolute left-[30px] top-2 h-2 w-2 rounded-full bg-emerald-400 ring-2 ring-[#1B7FD4] group-hover:hidden" />}
         </span>
         <Rotulo>{m.label}</Rotulo>
         {m.badge && <span className="hidden rounded bg-emerald-400/20 px-1.5 py-0.5 text-[9px] font-semibold uppercase text-emerald-50 opacity-0 transition-opacity group-hover:inline group-hover:opacity-100">{m.badge}</span>}
@@ -97,8 +97,8 @@ export const Sidebar = () => {
           aria-label="Início"
           className="mb-3 flex h-10 w-full items-center gap-2 rounded-xl px-3 transition-colors hover:bg-white/10"
         >
-          <span className="grid w-6 shrink-0 place-items-center">
-            <img src={iconWhite} alt="Sorrimax" className="h-6 w-6" draggable={false} />
+          <span className="grid w-7 shrink-0 place-items-center">
+            <img src={iconWhite} alt="Sorrimax" className="h-7 w-7" draggable={false} />
           </span>
           <Rotulo className="text-lg font-extrabold tracking-tight text-white">SORRIMAX</Rotulo>
         </button>
@@ -117,7 +117,7 @@ export const Sidebar = () => {
             className="mt-2 flex h-11 w-full items-center gap-2 rounded-xl px-2 text-white transition hover:bg-white/15"
           >
             <span className="grid w-7 shrink-0 place-items-center">
-              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20 text-xs font-semibold ring-2 ring-white/30">
+              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white/20 text-xs font-semibold ring-2 ring-white/30">
                 {iniciais}
               </span>
             </span>

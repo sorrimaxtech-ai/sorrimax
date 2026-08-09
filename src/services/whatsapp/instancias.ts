@@ -50,6 +50,32 @@ export class ErroInstancia extends Error {
   }
 }
 
+/**
+ * Traduz falha de transporte para frase de gente.
+ *
+ * O caso mais comum na prática — e o mais confuso — é o serviço de conexão
+ * ainda não ter sido publicado no servidor: o navegador nem chega a falar com
+ * ele e o SDK devolve "Failed to send a request to the Edge Function". Jogar
+ * isso num toast para a recepção não diz nada e ainda passa amadorismo.
+ */
+function mensagemDeTransporte(bruta: string): { msg: string; det: string } {
+  const b = bruta.toLowerCase();
+  if (b.includes("failed to send a request") || b.includes("failed to fetch") ||
+      b.includes("networkerror") || b.includes("load failed")) {
+    return {
+      msg: "O WhatsApp ainda não foi ativado neste sistema.",
+      det: "O serviço de conexão não respondeu. Se o problema persistir, avise o suporte.",
+    };
+  }
+  if (b.includes("timeout") || b.includes("timed out")) {
+    return {
+      msg: "O serviço de conexão demorou demais para responder.",
+      det: "Tente de novo em alguns instantes.",
+    };
+  }
+  return { msg: "Não foi possível falar com o serviço de conexão.", det: bruta };
+}
+
 async function chamar<T>(corpo: Record<string, unknown>): Promise<T> {
   const { data, error } = await supabase.functions.invoke("whatsapp-instances", { body: corpo });
 
@@ -58,12 +84,17 @@ async function chamar<T>(corpo: Record<string, unknown>): Promise<T> {
   // como sucesso silencioso.
   if (error) {
     const ctx = (error as any)?.context;
-    let msg = error.message;
+    let msg: string | undefined;
     let det: string | undefined;
     try {
       const corpoErro = typeof ctx?.body === "string" ? JSON.parse(ctx.body) : ctx?.body;
       if (corpoErro?.erro) { msg = corpoErro.erro; det = corpoErro.detalhe; }
-    } catch { /* mantém a mensagem de transporte */ }
+    } catch { /* sem corpo utilizável: cai na tradução de transporte */ }
+    if (!msg) {
+      const t = mensagemDeTransporte(error.message ?? "");
+      msg = t.msg;
+      det = det ?? t.det;
+    }
     throw new ErroInstancia(msg, det);
   }
   if (data && typeof data === "object" && "erro" in (data as any)) {
