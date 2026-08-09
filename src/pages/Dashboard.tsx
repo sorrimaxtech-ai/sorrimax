@@ -277,7 +277,7 @@ const Dashboard = () => {
   return (
     <div className="flex min-h-full bg-background dashboard-theme">
       <main className="flex-1 min-w-0 overflow-auto">
-        <div className="p-8">
+        <div className="p-6">
           {/* Demo Mode Banner */}
           {isDemo && (
             <div className="mb-6 bg-gradient-to-r from-brand-700 to-brand-500 text-white rounded-lg p-4 shadow-lg">
@@ -316,20 +316,23 @@ const Dashboard = () => {
           </div>
 
           {/* Cards operacionais — números REAIS do banco, nada financeiro */}
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
+          <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4 mb-6">
             <MetricCard
+              index={0}
               title="Pacientes Ativos"
               value={pacientesAtivos.toString()}
               icon={Users}
               iconColor="text-brand-600"
             />
             <MetricCard
+              index={1}
               title="Consultas Hoje"
               value={consultasHoje.toString()}
               icon={Calendar}
               iconColor="text-brand-600"
             />
             <MetricCard
+              index={2}
               title="Amanhã sem confirmação"
               value={semConfirmacao.length.toString()}
               change={semConfirmacao.length > 0 ? "precisa de atenção" : "tudo confirmado"}
@@ -338,6 +341,7 @@ const Dashboard = () => {
               iconColor={semConfirmacao.length > 0 ? "text-amber-600" : "text-emerald-600"}
             />
             <MetricCard
+              index={3}
               title="Aniversariantes Hoje"
               value={aniversariantes.length.toString()}
               icon={Cake}
