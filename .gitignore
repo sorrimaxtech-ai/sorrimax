@@ -30,3 +30,4 @@ graphify-out/
 
 # Vite temp
 vite.config.ts.timestamp-*.mjs
+supabase/.temp/
