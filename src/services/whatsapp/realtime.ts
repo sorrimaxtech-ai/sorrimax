@@ -36,6 +36,8 @@ export interface WaChatRow {
   unread_count: number;
   assigned_to: string | null;
   tags: string[];
+  archived_at: string | null;
+  paciente_id: string | null;
 }
 
 interface Handlers {

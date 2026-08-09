@@ -15,7 +15,9 @@ import { useTenant } from "@/hooks/useTenant";
 import { useInstanciasWa } from "@/hooks/useInstanciasWa";
 import { GerenciarWhatsAppDialog } from "@/components/whatsapp/GerenciarWhatsAppDialog";
 import { AvatarContato } from "@/components/whatsapp/AvatarContato";
+import { useNotificacaoChat } from "@/hooks/useNotificacaoChat";
 import { MensagemBolha } from "@/components/whatsapp/MensagemBolha";
+import { VincularPacienteBotao } from "@/components/whatsapp/VincularPacienteBotao";
 import { formatarNumeroWa } from "@/services/whatsapp/instancias";
 import { subscribeChatRealtime, type WaChatRow, type WaMessageRow } from "@/services/whatsapp/realtime";
 import { enqueueText, enqueueMedia, markChatRead } from "@/services/whatsapp/send";
@@ -54,6 +56,8 @@ const Conversas = () => {
   // quem nota que "não chega mensagem" está olhando esta caixa de conversas.
   const wa = useInstanciasWa();
   const [gerenciar, setGerenciar] = useState(false);
+  const [aba, setAba] = useState<"todas" | "nao_lidas" | "arquivadas">("todas");
+  const notificar = useNotificacaoChat();
   const [chats, setChats] = useState<WaChatRow[]>([]);
   const [mensagens, setMensagens] = useState<WaMessageRow[]>([]);
   const [ativo, setAtivo] = useState<string | null>(null);
@@ -72,11 +76,12 @@ const Conversas = () => {
     let vivo = true;
     (async () => {
       setCarregando(true);
+      // Traz arquivadas também: quem filtra é a aba. Excluir aqui deixava a aba
+      // "Arquivadas" eternamente vazia — a conversa arquivada sumia para sempre.
       const { data, error } = await supabase
         .from("whatsapp_chats")
         .select("*")
         .eq("clinica_id", clinicaId)
-        .is("archived_at", null)
         .order("last_message_time", { ascending: false, nullsFirst: false })
         .limit(100);
       if (!vivo) return;
@@ -117,6 +122,12 @@ const Conversas = () => {
     if (!clinicaId) return;
     return subscribeChatRealtime(clinicaId, {
       onNewMessage: (m) => {
+        // Uma mensagem, um toque — mesmo que o atendente esteja em outra tela.
+        // Só entrada: o eco do próprio envio não avisa nada a ninguém.
+        if (!m.from_me) {
+          notificar.tocar(1);
+          notificar.avisarNavegador("Nova mensagem", m.content?.slice(0, 80) || "Mídia recebida");
+        }
         if (m.chat_id === ativoRef.current) {
           setMensagens((prev) => (prev.some((x) => x.id === m.id) ? prev : [...prev, m]));
           // chegou mensagem no chat ABERTO: já está sendo lida, então marca lida
@@ -178,9 +189,21 @@ const Conversas = () => {
     }
   };
 
-  const visiveis = chats.filter((c) =>
-    !busca || (c.name ?? "").toLowerCase().includes(busca.toLowerCase()) ||
-    (c.contact_phone ?? "").includes(busca));
+  const totalNaoLidas = chats.reduce((s, c) => s + (c.unread_count ?? 0), 0);
+
+  // Título da aba vira o painel de aviso quando a recepção está em outra tela.
+  useEffect(() => { notificar.atualizarTitulo(totalNaoLidas); }, [totalNaoLidas, notificar]);
+  useEffect(() => { notificar.pedirPermissao(); }, [notificar]);
+
+  const visiveis = chats
+    .filter((c) => {
+      if (aba === "nao_lidas") return (c.unread_count ?? 0) > 0;
+      if (aba === "arquivadas") return !!(c as any).archived_at;
+      return !(c as any).archived_at; // "Todas" esconde arquivada, como no WhatsApp
+    })
+    .filter((c) =>
+      !busca || (c.name ?? "").toLowerCase().includes(busca.toLowerCase()) ||
+      (c.contact_phone ?? "").includes(busca));
   const chatAtivo = chats.find((c) => c.id === ativo);
 
   return (
@@ -250,6 +273,32 @@ const Conversas = () => {
               <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input placeholder="Buscar por nome ou telefone" value={busca}
                      onChange={(e) => setBusca(e.target.value)} className="pl-9 h-9" />
+            </div>
+
+            {/* Abas: separam o que precisa de resposta do resto. "Não lidas" é
+                a fila de trabalho da recepção; "Arquivadas" é o que saiu dela. */}
+            <div className="flex items-center gap-1 mt-3 text-xs">
+              {([
+                ["todas", "Todas", null],
+                ["nao_lidas", "Não lidas", totalNaoLidas],
+                ["arquivadas", "Arquivadas", null],
+              ] as const).map(([chave, rotulo, contador]) => (
+                <button
+                  key={chave}
+                  onClick={() => setAba(chave as typeof aba)}
+                  className={cn(
+                    "px-2.5 py-1 rounded-full transition-colors font-medium",
+                    aba === chave
+                      ? "bg-brand-50 text-brand-700"
+                      : "text-muted-foreground hover:bg-muted",
+                  )}
+                >
+                  {rotulo}
+                  {typeof contador === "number" && contador > 0 && (
+                    <span className="ml-1 text-brand-600">{contador}</span>
+                  )}
+                </button>
+              ))}
             </div>
           </div>
 
@@ -365,7 +414,7 @@ const Conversas = () => {
               <div className="h-16 border-b border-border bg-white px-5 flex items-center gap-3 shrink-0">
                 <AvatarContato nome={chatAtivo.name} telefone={chatAtivo.contact_phone}
                                fotoUrl={chatAtivo.profile_pic_url} tamanho="md" />
-                <div className="min-w-0">
+                <div className="min-w-0 flex-1">
                   <p className="font-medium text-sm truncate">
                     {chatAtivo.name ?? formatarNumeroWa(chatAtivo.contact_phone)}
                   </p>
@@ -373,6 +422,15 @@ const Conversas = () => {
                     {formatarNumeroWa(chatAtivo.contact_phone)}
                   </p>
                 </div>
+                <VincularPacienteBotao
+                  chatId={chatAtivo.id}
+                  pacienteId={(chatAtivo as any).paciente_id ?? null}
+                  telefone={chatAtivo.contact_phone}
+                  nomeContato={chatAtivo.name}
+                  onVinculado={(pid) =>
+                    setChats((prev) => prev.map((c) =>
+                      c.id === chatAtivo.id ? ({ ...c, paciente_id: pid } as WaChatRow) : c))}
+                />
               </div>
 
               <div className="flex-1 overflow-y-auto px-5 py-4 space-y-1 bg-[#efeae2]/40">

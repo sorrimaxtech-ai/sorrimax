@@ -19,6 +19,7 @@ import {
 import {
   ArrowLeft, Loader2, MessageCircle, Pencil, Receipt, Stethoscope, ClipboardList,
   FileText, Wallet, User, CalendarClock, AlertTriangle, Plus, Lock, ExternalLink, Paperclip,
+  Image as ImageIcon, Mic, Video, MapPin,
 } from "lucide-react";
 import { AbaArquivos } from "@/components/arquivos/AbaArquivos";
 import { toast } from "sonner";

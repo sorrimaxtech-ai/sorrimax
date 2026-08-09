@@ -593,6 +593,7 @@ export interface MensagemResumo {
   tipo: string;
   from_me: boolean;
   quando: string | null;
+  midiaUrl: string | null;
 }
 
 /**
@@ -623,7 +624,7 @@ export async function ultimasMensagens(
 
   const { data, error } = await supabase
     .from("whatsapp_messages")
-    .select("id, content, message_type, from_me, sent_at, created_at")
+    .select("id, content, message_type, from_me, sent_at, created_at, media_url")
     .eq("clinica_id", clinicaId)
     .in("chat_id", ids)
     .order("created_at", { ascending: false })
@@ -637,6 +638,7 @@ export async function ultimasMensagens(
       tipo: m.message_type,
       from_me: !!m.from_me,
       quando: m.sent_at ?? m.created_at,
+      midiaUrl: m.media_url ?? null,
     }))
     .reverse();
 }
