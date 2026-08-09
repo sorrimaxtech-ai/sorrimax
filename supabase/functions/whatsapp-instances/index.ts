@@ -65,6 +65,60 @@ async function api(
   }
 }
 
+// ============================================================================
+// Registro do webhook no provedor
+// ----------------------------------------------------------------------------
+// Sem esta etapa nada nunca chega: o QR conecta, o status vira "connected" e a
+// caixa de conversas fica eternamente vazia, porque ninguém disse ao provedor
+// para onde mandar as mensagens. O `webhook_secret` era gerado e gravado, e
+// morria no banco.
+//
+// Contrato conferido contra o CRM que já opera esta mesma conta em produção:
+//   POST {base}/webhook   header `token` (o da instância, não o admin)
+//   body { url, events[], enabled: true }
+//
+// `excludeMessages: ['wasSentByApi']` pede ao provedor que NÃO devolva o eco da
+// mensagem que nós mesmos enviamos. O outro sistema não usa isso e paga o preço:
+// casa o eco por janela de tempo e já produziu mais de mil mensagens fantasma.
+// Aqui a ingestão do próprio envio tem caminho determinístico (`wa_ingerir_eco`).
+// ============================================================================
+const EVENTOS_WEBHOOK = [
+  "messages", "messages_update", "chats", "connection", "presence", "groups",
+];
+
+async function registrarWebhook(
+  provider: Provider,
+  baseUrl: string,
+  token: string,
+  segredo: string,
+): Promise<{ ok: boolean; detalhe?: string }> {
+  // O segredo viaja no caminho da URL, não em querystring: query aparece em log
+  // de proxy e de borda com mais frequência. A Edge do webhook confere este
+  // valor contra a coluna da instância — cada clínica com o seu.
+  const destino = `${SUPABASE_URL}/functions/v1/whatsapp-webhook/${segredo}`;
+
+  if (provider === "uazapi") {
+    const r = await api(`${baseUrl}/webhook`, {
+      method: "POST",
+      headers: { token, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        url: destino,
+        events: EVENTOS_WEBHOOK,
+        excludeMessages: ["wasSentByApi"],
+        enabled: true,
+      }),
+    });
+    return r.ok ? { ok: true } : { ok: false, detalhe: r.data?.error ?? `HTTP ${r.status}` };
+  }
+
+  const r = await api(`${baseUrl}/webhook/set/${encodeURIComponent(token)}`, {
+    method: "POST",
+    headers: { apikey: token, "Content-Type": "application/json" },
+    body: JSON.stringify({ webhook: { url: destino, enabled: true, events: EVENTOS_WEBHOOK } }),
+  });
+  return r.ok ? { ok: true } : { ok: false, detalhe: r.data?.message ?? `HTTP ${r.status}` };
+}
+
 /** Normaliza o estado do provedor para o enum que o banco usa. */
 function normalizarStatus(provider: Provider, data: any): string {
   const bruto = String(
@@ -264,8 +318,24 @@ Deno.serve(async (req) => {
         }, 500);
       }
 
-      await registrar(nova.id, nome, "criada", `provedor ${provider}`);
-      return json({ instancia: nova });
+      // Aponta o provedor para cá. Não é fatal: a instância existe e o usuário
+      // consegue ler o QR; o que falha é a chegada de mensagem, e isso precisa
+      // aparecer no histórico em vez de virar um vazio inexplicável depois.
+      const wh = await registrarWebhook(provider, baseUrl, token, webhookSecret);
+      await registrar(
+        nova.id, nome,
+        wh.ok ? "criada" : "falha",
+        wh.ok
+          ? `provedor ${provider}; webhook registrado`
+          : `provedor ${provider}; WEBHOOK NÃO REGISTRADO (${wh.detalhe}) — a instância conecta mas não recebe mensagem`,
+      );
+
+      return json({
+        instancia: nova,
+        ...(wh.ok ? {} : {
+          aviso: "O número foi criado, mas o recebimento de mensagens não pôde ser ativado agora.",
+        }),
+      });
     }
 
     // ====================================================== órfãs no provedor
@@ -430,6 +500,25 @@ Deno.serve(async (req) => {
       if (numero) patch.owner_number = numero;
       if (status === "connected" && inst.status !== "connected") {
         patch.connected_at = new Date().toISOString();
+
+        // Acabou de conectar: garante que o provedor sabe para onde mandar as
+        // mensagens. Reafirmar aqui (e não só na criação) é o que conserta as
+        // linhas criadas antes desta correção e as que o provedor esqueceu ao
+        // recriar a sessão. É idempotente.
+        //
+        // `shared_external` e `webhook_mode` != 'direct' ficam de FORA, e isso
+        // não é detalhe: essas linhas são o mesmo número que outro sistema opera
+        // em produção. Sobrescrever o webhook delas roubaria a entrada de
+        // mensagens do outro produto e derrubaria o atendimento de clientes reais.
+        if (!inst.shared_external && inst.webhook_mode === "direct" && inst.webhook_secret) {
+          const wh = await registrarWebhook(
+            provider, baseUrl, inst.api_token ?? inst.apikey, inst.webhook_secret,
+          );
+          if (!wh.ok) {
+            await registrar(inst.id, inst.name, "falha",
+              `conectou, mas o webhook não pôde ser registrado (${wh.detalhe}) — não vai receber mensagem`);
+          }
+        }
       }
       await admin.from("whatsapp_instances").update(patch).eq("id", inst.id);
 

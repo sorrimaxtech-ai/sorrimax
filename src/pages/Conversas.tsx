@@ -170,11 +170,15 @@ const Conversas = () => {
               className="w-full mb-3 flex items-center gap-2 rounded-lg border border-border px-2.5 py-2 text-left transition-colors hover:bg-muted/50"
             >
               <span className={cn("h-2 w-2 rounded-full shrink-0",
-                wa.conectada ? "bg-emerald-500" : "bg-gray-300")} />
+                wa.conectada ? "bg-emerald-500" : wa.falhouCarga ? "bg-amber-500" : "bg-gray-300")} />
               <Smartphone className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
               <span className="min-w-0 flex-1 truncate text-xs">
                 {wa.carregando ? (
                   <span className="text-muted-foreground">Verificando a conexão…</span>
+                ) : wa.falhouCarga ? (
+                  // Não dá para dizer "nenhum conectado": a consulta nem chegou
+                  // ao servidor. Afirmar isso seria a tela inventando um fato.
+                  <span className="text-amber-700">Não deu para verificar a conexão</span>
                 ) : wa.conectada ? (
                   <span className="text-gray-700">
                     {formatarNumeroWa(wa.conectada.owner_number)}
@@ -183,7 +187,7 @@ const Conversas = () => {
                   <span className="font-medium text-gray-700">Nenhum número conectado</span>
                 )}
               </span>
-              {!wa.carregando && !wa.conectada && (
+              {!wa.carregando && !wa.conectada && !wa.falhouCarga && (
                 <span className="shrink-0 text-[11px] font-medium text-brand-700">Conectar</span>
               )}
             </button>
@@ -210,6 +214,17 @@ const Conversas = () => {
                     <p className="text-xs text-gray-500 mt-1">
                       Nenhuma conversa com "{busca}".
                     </p>
+                  </>
+                ) : wa.falhouCarga ? (
+                  <>
+                    <p className="text-sm font-medium text-gray-700">
+                      Não deu para verificar o WhatsApp
+                    </p>
+                    <p className="text-xs text-gray-500 mt-1 mb-4">{wa.falhouCarga}</p>
+                    <Button variant="outline" size="sm" className="gap-2"
+                            onClick={() => wa.carregar()}>
+                      <RefreshCw className="h-3.5 w-3.5" /> Tentar de novo
+                    </Button>
                   </>
                 ) : wa.conectada ? (
                   <>

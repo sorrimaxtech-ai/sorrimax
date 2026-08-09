@@ -191,18 +191,50 @@ async function upsertChat(instanceId: string, clinicaId: string, remoteJid: stri
   return data?.id as string | undefined;
 }
 
+/** Compara sem vazar o tamanho por tempo de resposta. */
+function iguala(a: string, b: string): boolean {
+  const x = new TextEncoder().encode(a);
+  const y = new TextEncoder().encode(b);
+  let diff = x.length ^ y.length;
+  for (let i = 0; i < Math.max(x.length, y.length); i++) diff |= (x[i] ?? 0) ^ (y[i] ?? 0);
+  return diff === 0;
+}
+
 Deno.serve(async (req) => {
-  // fail-CLOSED: sem segredo configurado a função NÃO atende (antes, remover o
-  // secret desligava a autenticação inteira numa função com service_role).
-  if (!WEBHOOK_SECRET) return new Response("misconfigured", { status: 503 });
-  {
-    // sem fallback por querystring: segredo em URL vaza em log de edge e proxy
-    const got = req.headers.get("x-webhook-secret") ?? "";
-    const a = new TextEncoder().encode(got);
-    const b = new TextEncoder().encode(WEBHOOK_SECRET);
-    let diff = a.length ^ b.length;
-    for (let i = 0; i < Math.max(a.length, b.length); i++) diff |= (a[i] ?? 0) ^ (b[i] ?? 0);
-    if (diff !== 0) return new Response("forbidden", { status: 403 });
+  // --------------------------------------------------------------- autenticação
+  // Dois modelos convivem, e antes eles não conversavam: o banco guarda um
+  // segredo POR INSTÂNCIA (`whatsapp_instances.webhook_secret`, gerado na
+  // criação) enquanto aqui só existia um env global. O provedor registrado com
+  // o segredo da instância batia de frente com 403 — ninguém recebia nada.
+  //
+  // Um segredo por clínica também é melhor de segurança: com o global, quem
+  // descobrisse o valor injetaria mensagem em QUALQUER clínica bastando acertar
+  // o nome da instância.
+  //
+  // O provedor não manda header customizado, então o segredo vem no caminho da
+  // URL (…/whatsapp-webhook/<segredo>). Continua fora da querystring, que é a
+  // parte que mais aparece em log de proxy e de borda.
+  const partes = new URL(req.url).pathname.split("/").filter(Boolean);
+  const doCaminho = partes[partes.length - 1] ?? "";
+  const candidato = req.headers.get("x-webhook-secret")
+    ?? (doCaminho && doCaminho !== "whatsapp-webhook" ? doCaminho : "");
+
+  // fail-CLOSED: sem candidato não se atende — a função roda com service_role.
+  if (!candidato) return new Response("forbidden", { status: 403 });
+
+  // 1) segredo global, quando configurado (compatibilidade com o que já existia)
+  let instPorSegredo: { id: string; clinica_id: string } | null = null;
+  const globalOk = !!WEBHOOK_SECRET && iguala(candidato, WEBHOOK_SECRET);
+
+  // 2) senão, o segredo tem de pertencer a uma instância viva
+  if (!globalOk) {
+    const { data } = await supabase
+      .from("whatsapp_instances")
+      .select("id, clinica_id")
+      .eq("webhook_secret", candidato)
+      .maybeSingle();
+    if (!data) return new Response("forbidden", { status: 403 });
+    instPorSegredo = data as { id: string; clinica_id: string };
   }
 
   let body: any;
@@ -210,7 +242,12 @@ Deno.serve(async (req) => {
 
   const event: string = body?.event ?? body?.type ?? "";
   const instanceName: string = body?.instance ?? body?.instanceName ?? "";
-  const inst = instanceName ? await findInstance(instanceName) : null;
+  // O segredo identifica a instância melhor que o nome vindo no corpo: o nome é
+  // dado do remetente, o segredo é nosso. Só cai no nome quando veio pelo
+  // segredo global (rota antiga).
+  const inst = instPorSegredo
+    ? { id: instPorSegredo.id, clinica_id: instPorSegredo.clinica_id }
+    : (instanceName ? await findInstance(instanceName) : null);
 
   try {
     // ---- conexão: marca estado e limpa "degraded" (dispara sync/flush no worker)
