@@ -114,6 +114,50 @@ export function useInstanciasWa(opcoes: { comHistorico?: boolean } = {}) {
     return () => { if (pollRef.current) clearInterval(pollRef.current); };
   }, [conexao, carregar]);
 
+  // ------------------------------------------------------------------ validade
+  // O código do WhatsApp vale poucos segundos. Antes, a tela seguia exibindo o
+  // mesmo desenho indefinidamente: o usuário escaneava um código já vencido e o
+  // celular respondia "não é possível conectar novos dispositivos no momento" —
+  // erro que não diz a verdade e manda caçar problema no lugar errado.
+  //
+  // Renova sozinho um pouco antes de vencer, e desiste após alguns minutos em
+  // vez de martelar o provedor para sempre com uma tela esquecida aberta.
+  const SEGUNDOS_VALIDADE = 40;
+  const MAX_RENOVACOES = 5; // ~3,5 min de tentativa
+  const [segundosQr, setSegundosQr] = useState(SEGUNDOS_VALIDADE);
+  const [qrExpirado, setQrExpirado] = useState(false);
+  const renovacoesRef = useRef(0);
+
+  useEffect(() => {
+    if (!conexao) { renovacoesRef.current = 0; setQrExpirado(false); return; }
+    setSegundosQr(SEGUNDOS_VALIDADE);
+    const t = window.setInterval(() => {
+      setSegundosQr((s) => {
+        if (s > 1) return s - 1;
+        if (renovacoesRef.current < MAX_RENOVACOES) {
+          renovacoesRef.current += 1;
+          // pede um código novo sem fechar o diálogo
+          conectarInstanciaWa(conexao.inst.id)
+            .then((r) => setConexao((c) => (c ? { ...c, qr: r.qrcode, codigo: r.codigo } : c)))
+            .catch(() => { /* a próxima volta tenta de novo */ });
+          return SEGUNDOS_VALIDADE;
+        }
+        setQrExpirado(true);
+        return 0;
+      });
+    }, 1000);
+    return () => clearInterval(t);
+  }, [conexao]);
+
+  /** Recomeça a contagem e pede um código novo (botão "Gerar novo"). */
+  const renovarQr = useCallback(async () => {
+    if (!conexao) return;
+    renovacoesRef.current = 0;
+    setQrExpirado(false);
+    setSegundosQr(SEGUNDOS_VALIDADE);
+    await abrirConexao(conexao.inst);
+  }, [conexao, abrirConexao]);
+
   const criar = useCallback(async (nome: string, provider: ProviderWa) => {
     if (nome.trim().length < 2) { toast.error("Dê um nome a esta linha"); return false; }
     setCriando(true);
@@ -183,8 +227,9 @@ export function useInstanciasWa(opcoes: { comHistorico?: boolean } = {}) {
     // estado
     instancias, proprias, compartilhadas, conectada, eventos,
     carregando, ocupado, falhouCarga, criando, conexao, excluir, isAdmin,
+    segundosQr, qrExpirado,
     // ações
     carregar, criar, abrirConexao, sincronizar, desconectar, confirmarExclusao,
-    setConexao, setExcluir,
+    renovarQr, setConexao, setExcluir,
   };
 }

@@ -252,7 +252,18 @@ export function GerenciarWhatsAppDialog({ aberto, onOpenChange, wa }: Props) {
             </DialogDescription>
           </DialogHeader>
 
-          {wa.conexao?.qr ? (
+          {wa.qrExpirado ? (
+            // O código morreu de velho. Mostrar o desenho vencido faz o usuário
+            // escanear e receber do WhatsApp um erro que não explica nada
+            // ("não é possível conectar novos dispositivos no momento").
+            <div className="py-10 text-center">
+              <QrCode className="h-10 w-10 mx-auto text-gray-300 mb-3" />
+              <p className="font-medium text-gray-800">O código expirou</p>
+              <p className="text-sm text-gray-500 mt-1 max-w-xs mx-auto">
+                Gere um novo e escaneie em seguida — ele vale menos de um minuto.
+              </p>
+            </div>
+          ) : wa.conexao?.qr ? (
             <img src={wa.conexao.qr} alt="QR code para conectar o WhatsApp"
                  className="mx-auto h-64 w-64 rounded-lg border border-border bg-white p-2" />
           ) : wa.conexao?.codigo ? (
@@ -266,16 +277,21 @@ export function GerenciarWhatsAppDialog({ aberto, onOpenChange, wa }: Props) {
             </div>
           )}
 
-          <p className="text-center text-xs text-muted-foreground flex items-center justify-center gap-1.5">
-            <Loader2 className="h-3 w-3 animate-spin" />
-            Aguardando a leitura — a tela avisa sozinha quando conectar.
-          </p>
+          {!wa.qrExpirado && (
+            <p className="text-center text-xs text-muted-foreground flex items-center justify-center gap-1.5">
+              <Loader2 className="h-3 w-3 animate-spin" />
+              Aguardando a leitura · o código se renova em {wa.segundosQr}s
+            </p>
+          )}
 
           <DialogFooter className="gap-2">
             <Button variant="outline" onClick={() => wa.setConexao(null)}>Fechar</Button>
-            <Button variant="outline" className="gap-2"
-                    onClick={() => wa.conexao && wa.abrirConexao(wa.conexao.inst)}>
-              <RefreshCw className="h-4 w-4" /> Gerar novo QR
+            <Button
+              className={wa.qrExpirado ? "bg-brand-600 hover:bg-brand-700 gap-2" : "gap-2"}
+              variant={wa.qrExpirado ? "default" : "outline"}
+              onClick={wa.renovarQr}
+            >
+              <RefreshCw className="h-4 w-4" /> Gerar novo código
             </Button>
           </DialogFooter>
         </DialogContent>
