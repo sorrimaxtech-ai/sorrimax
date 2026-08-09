@@ -3,9 +3,18 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MessageSquare, Search, Send, Loader2, Phone } from "lucide-react";
+import {
+  MessageSquare, Search, Send, Loader2, Phone, Smartphone, QrCode,
+  MoreVertical, RefreshCw, Settings2,
+} from "lucide-react";
+import {
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { supabase } from "@/integrations/supabase/client";
 import { useTenant } from "@/hooks/useTenant";
+import { useInstanciasWa } from "@/hooks/useInstanciasWa";
+import { GerenciarWhatsAppDialog } from "@/components/whatsapp/GerenciarWhatsAppDialog";
+import { formatarNumeroWa } from "@/services/whatsapp/instancias";
 import { subscribeChatRealtime, type WaChatRow, type WaMessageRow } from "@/services/whatsapp/realtime";
 import { enqueueText, markChatRead } from "@/services/whatsapp/send";
 import { statusColor, statusIcon, type WaStatus } from "@/services/whatsapp/status";
@@ -24,6 +33,10 @@ import { cn } from "@/lib/utils";
 
 const Conversas = () => {
   const { clinicaId, carregando: carregandoCtx } = useTenant();
+  // A gestão dos números vive aqui, e não só numa tela de configuração distante:
+  // quem nota que "não chega mensagem" está olhando esta caixa de conversas.
+  const wa = useInstanciasWa();
+  const [gerenciar, setGerenciar] = useState(false);
   const [chats, setChats] = useState<WaChatRow[]>([]);
   const [mensagens, setMensagens] = useState<WaMessageRow[]>([]);
   const [ativo, setAtivo] = useState<string | null>(null);
@@ -126,9 +139,55 @@ const Conversas = () => {
         {/* Lista de conversas */}
         <div className="w-80 border-r border-border bg-white flex flex-col shrink-0">
           <div className="p-4 border-b border-border">
-            <h1 className="text-lg font-semibold flex items-center gap-2 mb-3">
-              <MessageSquare className="h-5 w-5 text-brand-600" /> Conversas
-            </h1>
+            <div className="flex items-center justify-between gap-2 mb-3">
+              <h1 className="text-lg font-semibold flex items-center gap-2">
+                <MessageSquare className="h-5 w-5 text-brand-600" /> Conversas
+              </h1>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="h-8 w-8"
+                          aria-label="Opções do WhatsApp">
+                    <MoreVertical className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuItem onClick={() => setGerenciar(true)}>
+                    <Settings2 className="h-4 w-4 mr-2" /> Números de WhatsApp
+                  </DropdownMenuItem>
+                  {wa.conectada && (
+                    <DropdownMenuItem onClick={() => wa.sincronizar(wa.conectada!)}>
+                      <RefreshCw className="h-4 w-4 mr-2" /> Atualizar situação
+                    </DropdownMenuItem>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+
+            {/* Situação da linha: o usuário precisa saber se está recebendo, sem
+                ter que caçar isso em outra tela. */}
+            <button
+              onClick={() => setGerenciar(true)}
+              className="w-full mb-3 flex items-center gap-2 rounded-lg border border-border px-2.5 py-2 text-left transition-colors hover:bg-muted/50"
+            >
+              <span className={cn("h-2 w-2 rounded-full shrink-0",
+                wa.conectada ? "bg-emerald-500" : "bg-gray-300")} />
+              <Smartphone className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+              <span className="min-w-0 flex-1 truncate text-xs">
+                {wa.carregando ? (
+                  <span className="text-muted-foreground">Verificando a conexão…</span>
+                ) : wa.conectada ? (
+                  <span className="text-gray-700">
+                    {formatarNumeroWa(wa.conectada.owner_number)}
+                  </span>
+                ) : (
+                  <span className="font-medium text-gray-700">Nenhum número conectado</span>
+                )}
+              </span>
+              {!wa.carregando && !wa.conectada && (
+                <span className="shrink-0 text-[11px] font-medium text-brand-700">Conectar</span>
+              )}
+            </button>
+
             <div className="relative">
               <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input placeholder="Buscar por nome ou telefone" value={busca}
@@ -140,13 +199,39 @@ const Conversas = () => {
             {carregandoCtx || carregando ? (
               <div className="p-8 flex justify-center"><Loader2 className="h-5 w-5 animate-spin text-muted-foreground" /></div>
             ) : visiveis.length === 0 ? (
+              // Vazio tem duas causas muito diferentes, e a saída de cada uma é
+              // outra: sem número conectado, nada nunca vai chegar — a tela tem
+              // que oferecer a conexão em vez de só explicar por que está vazia.
               <div className="p-8 text-center">
                 <MessageSquare className="h-10 w-10 mx-auto text-gray-300 mb-2" />
-                <p className="text-sm font-medium text-gray-700">Nenhuma conversa ainda</p>
-                <p className="text-xs text-gray-500 mt-1">
-                  As conversas aparecem aqui assim que uma instância de WhatsApp
-                  estiver conectada e receber mensagem.
-                </p>
+                {busca ? (
+                  <>
+                    <p className="text-sm font-medium text-gray-700">Nada encontrado</p>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Nenhuma conversa com "{busca}".
+                    </p>
+                  </>
+                ) : wa.conectada ? (
+                  <>
+                    <p className="text-sm font-medium text-gray-700">Nenhuma conversa ainda</p>
+                    <p className="text-xs text-gray-500 mt-1">
+                      O número {formatarNumeroWa(wa.conectada.owner_number)} está conectado.
+                      As conversas aparecem assim que alguém escrever para a clínica.
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-sm font-medium text-gray-700">Conecte o WhatsApp</p>
+                    <p className="text-xs text-gray-500 mt-1 mb-4">
+                      Leia um QR code com o celular da clínica e as mensagens dos pacientes
+                      passam a chegar aqui.
+                    </p>
+                    <Button className="gap-2 bg-brand-600 hover:bg-brand-700"
+                            onClick={() => setGerenciar(true)}>
+                      <QrCode className="h-4 w-4" /> Conectar WhatsApp
+                    </Button>
+                  </>
+                )}
               </div>
             ) : visiveis.map((c) => (
               <button key={c.id} onClick={() => abrirChat(c.id)}
@@ -171,9 +256,25 @@ const Conversas = () => {
         {/* Janela do chat */}
         <div className="flex-1 min-w-0 flex flex-col bg-gray-50">
           {!chatAtivo ? (
-            <div className="flex-1 min-w-0 flex flex-col items-center justify-center text-center gap-2">
+            <div className="flex-1 min-w-0 flex flex-col items-center justify-center text-center gap-2 px-6">
               <MessageSquare className="h-12 w-12 text-gray-300" />
-              <p className="text-sm font-medium text-gray-700">Selecione uma conversa</p>
+              {!wa.carregando && !wa.conectada ? (
+                <>
+                  <p className="text-sm font-medium text-gray-700">
+                    Nenhum número de WhatsApp conectado
+                  </p>
+                  <p className="text-xs text-gray-500 max-w-sm">
+                    Conecte o celular da clínica para receber e responder mensagens sem sair
+                    do sistema.
+                  </p>
+                  <Button className="mt-2 gap-2 bg-brand-600 hover:bg-brand-700"
+                          onClick={() => setGerenciar(true)}>
+                    <QrCode className="h-4 w-4" /> Conectar WhatsApp
+                  </Button>
+                </>
+              ) : (
+                <p className="text-sm font-medium text-gray-700">Selecione uma conversa</p>
+              )}
             </div>
           ) : (
             <>
@@ -221,6 +322,8 @@ const Conversas = () => {
           )}
         </div>
       </main>
+
+      <GerenciarWhatsAppDialog aberto={gerenciar} onOpenChange={setGerenciar} wa={wa} />
     </div>
   );
 };
