@@ -14,6 +14,7 @@ import CadastroClinica from "./pages/CadastroClinica";
 import ConfigurarClinica from "./pages/ConfigurarClinica";
 import Feedback from "./pages/Feedback";
 import OnboardingPreview from "./pages/OnboardingPreview";
+import SiriTest from "./pages/SiriTest";
 import NotFound from "./pages/NotFound";
 import EmConstrucao from "./pages/EmConstrucao";
 
@@ -87,6 +88,7 @@ const App = () => (
           <Route path="/configurar-clinica" element={<ConfigurarClinica />} />
           <Route path="/feedback" element={<Feedback />} />
           <Route path="/onboarding-preview" element={<OnboardingPreview />} />
+          <Route path="/siri-test" element={<SiriTest />} />
 
           {/* ---------------- app autenticado ----------------
               A sessão é verificada UMA vez, no layout. As páginas filhas
