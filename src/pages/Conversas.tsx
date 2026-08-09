@@ -1,5 +1,6 @@
 import { traduzErro } from "@/lib/erros";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -58,6 +59,7 @@ const Conversas = () => {
   const [gerenciar, setGerenciar] = useState(false);
   const [aba, setAba] = useState<"todas" | "nao_lidas" | "arquivadas">("todas");
   const notificar = useNotificacaoChat();
+  const [params, setParams] = useSearchParams();
   const [chats, setChats] = useState<WaChatRow[]>([]);
   const [mensagens, setMensagens] = useState<WaMessageRow[]>([]);
   const [ativo, setAtivo] = useState<string | null>(null);
@@ -110,6 +112,18 @@ const Conversas = () => {
     await markChatRead(chatId);
     setChats((prev) => prev.map((c) => (c.id === chatId ? { ...c, unread_count: 0 } : c)));
   }, []);
+
+  // Veio de outra tela pedindo uma conversa específica (ex.: botão de chat na
+  // lista de pacientes). Abre assim que a lista chegar e limpa o parâmetro, pra
+  // um F5 não reabrir sozinho o que o usuário já fechou.
+  const pedidoUrl = params.get("chat");
+  useEffect(() => {
+    if (!pedidoUrl || carregando) return;
+    if (chats.some((c) => c.id === pedidoUrl)) {
+      void abrirChat(pedidoUrl);
+      setParams({}, { replace: true });
+    }
+  }, [pedidoUrl, carregando, chats, abrirChat, setParams]);
 
   // O chat aberto muda o tempo todo; o canal não pode. Ref deixa o callback ler
   // o chat atual sem o effect depender de `ativo` — senão cada troca de conversa

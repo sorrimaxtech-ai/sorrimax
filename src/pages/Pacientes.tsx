@@ -1,4 +1,5 @@
 import { traduzErro } from "@/lib/erros";
+import { supabase } from "@/integrations/supabase/client";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
@@ -109,13 +110,28 @@ const Pacientes = () => {
       .sort((a, b) => a.nome_completo.localeCompare(b.nome_completo, "pt-BR"));
   }, [lista, busca, mostrarInativos]);
 
-  const abrirWhatsApp = (p: PacienteLista) => {
-    const url = linkWhatsApp(p.celular, `Olá, ${p.apelido || p.nome_completo.split(" ")[0]}!`);
-    if (!url) {
-      toast.error("Celular inválido", { description: "Edite o cadastro e informe o DDD." });
-      return;
+  /**
+   * Abre a conversa DENTRO do sistema.
+   *
+   * Antes isto mandava para o wa.me: o atendimento saía do produto, e o que foi
+   * combinado com o paciente ficava num aplicativo à parte, fora do prontuário.
+   * Agora a conversa é criada (ou reaproveitada) aqui e já nasce vinculada ao
+   * paciente — o histórico fica onde a clínica consegue consultar depois.
+   *
+   * Se o WhatsApp não estiver conectado, o servidor recusa com uma frase clara
+   * em vez de abrir uma conversa que não conseguiria enviar nada.
+   */
+  const abrirWhatsApp = async (p: PacienteLista) => {
+    try {
+      const { data, error } = await supabase.rpc("wa_abrir_conversa", {
+        p_paciente_id: p.id,
+        p_telefone: null,
+      });
+      if (error) throw error;
+      navigate(`/conversas?chat=${data}`);
+    } catch (e: any) {
+      toast.error("Não foi possível abrir a conversa", { description: traduzErro(e) });
     }
-    window.open(url, "_blank", "noopener,noreferrer");
   };
 
   const alternarAtivo = async (p: PacienteLista) => {
