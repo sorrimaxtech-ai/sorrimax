@@ -85,7 +85,7 @@ export const TIPO_MOVIMENTO_LABEL: Record<TipoMovimento, string> = {
 };
 
 export const TIPO_MOVIMENTO_CLASSE: Record<TipoMovimento, string> = {
-  entrada: "bg-emerald-100 text-emerald-800 border-0",
+  entrada: "bg-brand-100 text-brand-800 border-0",
   saida: "bg-sky-100 text-sky-800 border-0",
   ajuste: "bg-amber-100 text-amber-800 border-0",
   perda: "bg-rose-100 text-rose-800 border-0",
@@ -454,7 +454,7 @@ export const ETAPA_CLASSE: Record<EtapaProtese, string> = {
   laboratorio: "bg-sky-100 text-sky-800",
   prova: "bg-violet-100 text-violet-800",
   agenda: "bg-blue-100 text-blue-800",
-  realizado: "bg-emerald-100 text-emerald-800",
+  realizado: "bg-brand-100 text-brand-800",
 };
 
 export const ETAPA_PONTO: Record<EtapaProtese, string> = {
@@ -463,7 +463,7 @@ export const ETAPA_PONTO: Record<EtapaProtese, string> = {
   laboratorio: "bg-sky-500",
   prova: "bg-violet-500",
   agenda: "bg-blue-500",
-  realizado: "bg-emerald-500",
+  realizado: "bg-brand-500",
 };
 
 export interface ProteseServico {

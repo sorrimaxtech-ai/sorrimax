@@ -12,14 +12,14 @@ export function RecentActivities() {
     },
     {
       icon: DollarSign,
-      color: "text-emerald-600 bg-emerald-50",
+      color: "text-brand-600 bg-brand-50",
       textColor: "text-gray-900",
       text: "Pagamento recebido: R$ 1.800,00 - Lucas Ferreira",
       time: "Há 15 min",
     },
     {
       icon: CheckCircle,
-      color: "text-teal-600 bg-teal-50",
+      color: "text-brand-600 bg-brand-50",
       textColor: "text-gray-900",
       text: "Procedimento finalizado: Peeling - Fernanda Lima",
       time: "Há 30 min",
@@ -40,7 +40,7 @@ export function RecentActivities() {
     },
     {
       icon: DollarSign,
-      color: "text-emerald-600 bg-emerald-50",
+      color: "text-brand-600 bg-brand-50",
       textColor: "text-gray-900",
       text: "Pagamento recebido: R$ 2.500,00 - Roberto Alves",
       time: "Há 3h",

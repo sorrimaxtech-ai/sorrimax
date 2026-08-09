@@ -235,7 +235,7 @@ export const DespesaFixaDialog = ({ aberto, onFechar, onSalvo, despesa }: Props)
 
         <DialogFooter>
           <Button variant="outline" onClick={onFechar} disabled={salvando}>Cancelar</Button>
-          <Button onClick={salvar} disabled={salvando} className="bg-emerald-600 hover:bg-emerald-700 gap-2">
+          <Button onClick={salvar} disabled={salvando} className="bg-brand-600 hover:bg-brand-700 gap-2">
             {salvando && <Loader2 className="h-4 w-4 animate-spin" />}
             {despesa ? "Salvar alterações" : "Cadastrar"}
           </Button>

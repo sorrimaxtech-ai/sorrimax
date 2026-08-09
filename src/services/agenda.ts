@@ -152,7 +152,7 @@ export const MODALIDADE_LABEL: Record<ModalidadeAtendimento, string> = {
   domiciliar: "Domiciliar",
 };
 
-export const COR_PADRAO_PROCEDIMENTO = "#4ade80";
+export const COR_PADRAO_PROCEDIMENTO = "#00b4d8";
 
 // ------------------------------------------------------------------ tempo
 

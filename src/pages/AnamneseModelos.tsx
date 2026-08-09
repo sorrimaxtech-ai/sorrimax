@@ -165,7 +165,7 @@ const AnamneseModelos = () => {
           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-6">
             <div>
               <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-                <ClipboardList className="h-6 w-6 text-emerald-600" /> Anamnese
+                <ClipboardList className="h-6 w-6 text-brand-600" /> Anamnese
               </h1>
               <p className="text-sm text-gray-600 mt-0.5">
                 Monte a ficha marcando perguntas de um banco pronto. Publicado é o que a recepção consegue usar.
@@ -179,7 +179,7 @@ const AnamneseModelos = () => {
                 {semeando ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
                 Usar modelo pronto
               </Button>
-              <Button className="bg-emerald-600 hover:bg-emerald-700 gap-2" onClick={() => setAbrirNovo(true)}>
+              <Button className="bg-brand-600 hover:bg-brand-700 gap-2" onClick={() => setAbrirNovo(true)}>
                 <Plus className="h-4 w-4" /> Novo Modelo
               </Button>
             </div>
@@ -236,7 +236,7 @@ const AnamneseModelos = () => {
                       {semeando ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
                       Usar modelo pronto
                     </Button>
-                    <Button className="bg-emerald-600 hover:bg-emerald-700 gap-2" onClick={() => setAbrirNovo(true)}>
+                    <Button className="bg-brand-600 hover:bg-brand-700 gap-2" onClick={() => setAbrirNovo(true)}>
                       <Plus className="h-4 w-4" /> Novo Modelo
                     </Button>
                   </div>
@@ -265,7 +265,7 @@ const AnamneseModelos = () => {
                       {visiveis.map((m) => (
                         <tr key={m.id} className="border-b border-border/50 hover:bg-muted/40">
                           <td className="px-5 py-3">
-                            <button className="font-medium text-gray-900 hover:text-emerald-700 text-left"
+                            <button className="font-medium text-gray-900 hover:text-brand-700 text-left"
                                     onClick={() => navigate(`/anamnese/modelos/${m.id}`)}>
                               {m.nome}
                             </button>
@@ -281,7 +281,7 @@ const AnamneseModelos = () => {
                             <div className="flex items-center gap-2">
                               <Switch checked={m.publicado} onCheckedChange={(v) => alternarPublicado(m, v)} />
                               <Badge className={m.publicado
-                                ? "bg-emerald-100 text-emerald-800 border-0"
+                                ? "bg-brand-100 text-brand-800 border-0"
                                 : "bg-gray-100 text-gray-700 border-0"}>
                                 {m.publicado ? "Publicado" : "Rascunho"}
                               </Badge>
@@ -339,7 +339,7 @@ const AnamneseModelos = () => {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setAbrirNovo(false)}>Cancelar</Button>
-            <Button className="bg-emerald-600 hover:bg-emerald-700 gap-2" onClick={criar} disabled={salvando}>
+            <Button className="bg-brand-600 hover:bg-brand-700 gap-2" onClick={criar} disabled={salvando}>
               {salvando && <Loader2 className="h-4 w-4 animate-spin" />} Criar modelo
             </Button>
           </DialogFooter>
@@ -373,7 +373,7 @@ const AnamneseModelos = () => {
           )}
           <DialogFooter>
             <Button variant="outline" onClick={() => setAbrirPreencher(false)}>Cancelar</Button>
-            <Button className="bg-emerald-600 hover:bg-emerald-700" disabled={!pacienteId}
+            <Button className="bg-brand-600 hover:bg-brand-700" disabled={!pacienteId}
                     onClick={() => navigate(`/anamnese/preencher/${pacienteId}`)}>
               Abrir formulário
             </Button>

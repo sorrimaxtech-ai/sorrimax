@@ -133,7 +133,7 @@ const CadastroClinica = () => {
         {/* Logo e Título */}
         <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-2 mb-2">
-            <Sparkles className="h-6 w-6 text-emerald-600" />
+            <Sparkles className="h-6 w-6 text-brand-600" />
             <h1 className="text-2xl font-bold text-gray-900">CLINIC.AI</h1>
           </div>
           <p className="text-gray-600">Gerencie sua clínica de forma profissional</p>
@@ -156,7 +156,7 @@ const CadastroClinica = () => {
                     value={formData.nome}
                     onChange={(e) => handleChange('nome', e.target.value)}
                     placeholder="Seu nome completo"
-                    className="pl-10 h-10 border-gray-200 focus:border-emerald-500 focus:ring-emerald-500"
+                    className="pl-10 h-10 border-gray-200 focus:border-brand-500 focus:ring-brand-500"
                   />
                 </div>
               </div>
@@ -171,7 +171,7 @@ const CadastroClinica = () => {
                     value={formData.email}
                     onChange={(e) => handleChange('email', e.target.value)}
                     placeholder="seu@email.com"
-                    className="pl-10 h-10 border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 bg-emerald-50/30"
+                    className="pl-10 h-10 border-gray-200 focus:border-brand-500 focus:ring-brand-500 bg-brand-50/30"
                   />
                 </div>
               </div>
@@ -185,7 +185,7 @@ const CadastroClinica = () => {
                     value={formData.telefone}
                     onChange={handlePhoneChange}
                     placeholder="(11) 99999-9999"
-                    className="pl-10 h-10 border-gray-200 focus:border-emerald-500 focus:ring-emerald-500"
+                    className="pl-10 h-10 border-gray-200 focus:border-brand-500 focus:ring-brand-500"
                     maxLength={15}
                   />
                 </div>
@@ -202,7 +202,7 @@ const CadastroClinica = () => {
                     value={formData.senha}
                     onChange={(e) => handleChange('senha', e.target.value)}
                     placeholder="••••••••"
-                    className="pl-10 pr-10 h-10 border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 bg-emerald-50/30"
+                    className="pl-10 pr-10 h-10 border-gray-200 focus:border-brand-500 focus:ring-brand-500 bg-brand-50/30"
                   />
                   <button 
                     type="button" 
@@ -224,7 +224,7 @@ const CadastroClinica = () => {
                     value={formData.confirmarSenha}
                     onChange={(e) => handleChange('confirmarSenha', e.target.value)}
                     placeholder="Digite a senha novamente"
-                    className="pl-10 pr-10 h-10 border-gray-200 focus:border-emerald-500 focus:ring-emerald-500"
+                    className="pl-10 pr-10 h-10 border-gray-200 focus:border-brand-500 focus:ring-brand-500"
                   />
                   <button 
                     type="button" 
@@ -238,7 +238,7 @@ const CadastroClinica = () => {
 
               <Button 
                 type="submit" 
-                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold h-11 mt-2"
+                className="w-full bg-brand-600 hover:bg-brand-700 text-white font-semibold h-11 mt-2"
                 disabled={loading}
               >
                 {loading ? 'Criando conta...' : 'Cadastrar'}
@@ -252,7 +252,7 @@ const CadastroClinica = () => {
                 Já tem uma conta?{' '}
                 <button
                   onClick={() => navigate('/auth')}
-                  className="text-emerald-600 hover:text-emerald-700 font-semibold"
+                  className="text-brand-600 hover:text-brand-700 font-semibold"
                 >
                   Fazer login
                 </button>

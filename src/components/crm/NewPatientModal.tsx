@@ -84,8 +84,8 @@ export function NewPatientModal({ isOpen, onClose, onAddPatient }: NewPatientMod
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-100">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-emerald-50 rounded-lg">
-              <User className="h-5 w-5 text-emerald-600" />
+            <div className="p-2 bg-brand-50 rounded-lg">
+              <User className="h-5 w-5 text-brand-600" />
             </div>
             <h2 className="text-xl font-semibold text-gray-900">Novo Contato</h2>
           </div>
@@ -311,7 +311,7 @@ export function NewPatientModal({ isOpen, onClose, onAddPatient }: NewPatientMod
           <Button
             type="submit"
             form="patient-form"
-            className="px-6 bg-emerald-600 hover:bg-emerald-700 text-white"
+            className="px-6 bg-brand-600 hover:bg-brand-700 text-white"
           >
             Criar
           </Button>

@@ -188,7 +188,7 @@ const Documentos = () => {
           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-6">
             <div>
               <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-                <FileSignature className="h-6 w-6 text-emerald-600" /> Documentos
+                <FileSignature className="h-6 w-6 text-brand-600" /> Documentos
               </h1>
               <p className="text-sm text-gray-600 mt-0.5">
                 Atestado, declaração e recibo saem preenchidos com o dado do cadastro — sem linha em branco.
@@ -200,7 +200,7 @@ const Documentos = () => {
                 {semeando ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
                 Trazer modelos padrão
               </Button>
-              <Button className="bg-emerald-600 hover:bg-emerald-700 gap-2"
+              <Button className="bg-brand-600 hover:bg-brand-700 gap-2"
                       onClick={() => setAbrirNovo(true)} disabled={!clinicaId}>
                 <Plus className="h-4 w-4" /> Novo modelo
               </Button>
@@ -270,7 +270,7 @@ const Documentos = () => {
                           {semeando ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
                           Trazer modelos padrão
                         </Button>
-                        <Button className="bg-emerald-600 hover:bg-emerald-700 gap-2"
+                        <Button className="bg-brand-600 hover:bg-brand-700 gap-2"
                                 onClick={() => setAbrirNovo(true)}>
                           <Plus className="h-4 w-4" /> Criar do zero
                         </Button>
@@ -291,7 +291,7 @@ const Documentos = () => {
                       <Card key={m.id} className="border-gray-100 flex flex-col">
                         <CardContent className="p-5 flex flex-col gap-3 flex-1">
                           <div className="flex items-start justify-between gap-2">
-                            <button className="text-left font-medium text-gray-900 hover:text-emerald-700"
+                            <button className="text-left font-medium text-gray-900 hover:text-brand-700"
                                     onClick={() => navigate(`/documentos/modelos/${m.id}`)}>
                               {m.nome}
                             </button>
@@ -308,7 +308,7 @@ const Documentos = () => {
                               <Printer className="h-3.5 w-3.5" /> {m.qtd_emitidos} emitidos
                             </span>
                             {m.sistema && (
-                              <span className="flex items-center gap-1 text-emerald-700">
+                              <span className="flex items-center gap-1 text-brand-700">
                                 <ShieldCheck className="h-3.5 w-3.5" /> padrão
                               </span>
                             )}
@@ -321,7 +321,7 @@ const Documentos = () => {
                           )}
 
                           <div className="flex flex-wrap gap-1 mt-auto pt-2">
-                            <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700 gap-1"
+                            <Button size="sm" className="bg-brand-600 hover:bg-brand-700 gap-1"
                                     onClick={() => navigate(`/documentos/modelos/${m.id}?emitir=1`)}>
                               <Printer className="h-4 w-4" /> Emitir
                             </Button>
@@ -460,7 +460,7 @@ const Documentos = () => {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setAbrirNovo(false)}>Cancelar</Button>
-            <Button className="bg-emerald-600 hover:bg-emerald-700 gap-2" onClick={criar} disabled={salvando}>
+            <Button className="bg-brand-600 hover:bg-brand-700 gap-2" onClick={criar} disabled={salvando}>
               {salvando && <Loader2 className="h-4 w-4 animate-spin" />} Criar modelo
             </Button>
           </DialogFooter>

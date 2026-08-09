@@ -198,7 +198,7 @@ export const CalendarioGrade = ({
                   key={dia.toISOString()}
                   type="button"
                   onClick={() => onSelecionarDia(dia)}
-                  className={`min-h-[92px] border-b border-r border-gray-100 p-2 text-left align-top transition-colors hover:bg-emerald-50/50 ${
+                  className={`min-h-[92px] border-b border-r border-gray-100 p-2 text-left align-top transition-colors hover:bg-brand-50/50 ${
                     foraDoMes ? "bg-gray-50/60" : "bg-white"
                   }`}
                 >
@@ -206,7 +206,7 @@ export const CalendarioGrade = ({
                     <span
                       className={`inline-flex h-6 min-w-6 items-center justify-center rounded-full px-1 text-xs font-semibold ${
                         isToday(dia)
-                          ? "bg-emerald-600 text-white"
+                          ? "bg-brand-600 text-white"
                           : foraDoMes ? "text-gray-300" : "text-gray-700"
                       }`}
                     >
@@ -265,9 +265,9 @@ export const CalendarioGrade = ({
           {colunas.map((col) => (
             <div
               key={col.chave}
-              className={`flex-1 border-l border-gray-100 px-2 py-2 text-center ${col.destacada ? "bg-emerald-50/60" : ""}`}
+              className={`flex-1 border-l border-gray-100 px-2 py-2 text-center ${col.destacada ? "bg-brand-50/60" : ""}`}
             >
-              <p className={`text-xs font-semibold capitalize ${col.destacada ? "text-emerald-700" : "text-gray-700"}`}>
+              <p className={`text-xs font-semibold capitalize ${col.destacada ? "text-brand-700" : "text-gray-700"}`}>
                 {col.titulo}
               </p>
               {col.subtitulo && <p className="text-[11px] text-gray-400">{col.subtitulo}</p>}
@@ -326,7 +326,7 @@ export const CalendarioGrade = ({
               return (
                 <div
                   key={col.chave}
-                  className={`relative flex-1 border-l border-gray-100 ${col.destacada ? "bg-emerald-50/30" : ""}`}
+                  className={`relative flex-1 border-l border-gray-100 ${col.destacada ? "bg-brand-50/30" : ""}`}
                   style={{ height: alturaTotal }}
                 >
                   {/* slots clicáveis — camada de fundo */}
@@ -343,7 +343,7 @@ export const CalendarioGrade = ({
                           cadeiraId: col.cadeiraId && col.cadeiraId !== SEM_CADEIRA ? col.cadeiraId : null,
                         });
                       }}
-                      className={`absolute left-0 right-0 w-full border-t transition-colors hover:bg-emerald-100/50 ${
+                      className={`absolute left-0 right-0 w-full border-t transition-colors hover:bg-brand-100/50 ${
                         m % 60 === 0 ? "border-gray-200" : "border-gray-100 border-dashed"
                       }`}
                       style={{

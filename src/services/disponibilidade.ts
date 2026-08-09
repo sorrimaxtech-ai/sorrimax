@@ -49,7 +49,7 @@ export const DIAS_SEMANA: DiaSemana[] = [
 export const SLOT_MIN = 5;
 export const SLOT_MAX = 240;
 
-export const COR_PADRAO_CADEIRA = "#10b981";
+export const COR_PADRAO_CADEIRA = "#00b4d8";
 
 /** Paleta de atalho do seletor de cor. Precisa casar com `cadeiras_cor_check` (#RRGGBB). */
 export const PALETA_CADEIRAS = [

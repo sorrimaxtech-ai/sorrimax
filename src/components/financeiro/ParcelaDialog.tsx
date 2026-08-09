@@ -199,7 +199,7 @@ export const ParcelaDialog = ({
           {ehCartao(forma) && (
             <div className="rounded-md border border-gray-100 p-3 space-y-3">
               <div className="flex items-center gap-2 text-sm font-medium text-gray-800">
-                <CreditCard className="h-4 w-4 text-emerald-600" /> Taxa da operadora
+                <CreditCard className="h-4 w-4 text-brand-600" /> Taxa da operadora
               </div>
 
               {adquirentes.length === 0 && (
@@ -249,9 +249,9 @@ export const ParcelaDialog = ({
             </div>
           )}
 
-          <div className="rounded-md bg-emerald-50 px-3 py-2 flex items-center justify-between">
-            <span className="text-sm text-emerald-900">Valor líquido</span>
-            <span className="text-base font-bold text-emerald-700">{brl(liquido)}</span>
+          <div className="rounded-md bg-brand-50 px-3 py-2 flex items-center justify-between">
+            <span className="text-sm text-brand-900">Valor líquido</span>
+            <span className="text-base font-bold text-brand-700">{brl(liquido)}</span>
           </div>
 
           <p className="text-[11px] text-gray-500 flex items-start gap-1.5">
@@ -265,7 +265,7 @@ export const ParcelaDialog = ({
 
         <DialogFooter>
           <Button variant="outline" onClick={onFechar} disabled={salvando}>Cancelar</Button>
-          <Button onClick={salvar} disabled={salvando} className="bg-emerald-600 hover:bg-emerald-700 gap-2">
+          <Button onClick={salvar} disabled={salvando} className="bg-brand-600 hover:bg-brand-700 gap-2">
             {salvando ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />}
             Confirmar pagamento
           </Button>
@@ -456,7 +456,7 @@ export const LancamentoAvulsoDialog = ({
 
         <DialogFooter>
           <Button variant="outline" onClick={onFechar} disabled={salvando}>Cancelar</Button>
-          <Button onClick={salvar} disabled={salvando} className="bg-emerald-600 hover:bg-emerald-700 gap-2">
+          <Button onClick={salvar} disabled={salvando} className="bg-brand-600 hover:bg-brand-700 gap-2">
             {salvando && <Loader2 className="h-4 w-4 animate-spin" />}
             Criar lançamento
           </Button>

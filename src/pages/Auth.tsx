@@ -108,7 +108,7 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-emerald-50/30 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-brand-50/30 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <button
           onClick={() => navigate("/")}
@@ -121,10 +121,10 @@ const Auth = () => {
         {/* Logo e título */}
         <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-2 mb-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-600 text-white shadow-lg">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-600 text-white shadow-lg">
               <Sparkles className="h-6 w-6" />
             </div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-emerald-500 bg-clip-text text-transparent">
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-brand-600 to-brand-500 bg-clip-text text-transparent">
               SORRIMAX
             </h1>
           </div>
@@ -175,7 +175,7 @@ const Auth = () => {
 
             <Button
               type="submit"
-              className="w-full bg-emerald-600 hover:bg-emerald-700"
+              className="w-full bg-brand-600 hover:bg-brand-700"
               size="lg"
               disabled={loading}
             >
@@ -196,7 +196,7 @@ const Auth = () => {
             <button
               type="button"
               onClick={() => navigate('/cadastro')}
-              className="text-emerald-600 hover:text-emerald-700 font-semibold transition-colors"
+              className="text-brand-600 hover:text-brand-700 font-semibold transition-colors"
             >
               Fazer Cadastro
             </button>

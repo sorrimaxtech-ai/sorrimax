@@ -191,14 +191,14 @@ const Cadeiras = () => {
           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-6">
             <div>
               <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-                <Armchair className="h-6 w-6 text-emerald-600" /> Cadeiras
+                <Armchair className="h-6 w-6 text-brand-600" /> Cadeiras
               </h1>
               <p className="text-sm text-gray-600 mt-0.5">
                 Cada cadeira é um lugar físico de atendimento. A agenda usa essa lista para saber
                 onde a consulta cabe.
               </p>
             </div>
-            <Button className="bg-emerald-600 hover:bg-emerald-700 gap-2" onClick={abrirNova}>
+            <Button className="bg-brand-600 hover:bg-brand-700 gap-2" onClick={abrirNova}>
               <Plus className="h-4 w-4" /> Nova cadeira
             </Button>
           </div>
@@ -206,7 +206,7 @@ const Cadeiras = () => {
           {/* A regra abaixo é do banco, não da tela — o usuário precisa saber que é garantida. */}
           <Card className="border-gray-100 mb-6">
             <CardContent className="p-5 flex items-start gap-3">
-              <ShieldCheck className="h-5 w-5 text-emerald-600 shrink-0 mt-0.5" />
+              <ShieldCheck className="h-5 w-5 text-brand-600 shrink-0 mt-0.5" />
               <div className="text-sm text-gray-600">
                 <p className="font-medium text-gray-900 mb-1">Cadeira não aceita duas consultas no mesmo horário</p>
                 <p>
@@ -234,7 +234,7 @@ const Cadeiras = () => {
             <Card className="border-gray-100">
               <CardContent className="p-5">
                 <p className="text-xs text-gray-500">Disponíveis na agenda</p>
-                <p className="text-xl font-bold text-emerald-600">{totalAtivas}</p>
+                <p className="text-xl font-bold text-brand-600">{totalAtivas}</p>
                 <p className="text-[11px] text-gray-400">apenas as ativas aparecem no agendamento</p>
               </CardContent>
             </Card>
@@ -285,7 +285,7 @@ const Cadeiras = () => {
                     Cadastre as salas ou cadeiras da clínica para poder escolher onde cada consulta
                     acontece e deixar a agenda impedir dois pacientes no mesmo lugar e horário.
                   </p>
-                  <Button className="bg-emerald-600 hover:bg-emerald-700 gap-2 mt-4" onClick={abrirNova}>
+                  <Button className="bg-brand-600 hover:bg-brand-700 gap-2 mt-4" onClick={abrirNova}>
                     <Plus className="h-4 w-4" /> Cadastrar a primeira cadeira
                   </Button>
                 </div>
@@ -336,7 +336,7 @@ const Cadeiras = () => {
                               />
                               <Badge
                                 className={c.ativo
-                                  ? "bg-emerald-100 text-emerald-800 border-0"
+                                  ? "bg-brand-100 text-brand-800 border-0"
                                   : "bg-gray-100 text-gray-600 border-0"}
                               >
                                 {c.ativo ? "Ativa" : "Inativa"}
@@ -412,7 +412,7 @@ const Cadeiras = () => {
                   onChange={(e) => setForm((f) => ({ ...f, cor: e.target.value }))}
                   className="font-mono text-xs"
                   maxLength={7}
-                  placeholder="#10b981"
+                  placeholder="#00b4d8"
                 />
               </div>
               <div className="flex flex-wrap gap-1.5 mt-2">
@@ -460,7 +460,7 @@ const Cadeiras = () => {
             <Button variant="outline" onClick={() => setDialogAberto(false)} disabled={salvando}>
               Cancelar
             </Button>
-            <Button className="bg-emerald-600 hover:bg-emerald-700 gap-2" onClick={salvar} disabled={salvando}>
+            <Button className="bg-brand-600 hover:bg-brand-700 gap-2" onClick={salvar} disabled={salvando}>
               {salvando && <Loader2 className="h-4 w-4 animate-spin" />}
               {editando ? "Salvar" : "Criar cadeira"}
             </Button>

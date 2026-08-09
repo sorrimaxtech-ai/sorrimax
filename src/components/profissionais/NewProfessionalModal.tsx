@@ -181,7 +181,7 @@ export const NewProfessionalModal = ({ isOpen, onClose, onSave, initialData }: N
           </div>
 
           <div className="flex justify-end pt-4">
-            <Button type="submit" disabled={loading} className="w-full bg-emerald-600 hover:bg-emerald-700">
+            <Button type="submit" disabled={loading} className="w-full bg-brand-600 hover:bg-brand-700">
               {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : (initialData ? "Salvar Alterações" : "Criar Profissional")}
             </Button>
           </div>

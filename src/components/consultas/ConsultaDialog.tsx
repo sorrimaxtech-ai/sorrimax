@@ -491,7 +491,7 @@ export const ConsultaDialog = ({ aberto, onFechar, onSalvo, consulta, pacienteId
               <div className="flex items-center justify-between">
                 <div>
                   <Label className="flex items-center gap-2">
-                    <Repeat className="h-4 w-4 text-emerald-600" /> Repetir consulta
+                    <Repeat className="h-4 w-4 text-brand-600" /> Repetir consulta
                   </Label>
                   <p className="text-xs text-gray-500 mt-0.5">
                     Cria a série inteira de uma vez. Horários ocupados são avisados e pulados.
@@ -540,8 +540,8 @@ export const ConsultaDialog = ({ aberto, onFechar, onSalvo, consulta, pacienteId
                               aria-pressed={ativo}
                               className={`px-2.5 py-1 rounded-md text-xs font-medium border transition-colors ${
                                 ativo
-                                  ? "bg-emerald-600 text-white border-emerald-600"
-                                  : "bg-white text-gray-600 border-gray-200 hover:border-emerald-300"
+                                  ? "bg-brand-600 text-white border-brand-600"
+                                  : "bg-white text-gray-600 border-gray-200 hover:border-brand-300"
                               }`}
                             >
                               {d.curto}
@@ -577,7 +577,7 @@ export const ConsultaDialog = ({ aberto, onFechar, onSalvo, consulta, pacienteId
         <DialogFooter>
           <Button variant="outline" onClick={onFechar} disabled={salvando}>Cancelar</Button>
           <Button onClick={salvar} disabled={salvando || !!erro}
-                  className="bg-emerald-600 hover:bg-emerald-700 gap-2">
+                  className="bg-brand-600 hover:bg-brand-700 gap-2">
             {salvando && <Loader2 className="h-4 w-4 animate-spin" />}
             {editando ? "Salvar alterações" : comRecorrencia ? "Criar série" : "Agendar"}
           </Button>

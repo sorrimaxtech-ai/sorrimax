@@ -77,7 +77,7 @@ const KpiCard = ({ rotulo, valor, sub, Icone, destaque = "neutro" }: KpiProps) =
           <p className={`text-xl font-bold mt-1 ${CLASSE_DESTAQUE[destaque]}`}>{valor}</p>
           <p className="text-[11px] text-gray-400 mt-1">{sub}</p>
         </div>
-        <Icone className="h-5 w-5 text-emerald-600 shrink-0" />
+        <Icone className="h-5 w-5 text-brand-600 shrink-0" />
       </div>
     </CardContent>
   </Card>
@@ -183,7 +183,7 @@ const Relatorios = () => {
           <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-6">
             <div>
               <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-                <BarChart3 className="h-6 w-6 text-emerald-600" /> Indicadores
+                <BarChart3 className="h-6 w-6 text-brand-600" /> Indicadores
               </h1>
               <p className="text-sm text-gray-600 mt-0.5">
                 Onde está o dinheiro parado, o que a agenda entregou e quanto do que foi orçado virou caixa.
@@ -204,7 +204,7 @@ const Relatorios = () => {
               <Button variant="outline" className="gap-2" onClick={() => void carregar()} disabled={carregando}>
                 <RotateCcw className={`h-4 w-4 ${carregando ? "animate-spin" : ""}`} /> Atualizar
               </Button>
-              <Button asChild className="bg-emerald-600 hover:bg-emerald-700 gap-2">
+              <Button asChild className="bg-brand-600 hover:bg-brand-700 gap-2">
                 <Link to="/relatorios/profissional">
                   <Users className="h-4 w-4" /> Por profissional
                 </Link>
@@ -299,10 +299,10 @@ const Relatorios = () => {
 
               {/* ---------------------------------------- funil completo */}
               <section>
-                <Card className="border-emerald-200 bg-emerald-50/40">
+                <Card className="border-brand-200 bg-brand-50/40">
                   <CardContent className="p-5">
                     <div className="flex items-start gap-2 mb-1">
-                      <Target className="h-5 w-5 text-emerald-600 shrink-0 mt-0.5" />
+                      <Target className="h-5 w-5 text-brand-600 shrink-0 mt-0.5" />
                       <div>
                         <h2 className="text-base font-semibold text-gray-900">Funil completo — do lead ao caixa</h2>
                         <p className="text-sm text-gray-600 mt-0.5">
@@ -349,31 +349,31 @@ const Relatorios = () => {
                               s: `${funil.resumo.comTratamentoConcluido} com tratamento concluído`,
                             },
                           ].map((e, idx, arr) => (
-                            <div key={e.t} className="relative bg-white rounded-lg border border-emerald-100 p-4">
+                            <div key={e.t} className="relative bg-white rounded-lg border border-brand-100 p-4">
                               <p className="text-xs text-gray-500">{e.t}</p>
                               <p className="text-xl font-bold text-gray-900 mt-1 break-words">{e.v}</p>
                               <p className="text-[11px] text-gray-400 mt-1">{e.s}</p>
                               {idx < arr.length - 1 && (
-                                <ArrowRight className="hidden lg:block absolute -right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-emerald-300" />
+                                <ArrowRight className="hidden lg:block absolute -right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-brand-300" />
                               )}
                             </div>
                           ))}
                         </div>
 
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-3">
-                          <div className="bg-white rounded-lg border border-emerald-100 p-4">
+                          <div className="bg-white rounded-lg border border-brand-100 p-4">
                             <p className="text-xs text-gray-500">Taxa de aprovação</p>
-                            <p className="text-xl font-bold text-emerald-700 mt-1">{pct(funil.resumo.taxaAprovacaoPct)}</p>
+                            <p className="text-xl font-bold text-brand-700 mt-1">{pct(funil.resumo.taxaAprovacaoPct)}</p>
                             <p className="text-[11px] text-gray-400 mt-1">Do orçado, quanto o paciente aprovou</p>
                           </div>
-                          <div className="bg-white rounded-lg border border-emerald-100 p-4">
+                          <div className="bg-white rounded-lg border border-brand-100 p-4">
                             <p className="text-xs text-gray-500">Taxa de recebimento</p>
-                            <p className="text-xl font-bold text-emerald-700 mt-1">{pct(funil.resumo.taxaRecebimentoPct)}</p>
+                            <p className="text-xl font-bold text-brand-700 mt-1">{pct(funil.resumo.taxaRecebimentoPct)}</p>
                             <p className="text-[11px] text-gray-400 mt-1">Do aprovado, quanto entrou no caixa</p>
                           </div>
-                          <div className="bg-white rounded-lg border border-emerald-100 p-4">
+                          <div className="bg-white rounded-lg border border-brand-100 p-4">
                             <p className="text-xs text-gray-500">Orçado que virou caixa</p>
-                            <p className="text-xl font-bold text-emerald-700 mt-1">{pct(funil.resumo.taxaOrcadoParaCaixaPct)}</p>
+                            <p className="text-xl font-bold text-brand-700 mt-1">{pct(funil.resumo.taxaOrcadoParaCaixaPct)}</p>
                             <p className="text-[11px] text-gray-400 mt-1">A conta final: aprovação × recebimento</p>
                           </div>
                         </div>
@@ -498,7 +498,7 @@ const Relatorios = () => {
                     {inativos.length > 0 && (
                       <div className="text-left sm:text-right shrink-0">
                         <p className="text-xs text-gray-500">Em aberto nesta lista</p>
-                        <p className="text-xl font-bold text-emerald-700">{brl(totalInativosAberto)}</p>
+                        <p className="text-xl font-bold text-brand-700">{brl(totalInativosAberto)}</p>
                         <p className="text-[11px] text-gray-400">{inativos.length} paciente(s)</p>
                       </div>
                     )}
@@ -533,7 +533,7 @@ const Relatorios = () => {
                               <td className="px-3 py-2 text-right tabular-nums text-gray-600">
                                 {p.diasSemVir != null ? `${p.diasSemVir} dias` : "—"}
                               </td>
-                              <td className={`px-3 py-2 text-right tabular-nums ${p.valorEmAberto > 0 ? "font-semibold text-emerald-700" : "text-gray-500"}`}>
+                              <td className={`px-3 py-2 text-right tabular-nums ${p.valorEmAberto > 0 ? "font-semibold text-brand-700" : "text-gray-500"}`}>
                                 {brl(p.valorEmAberto)}
                               </td>
                               <td className="px-3 py-2">
@@ -546,7 +546,7 @@ const Relatorios = () => {
                               <td className="px-3 py-2 text-right">
                                 <Button
                                   size="sm"
-                                  className="bg-emerald-600 hover:bg-emerald-700 gap-2"
+                                  className="bg-brand-600 hover:bg-brand-700 gap-2"
                                   onClick={() => setAContatar(p)}
                                   disabled={!p.celular}
                                   title={p.celular ? "Abrir conversa no WhatsApp" : "Paciente sem celular cadastrado"}
@@ -588,7 +588,7 @@ const Relatorios = () => {
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
             <AlertDialogAction
-              className="bg-emerald-600 hover:bg-emerald-700"
+              className="bg-brand-600 hover:bg-brand-700"
               onClick={() => { if (aContatar) abrirWhatsApp(aContatar); setAContatar(null); }}
             >
               Abrir WhatsApp

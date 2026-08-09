@@ -18,7 +18,7 @@ export function FloatingWhatsAppButton({ onClick, unreadCount = 3 }: FloatingWha
         size="icon"
         className={cn(
           "h-14 w-14 rounded-full shadow-lg transition-all duration-300 hover:scale-105",
-          "bg-green-600 hover:bg-green-700 text-white hover:shadow-green-900/20"
+          "bg-brand-600 hover:bg-brand-700 text-white hover:shadow-brand-900/20"
         )}
       >
         <MessageCircle className="h-7 w-7" />

@@ -199,7 +199,7 @@ export function KanbanBoard({ onChatClick, columns, setColumns, onDragEnd, onAdd
             
             {/* Add Column Button */}
             <div className="min-w-[350px] h-full flex items-start justify-center pt-4 border-2 border-dashed border-gray-200 rounded-xl bg-gray-50/50 hover:bg-gray-100/50 transition-colors">
-                 <Button variant="ghost" className="text-gray-500 hover:text-emerald-600 gap-2" onClick={onAddColumn}>
+                 <Button variant="ghost" className="text-gray-500 hover:text-brand-600 gap-2" onClick={onAddColumn}>
                     <Plus className="h-5 w-5" />
                     Nova Fase
                  </Button>

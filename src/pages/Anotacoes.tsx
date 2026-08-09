@@ -65,7 +65,7 @@ const Anotacoes = () => {
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between mb-4">
                       <h3 className="font-semibold text-gray-900">Notas</h3>
-                      <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700">
+                      <Button size="sm" className="bg-brand-600 hover:bg-brand-700">
                         <Plus className="h-4 w-4" />
                       </Button>
                     </div>
@@ -87,7 +87,7 @@ const Anotacoes = () => {
                           onClick={() => setSelectedNote(note)}
                           className={`p-3 rounded-lg cursor-pointer transition-colors ${
                             selectedNote?.id === note.id
-                              ? "bg-emerald-50 border border-emerald-200"
+                              ? "bg-brand-50 border border-brand-200"
                               : "hover:bg-gray-50 border border-transparent"
                           }`}
                         >
@@ -149,7 +149,7 @@ const Anotacoes = () => {
 
                         <div className="flex justify-end gap-2 pt-4 border-t">
                           <Button variant="outline">Cancelar</Button>
-                          <Button className="bg-emerald-600 hover:bg-emerald-700">Salvar</Button>
+                          <Button className="bg-brand-600 hover:bg-brand-700">Salvar</Button>
                         </div>
                       </div>
                     ) : (
@@ -171,7 +171,7 @@ const Anotacoes = () => {
                     <FileText className="h-16 w-16 mx-auto mb-4 text-gray-300" />
                     <h3 className="text-lg font-semibold text-gray-900 mb-2">Documentos Anexados</h3>
                     <p className="text-gray-600 mb-6">Faça upload de documentos importantes da clínica</p>
-                    <Button className="bg-emerald-600 hover:bg-emerald-700 gap-2">
+                    <Button className="bg-brand-600 hover:bg-brand-700 gap-2">
                       <Plus className="h-4 w-4" />
                       Upload de Documento
                     </Button>

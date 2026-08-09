@@ -4,7 +4,7 @@ const funnelSteps = [
   { icon: Users, label: "Leads", count: 0, percentage: "0.0%", color: "bg-blue-500" },
   { icon: MessageSquare, label: "Contato Inicial", count: 0, percentage: "0%", color: "bg-yellow-500" },
   { icon: Calendar, label: "Agendados", count: 0, percentage: "0%", color: "bg-orange-500" },
-  { icon: CheckCircle, label: "Convertidos", count: 0, percentage: "0%", color: "bg-green-500" },
+  { icon: CheckCircle, label: "Convertidos", count: 0, percentage: "0%", color: "bg-brand-500" },
 ];
 
 export const ConversionFunnel = () => {

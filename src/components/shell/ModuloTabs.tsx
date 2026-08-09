@@ -40,7 +40,7 @@ export const ModuloTabs = () => {
               className={cn(
                 "relative whitespace-nowrap px-3 py-3 text-sm transition-colors border-b-2 -mb-px",
                 atual
-                  ? "border-emerald-600 text-emerald-700 font-medium"
+                  ? "border-brand-600 text-brand-700 font-medium"
                   : "border-transparent text-muted-foreground hover:text-foreground",
               )}
             >

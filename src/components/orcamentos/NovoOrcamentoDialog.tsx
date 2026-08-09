@@ -156,7 +156,7 @@ export const NovoOrcamentoDialog = ({ aberto, onFechar, onCriado, pacienteIdFixo
         <DialogFooter>
           <Button variant="outline" onClick={onFechar}>Cancelar</Button>
           <Button onClick={salvar} disabled={salvando || !pacienteId}
-                  className="bg-emerald-600 hover:bg-emerald-700 gap-2">
+                  className="bg-brand-600 hover:bg-brand-700 gap-2">
             {salvando && <Loader2 className="h-4 w-4 animate-spin" />}
             Criar e adicionar tratamentos
           </Button>

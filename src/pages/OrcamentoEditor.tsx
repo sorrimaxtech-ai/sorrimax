@@ -229,7 +229,7 @@ const OrcamentoEditor = () => {
               </p>
             </div>
             {orc.status === "rascunho" && (
-              <Button onClick={publicar} className="bg-emerald-600 hover:bg-emerald-700 gap-2">
+              <Button onClick={publicar} className="bg-brand-600 hover:bg-brand-700 gap-2">
                 <Send className="h-4 w-4" /> Enviar ao paciente
               </Button>
             )}
@@ -288,7 +288,7 @@ const OrcamentoEditor = () => {
                 ] as const).map((t) => (
                   <button key={t.k} onClick={() => setAba(t.k)}
                     className={cn("px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors",
-                      aba === t.k ? "border-emerald-600 text-emerald-700" : "border-transparent text-muted-foreground hover:text-foreground")}>
+                      aba === t.k ? "border-brand-600 text-brand-700" : "border-transparent text-muted-foreground hover:text-foreground")}>
                     {t.r}
                   </button>
                 ))}
@@ -300,7 +300,7 @@ const OrcamentoEditor = () => {
                     <button key={r.codigo} onClick={() => setRegiaoFacial(r.codigo as RegiaoFacial)}
                       className={cn("text-left text-sm px-3 py-2 rounded-lg border transition-colors",
                         regiaoFacial === r.codigo
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-800"
+                          ? "border-brand-500 bg-brand-50 text-brand-800"
                           : "border-border hover:bg-muted/50")}>
                       <span className="block">{r.rotulo}</span>
                       <span className="block text-[10px] text-muted-foreground">{r.grupo}</span>
@@ -323,7 +323,7 @@ const OrcamentoEditor = () => {
 
               <div className="flex justify-end mt-4">
                 <Button onClick={adicionar} disabled={salvando || !procId}
-                        className="bg-emerald-600 hover:bg-emerald-700 gap-2">
+                        className="bg-brand-600 hover:bg-brand-700 gap-2">
                   {salvando ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
                   Adicionar tratamento
                 </Button>
@@ -394,7 +394,7 @@ const OrcamentoEditor = () => {
 
           {/* Faturamento */}
           {podeFaturar && (
-            <Card className="border-emerald-200 bg-emerald-50/40">
+            <Card className="border-brand-200 bg-brand-50/40">
               <CardContent className="p-5">
                 <h2 className="font-semibold text-gray-900 flex items-center gap-2 mb-1">
                   <Wallet className="h-4 w-4 text-emerald-600" /> Faturar o aprovado
@@ -427,7 +427,7 @@ const OrcamentoEditor = () => {
                     </Select>
                   </div>
                   <Button onClick={faturar} disabled={salvando}
-                          className="bg-emerald-600 hover:bg-emerald-700 gap-2">
+                          className="bg-brand-600 hover:bg-brand-700 gap-2">
                     {salvando ? <Loader2 className="h-4 w-4 animate-spin" /> : <Receipt className="h-4 w-4" />}
                     Gerar contas a receber
                   </Button>

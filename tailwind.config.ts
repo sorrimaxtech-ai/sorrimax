@@ -18,6 +18,22 @@ export default {
         body: ["Inter", "sans-serif"],
       },
       colors: {
+        // Paleta de marca — azul Diamond (#00b4d8 é o primary).
+        // Usada nos verdes que eram identidade visual; verde segue reservado
+        // para status de sucesso (pago/confirmado/aprovado).
+        brand: {
+          50: "#f0f9fc",
+          100: "#e0f2fe",
+          200: "#bae6fd",
+          300: "#7dd3fc",
+          400: "#38bdf8",
+          500: "#00b4d8",
+          600: "#0099c7",
+          700: "#0077b6",
+          800: "#005a94",
+          900: "#003d72",
+          950: "#001f3f",
+        },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

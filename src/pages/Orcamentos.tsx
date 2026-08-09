@@ -72,13 +72,13 @@ const Orcamentos = () => {
           <div className="flex items-start justify-between mb-6">
             <div>
               <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-                <Receipt className="h-6 w-6 text-emerald-600" /> Orçamentos
+                <Receipt className="h-6 w-6 text-brand-600" /> Orçamentos
               </h1>
               <p className="text-sm text-gray-600 mt-0.5">
                 Aprovar um orçamento gera os tratamentos e as contas a receber automaticamente.
               </p>
             </div>
-            <Button onClick={() => setAbrirNovo(true)} className="bg-emerald-600 hover:bg-emerald-700 gap-2">
+            <Button onClick={() => setAbrirNovo(true)} className="bg-brand-600 hover:bg-brand-700 gap-2">
               <Plus className="h-4 w-4" /> Novo Orçamento
             </Button>
           </div>
@@ -158,7 +158,7 @@ const Orcamentos = () => {
                         <td className="px-4 py-3 font-medium">{o.pacientes?.nome_completo ?? "—"}</td>
                         <td className="px-4 py-3 text-muted-foreground">{o.titulo ?? "—"}</td>
                         <td className="px-4 py-3 text-right tabular-nums">{brl(Number(o.total_itens))}</td>
-                        <td className="px-4 py-3 text-right tabular-nums font-medium text-emerald-700">
+                        <td className="px-4 py-3 text-right tabular-nums font-medium text-brand-700">
                           {brl(Number(o.total_aprovado))}
                         </td>
                         <td className="px-4 py-3">

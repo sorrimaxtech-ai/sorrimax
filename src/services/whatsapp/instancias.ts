@@ -114,7 +114,7 @@ export const STATUS_WA_LABEL: Record<string, string> = {
 };
 
 export const STATUS_WA_CLASSE: Record<string, string> = {
-  connected: "bg-emerald-100 text-emerald-800 border-0",
+  connected: "bg-brand-100 text-brand-800 border-0",
   connecting: "bg-amber-100 text-amber-800 border-0",
   disconnected: "bg-gray-100 text-gray-700 border-0",
 };

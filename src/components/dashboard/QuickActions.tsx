@@ -22,7 +22,7 @@ export function QuickActions() {
       id: "schedule",
       title: "Agendar Consulta",
       icon: Calendar,
-      color: "text-emerald-600 bg-emerald-50",
+      color: "text-brand-600 bg-brand-50",
       onClick: () => console.log("Agendar Consulta")
     },
     {

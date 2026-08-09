@@ -119,13 +119,13 @@ export const ROTULO_TIPO: Record<string, string> = TIPOS_DOCUMENTO.reduce(
 
 /** Cor fixa por tipo — Tailwind não gera classe montada em runtime. */
 export const CLASSE_TIPO: Record<string, string> = {
-  atestado: "bg-emerald-100 text-emerald-800 border-0",
+  atestado: "bg-brand-100 text-brand-800 border-0",
   declaracao: "bg-blue-100 text-blue-800 border-0",
   recibo: "bg-amber-100 text-amber-800 border-0",
   encaminhamento: "bg-purple-100 text-purple-800 border-0",
   termo: "bg-rose-100 text-rose-800 border-0",
   receita: "bg-cyan-100 text-cyan-800 border-0",
-  orientacao: "bg-lime-100 text-lime-800 border-0",
+  orientacao: "bg-brand-100 text-brand-800 border-0",
   outro: "bg-gray-100 text-gray-700 border-0",
 };
 

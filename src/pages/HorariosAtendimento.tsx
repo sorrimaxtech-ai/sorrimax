@@ -417,7 +417,7 @@ const HorariosAtendimento = () => {
           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-6">
             <div>
               <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-                <Clock className="h-6 w-6 text-emerald-600" /> Horários de Atendimento
+                <Clock className="h-6 w-6 text-brand-600" /> Horários de Atendimento
               </h1>
               <p className="text-sm text-gray-600 mt-0.5">
                 Defina a jornada semanal de cada profissional e as datas em que a agenda fica
@@ -425,7 +425,7 @@ const HorariosAtendimento = () => {
               </p>
             </div>
             <Button variant="outline" className="gap-2 shrink-0" onClick={abrirTesteSlots}>
-              <Sparkles className="h-4 w-4 text-emerald-600" /> Ver horários livres
+              <Sparkles className="h-4 w-4 text-brand-600" /> Ver horários livres
             </Button>
           </div>
 
@@ -492,7 +492,7 @@ const HorariosAtendimento = () => {
                           : "Nenhum dia de atendimento ativo"}
                       </div>
                       <Button
-                        className="bg-emerald-600 hover:bg-emerald-700 gap-2"
+                        className="bg-brand-600 hover:bg-brand-700 gap-2"
                         onClick={salvar}
                         disabled={salvandoGrade || carregandoGrade || !sujo}
                       >
@@ -684,7 +684,7 @@ const HorariosAtendimento = () => {
                           <Switch checked={incluirPassados} onCheckedChange={setIncluirPassados} />
                           Incluir encerrados
                         </label>
-                        <Button className="bg-emerald-600 hover:bg-emerald-700 gap-2" onClick={abrirNovoBloqueio}>
+                        <Button className="bg-brand-600 hover:bg-brand-700 gap-2" onClick={abrirNovoBloqueio}>
                           <Plus className="h-4 w-4" /> Novo bloqueio
                         </Button>
                       </div>
@@ -729,7 +729,7 @@ const HorariosAtendimento = () => {
                                   ? "bg-gray-100 text-gray-600 border-0"
                                   : ini <= agora
                                     ? "bg-amber-100 text-amber-800 border-0"
-                                    : "bg-emerald-100 text-emerald-800 border-0";
+                                    : "bg-brand-100 text-brand-800 border-0";
                               return (
                                 <tr key={b.id} className="border-b border-border/50 hover:bg-muted/40">
                                   <td className="px-3 py-3 font-medium text-gray-900">
@@ -853,7 +853,7 @@ const HorariosAtendimento = () => {
               Cancelar
             </Button>
             <Button
-              className="bg-emerald-600 hover:bg-emerald-700 gap-2"
+              className="bg-brand-600 hover:bg-brand-700 gap-2"
               onClick={salvarBloqueio}
               disabled={salvandoBloqueio}
             >
@@ -892,7 +892,7 @@ const HorariosAtendimento = () => {
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <CalendarCheck className="h-5 w-5 text-emerald-600" /> Horários livres
+              <CalendarCheck className="h-5 w-5 text-brand-600" /> Horários livres
             </DialogTitle>
             <DialogDescription>
               Consulta a mesma função do banco que o agendamento usa — ela cruza a grade semanal,
@@ -944,7 +944,7 @@ const HorariosAtendimento = () => {
             </div>
 
             <Button
-              className="bg-emerald-600 hover:bg-emerald-700 gap-2 w-full"
+              className="bg-brand-600 hover:bg-brand-700 gap-2 w-full"
               onClick={testarSlots}
               disabled={buscandoSlots}
             >
@@ -983,7 +983,7 @@ const HorariosAtendimento = () => {
                   {slots.map((s, i) => (
                     <span
                       key={`${s.inicio}-${i}`}
-                      className="px-2.5 py-1 rounded-md bg-emerald-50 text-emerald-800 text-xs font-medium border border-emerald-100"
+                      className="px-2.5 py-1 rounded-md bg-brand-50 text-brand-800 text-xs font-medium border border-brand-100"
                     >
                       {formatarHora(s.inicio)}–{formatarHora(s.fim)}
                     </span>

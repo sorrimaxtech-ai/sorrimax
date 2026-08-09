@@ -20,7 +20,7 @@ const DemoLoader = () => {
   }, [navigate]);
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-emerald-600 to-blue-700 text-white">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-brand-600 to-blue-700 text-white">
       <div className="flex bg-white/10 p-4 rounded-2xl backdrop-blur-md mb-6 animate-pulse">
         <Sparkles className="h-12 w-12" />
       </div>

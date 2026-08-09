@@ -140,7 +140,7 @@ const Profissionais = () => {
               <h1 className="text-3xl font-bold text-gray-900">Profissionais</h1>
               <p className="text-gray-500 mt-1">Gerencie a equipe da sua clínica</p>
             </div>
-            <Button onClick={openNewModal} className="bg-emerald-600 hover:bg-emerald-700 gap-2">
+            <Button onClick={openNewModal} className="bg-brand-600 hover:bg-brand-700 gap-2">
               <Plus className="h-4 w-4" />
               Novo Profissional
             </Button>
@@ -160,7 +160,7 @@ const Profissionais = () => {
                   <Card key={profile.id} className="hover:shadow-md transition-shadow relative group">
                     <CardHeader className="flex flex-row items-center justify-between pb-2">
                        <div className="flex items-center gap-3">
-                          <div className="h-10 w-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 font-bold">
+                          <div className="h-10 w-10 rounded-full bg-brand-100 flex items-center justify-center text-brand-700 font-bold">
                              {profile.full_name.charAt(0).toUpperCase()}
                           </div>
                           <div>
@@ -171,7 +171,7 @@ const Profissionais = () => {
                              </div>
                           </div>
                        </div>
-                       <Badge variant={profile.status === 'active' ? 'default' : 'secondary'} className={profile.status === 'active' ? 'bg-green-500' : 'bg-gray-400'}>
+                       <Badge variant={profile.status === 'active' ? 'default' : 'secondary'} className={profile.status === 'active' ? 'bg-brand-500' : 'bg-gray-400'}>
                          {profile.status === 'active' ? 'Ativo' : profile.status}
                        </Badge>
                     </CardHeader>

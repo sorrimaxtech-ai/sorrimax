@@ -393,12 +393,12 @@ const AnamneseEditor = () => {
                   <div className="flex items-center gap-2">
                     <Switch checked={modelo.publicado} onCheckedChange={alternarPublicado} />
                     <Badge className={modelo.publicado
-                      ? "bg-emerald-100 text-emerald-800 border-0"
+                      ? "bg-brand-100 text-brand-800 border-0"
                       : "bg-gray-100 text-gray-700 border-0"}>
                       {modelo.publicado ? "Publicado" : "Rascunho"}
                     </Badge>
                   </div>
-                  <Button className="bg-emerald-600 hover:bg-emerald-700 gap-2"
+                  <Button className="bg-brand-600 hover:bg-brand-700 gap-2"
                           onClick={salvarModelo} disabled={salvandoModelo || !dadosMudaram}>
                     {salvandoModelo ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
                     Salvar
@@ -419,10 +419,10 @@ const AnamneseEditor = () => {
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
                     <div>
                       <h2 className="font-semibold text-gray-900 flex items-center gap-2">
-                        <ListChecks className="h-5 w-5 text-emerald-600" /> Banco de perguntas
+                        <ListChecks className="h-5 w-5 text-brand-600" /> Banco de perguntas
                       </h2>
                       <p className="text-sm text-gray-600 mt-0.5">
-                        <span className="font-medium text-emerald-700">{sel.size} de {TOTAL_BANCO} selecionadas</span>
+                        <span className="font-medium text-brand-700">{sel.size} de {TOTAL_BANCO} selecionadas</span>
                         {" · "}marque o que sua clínica usa e salve.
                       </p>
                     </div>
@@ -441,7 +441,7 @@ const AnamneseEditor = () => {
                             <div className="flex items-center gap-3 text-left">
                               <span className="font-medium text-gray-900">{cat.categoria}</span>
                               <Badge className={marcadas > 0
-                                ? "bg-emerald-100 text-emerald-800 border-0"
+                                ? "bg-brand-100 text-brand-800 border-0"
                                 : "bg-gray-100 text-gray-600 border-0"}>
                                 {marcadas} de {cat.itens.length}
                               </Badge>
@@ -468,7 +468,7 @@ const AnamneseEditor = () => {
                                 return (
                                   <label key={item.chave}
                                          className={`flex gap-3 rounded-md border p-3 cursor-pointer transition-colors ${
-                                           marcado ? "border-emerald-200 bg-emerald-50/60" : "border-gray-100 hover:bg-muted/40"}`}>
+                                           marcado ? "border-brand-200 bg-brand-50/60" : "border-gray-100 hover:bg-muted/40"}`}>
                                     <Checkbox className="mt-0.5" checked={marcado}
                                               onCheckedChange={(v) => alternar(item.chave, v === true)} />
                                     <div className="min-w-0 flex-1">
@@ -508,7 +508,7 @@ const AnamneseEditor = () => {
                     <p className="text-sm text-gray-600">
                       {alteracoes === 0 ? "Nenhuma alteração pendente." : `${alteracoes} alteração(ões) pendente(s).`}
                     </p>
-                    <Button className="bg-emerald-600 hover:bg-emerald-700 gap-2"
+                    <Button className="bg-brand-600 hover:bg-brand-700 gap-2"
                             onClick={salvarSelecao} disabled={salvandoSelecao || alteracoes === 0}>
                       {salvandoSelecao ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
                       Salvar seleção
@@ -521,7 +521,7 @@ const AnamneseEditor = () => {
               <Card className="border-gray-100">
                 <CardContent className="p-5">
                   <h2 className="font-semibold text-gray-900 flex items-center gap-2 mb-1">
-                    <Plus className="h-5 w-5 text-emerald-600" /> Criar pergunta personalizada
+                    <Plus className="h-5 w-5 text-brand-600" /> Criar pergunta personalizada
                   </h2>
                   <p className="text-sm text-gray-600 mb-4">
                     Para o que o banco não cobre. Salva direto no modelo, sem passar pela seleção.
@@ -628,7 +628,7 @@ const AnamneseEditor = () => {
                         <Switch checked={condAtiva} onCheckedChange={setCondAtiva} id="cond"
                                 disabled={gatilhosDisponiveis.length === 0} />
                         <Label htmlFor="cond" className="cursor-pointer flex items-center gap-1.5">
-                          <GitBranch className="h-3.5 w-3.5 text-emerald-600" /> Mostrar só em certa condição
+                          <GitBranch className="h-3.5 w-3.5 text-brand-600" /> Mostrar só em certa condição
                         </Label>
                       </div>
                       {gatilhosDisponiveis.length === 0 ? (
@@ -689,7 +689,7 @@ const AnamneseEditor = () => {
 
                     <div className="flex justify-end gap-2">
                       <Button variant="outline" onClick={limparFormulario}>Limpar campos</Button>
-                      <Button className="bg-emerald-600 hover:bg-emerald-700 gap-2"
+                      <Button className="bg-brand-600 hover:bg-brand-700 gap-2"
                               onClick={criarPersonalizada} disabled={criandoPergunta}>
                         {criandoPergunta ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
                         Adicionar ao modelo
@@ -705,7 +705,7 @@ const AnamneseEditor = () => {
               <Card className="border-gray-100 xl:sticky xl:top-6">
                 <CardContent className="p-5">
                   <h2 className="font-semibold text-gray-900 flex items-center gap-2">
-                    <ClipboardList className="h-5 w-5 text-emerald-600" /> Formulário do modelo
+                    <ClipboardList className="h-5 w-5 text-brand-600" /> Formulário do modelo
                   </h2>
                   <p className="text-sm text-gray-600 mt-0.5 mb-4">
                     {perguntas.length} pergunta(s) · {personalizadas.length} personalizada(s)

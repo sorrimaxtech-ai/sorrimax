@@ -252,7 +252,7 @@ const Estoque = () => {
           <div className="flex flex-wrap items-start justify-between gap-3 mb-6">
             <div>
               <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-                <Package className="h-6 w-6 text-emerald-600" /> Estoque
+                <Package className="h-6 w-6 text-brand-600" /> Estoque
               </h1>
               <p className="text-sm text-gray-600 mt-0.5">
                 Saldo por produto, alerta de mínimo e o histórico de tudo que entrou e saiu.
@@ -269,7 +269,7 @@ const Estoque = () => {
                 <ArrowUpFromLine className="h-4 w-4" /> Nova saída
               </Button>
               <Button
-                className="bg-emerald-600 hover:bg-emerald-700 gap-2"
+                className="bg-brand-600 hover:bg-brand-700 gap-2"
                 onClick={() => abrirMovimento("entrada")}
                 disabled={semClinica}
               >
@@ -393,7 +393,7 @@ const Estoque = () => {
                           </p>
                           {!temFiltroProduto && (
                             <Button
-                              className="bg-emerald-600 hover:bg-emerald-700 gap-2 mt-4"
+                              className="bg-brand-600 hover:bg-brand-700 gap-2 mt-4"
                               onClick={abrirNovoProduto}
                             >
                               <Plus className="h-4 w-4" /> Cadastrar produto
@@ -462,7 +462,7 @@ const Estoque = () => {
                                         title="Entrada"
                                         onClick={() => abrirMovimento("entrada", i.id)}
                                       >
-                                        <ArrowDownToLine className="h-4 w-4 text-emerald-600" />
+                                        <ArrowDownToLine className="h-4 w-4 text-brand-600" />
                                       </Button>
                                       <Button
                                         size="icon" variant="ghost" className="h-8 w-8"
@@ -560,7 +560,7 @@ const Estoque = () => {
                                     </Badge>
                                   </td>
                                   <td className={`px-3 py-2.5 text-right font-semibold ${
-                                    m.delta >= 0 ? "text-emerald-700" : "text-rose-700"
+                                    m.delta >= 0 ? "text-brand-700" : "text-rose-700"
                                   }`}>
                                     {m.delta >= 0 ? "+" : "−"}{qtd(Math.abs(m.delta))} {m.unidade}
                                   </td>
@@ -678,7 +678,7 @@ const Estoque = () => {
               Cancelar
             </Button>
             <Button
-              className="bg-emerald-600 hover:bg-emerald-700 gap-2"
+              className="bg-brand-600 hover:bg-brand-700 gap-2"
               onClick={salvarProduto}
               disabled={salvando}
             >
@@ -793,7 +793,7 @@ const Estoque = () => {
               Cancelar
             </Button>
             <Button
-              className="bg-emerald-600 hover:bg-emerald-700 gap-2"
+              className="bg-brand-600 hover:bg-brand-700 gap-2"
               onClick={salvarMovimento}
               disabled={salvando || itens.length === 0}
             >

@@ -75,7 +75,7 @@ const STATUS_CLASSE: Record<StatusParcela, string> = {
   estornado: "bg-sky-100 text-sky-800 border-0",
 };
 
-const COR_RECEITA = "#059669"; // emerald-600 — identidade do produto
+const COR_RECEITA = "#00b4d8"; // azul Diamond — identidade do produto
 const COR_DESPESA = "#dc2626"; // red-600
 
 const dataBR = (iso: string) => new Date(`${iso}T12:00:00`).toLocaleDateString("pt-BR");
@@ -204,7 +204,7 @@ const FluxoCaixa = () => {
           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-6">
             <div>
               <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-                <Wallet className="h-6 w-6 text-emerald-600" /> Fluxo de Caixa
+                <Wallet className="h-6 w-6 text-brand-600" /> Fluxo de Caixa
               </h1>
               <p className="text-sm text-gray-600 mt-0.5">
                 O que entrou, o que saiu e o que ainda vai vencer — previsto contra realizado.
@@ -248,7 +248,7 @@ const FluxoCaixa = () => {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                 {[
                   {
-                    rot: "Receitas", dados: kpis.receitas, cor: "text-emerald-600",
+                    rot: "Receitas", dados: kpis.receitas, cor: "text-brand-600",
                     sub: "recebido no mês",
                   },
                   {
@@ -257,7 +257,7 @@ const FluxoCaixa = () => {
                   },
                   {
                     rot: "Saldo", dados: kpis.saldo,
-                    cor: kpis.saldo.realizado >= 0 ? "text-emerald-600" : "text-red-600",
+                    cor: kpis.saldo.realizado >= 0 ? "text-brand-600" : "text-red-600",
                     sub: "receitas menos despesas",
                   },
                 ].map((k) => (
@@ -387,12 +387,12 @@ const FluxoCaixa = () => {
                                 <td className="px-4 py-3 text-gray-600">{cat}</td>
                                 <td className="px-4 py-3">
                                   <Badge className={receita
-                                    ? "bg-emerald-100 text-emerald-800 border-0"
+                                    ? "bg-brand-100 text-brand-800 border-0"
                                     : "bg-red-100 text-red-800 border-0"}>
                                     {receita ? "Receita" : "Despesa"}
                                   </Badge>
                                 </td>
-                                <td className={`px-4 py-3 text-right font-medium whitespace-nowrap ${receita ? "text-emerald-700" : "text-red-600"}`}>
+                                <td className={`px-4 py-3 text-right font-medium whitespace-nowrap ${receita ? "text-brand-700" : "text-red-600"}`}>
                                   {receita ? "+" : "-"} {brl(Number(m.valor))}
                                 </td>
                                 <td className="px-4 py-3">

@@ -385,7 +385,7 @@ const DocumentoEditor = () => {
       <style>{CSS_DOCUMENTO}</style>
       <main className="flex-1 min-w-0 overflow-auto">
         <div className="p-4 sm:p-8">
-          <button className="text-sm text-gray-500 hover:text-emerald-700 flex items-center gap-1 mb-3"
+          <button className="text-sm text-gray-500 hover:text-brand-700 flex items-center gap-1 mb-3"
                   onClick={() => navigate("/documentos")}>
             <ArrowLeft className="h-4 w-4" /> Documentos
           </button>
@@ -393,7 +393,7 @@ const DocumentoEditor = () => {
           <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-3 mb-6">
             <div>
               <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-                <FileSignature className="h-6 w-6 text-emerald-600" /> {modelo.nome}
+                <FileSignature className="h-6 w-6 text-brand-600" /> {modelo.nome}
               </h1>
               <p className="text-sm text-gray-600 mt-0.5">
                 Escreva o texto uma vez, insira as variáveis e o sistema preenche com o dado real a cada emissão.
@@ -410,7 +410,7 @@ const DocumentoEditor = () => {
                 {salvando ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
                 {sujo ? "Salvar" : "Salvo"}
               </Button>
-              <Button className="bg-emerald-600 hover:bg-emerald-700 gap-2"
+              <Button className="bg-brand-600 hover:bg-brand-700 gap-2"
                       onClick={emitir} disabled={emitindo}>
                 {emitindo ? <Loader2 className="h-4 w-4 animate-spin" /> : <Printer className="h-4 w-4" />}
                 Emitir e imprimir
@@ -499,7 +499,7 @@ const DocumentoEditor = () => {
                 <CardContent className="p-5">
                   <div className="flex items-center justify-between gap-2 mb-3">
                     <p className="text-sm font-medium text-gray-800 flex items-center gap-2">
-                      <Eye className="h-4 w-4 text-emerald-600" /> Pré-visualização
+                      <Eye className="h-4 w-4 text-brand-600" /> Pré-visualização
                     </p>
                     <p className="text-xs text-gray-500">
                       {pacienteEscolhido
@@ -556,7 +556,7 @@ const DocumentoEditor = () => {
                                       type="button"
                                       onMouseDown={(ev) => ev.preventDefault()}
                                       onClick={() => inserirVariavel(c.chave)}
-                                      className="rounded-md border border-emerald-200 bg-emerald-50 px-2 py-1 text-xs text-emerald-800 hover:bg-emerald-100"
+                                      className="rounded-md border border-brand-200 bg-brand-50 px-2 py-1 text-xs text-brand-800 hover:bg-brand-100"
                                     >
                                       {c.rotulo}
                                     </button>
@@ -680,7 +680,7 @@ const DocumentoEditor = () => {
                         </div>
                       )}
 
-                      <Button className="w-full bg-emerald-600 hover:bg-emerald-700 gap-2"
+                      <Button className="w-full bg-brand-600 hover:bg-brand-700 gap-2"
                               onClick={emitir} disabled={emitindo || !pacienteId}>
                         {emitindo ? <Loader2 className="h-4 w-4 animate-spin" /> : <Printer className="h-4 w-4" />}
                         Emitir e imprimir

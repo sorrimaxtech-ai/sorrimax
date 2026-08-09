@@ -475,7 +475,7 @@ export const PacienteDialog = ({ aberto, onFechar, paciente, onSalvo }: Props) =
                 valores={form.tags}
                 onChange={(v) => set("tags", v)}
                 placeholder="Ex.: indicação, ortodontia, VIP"
-                cor="bg-emerald-100 text-emerald-800"
+                cor="bg-brand-100 text-brand-800"
               />
             </div>
             <div className="space-y-1.5">
@@ -492,7 +492,7 @@ export const PacienteDialog = ({ aberto, onFechar, paciente, onSalvo }: Props) =
 
         <DialogFooter>
           <Button variant="outline" onClick={onFechar} disabled={salvando}>Cancelar</Button>
-          <Button onClick={salvar} disabled={salvando} className="bg-emerald-600 hover:bg-emerald-700 gap-2">
+          <Button onClick={salvar} disabled={salvando} className="bg-brand-600 hover:bg-brand-700 gap-2">
             {salvando && <Loader2 className="h-4 w-4 animate-spin" />}
             {editando ? "Salvar alterações" : "Cadastrar paciente"}
           </Button>

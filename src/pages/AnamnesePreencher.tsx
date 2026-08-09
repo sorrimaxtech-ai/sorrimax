@@ -108,7 +108,7 @@ const PadAssinatura = ({
           <Eraser className="h-3.5 w-3.5" /> Limpar
         </Button>
       </div>
-      {valor && <p className="text-[11px] text-emerald-700 mt-1">Assinatura capturada.</p>}
+      {valor && <p className="text-[11px] text-brand-700 mt-1">Assinatura capturada.</p>}
     </div>
   );
 };
@@ -269,7 +269,7 @@ const AnamnesePreencher = () => {
             {[{ v: true, r: "Sim" }, { v: false, r: "Não" }].map((op) => (
               <Button key={op.r} type="button" size="sm"
                       variant={valor === op.v ? "default" : "outline"}
-                      className={valor === op.v ? "bg-emerald-600 hover:bg-emerald-700" : erro ? "border-red-300" : ""}
+                      className={valor === op.v ? "bg-brand-600 hover:bg-brand-700" : erro ? "border-red-300" : ""}
                       onClick={() => responder(p.id, op.v)}>
                 {op.r}
               </Button>
@@ -282,7 +282,7 @@ const AnamnesePreencher = () => {
             {(p.opcoes ?? []).map((o) => (
               <Button key={o} type="button" size="sm"
                       variant={valor === o ? "default" : "outline"}
-                      className={valor === o ? "bg-emerald-600 hover:bg-emerald-700" : erro ? "border-red-300" : ""}
+                      className={valor === o ? "bg-brand-600 hover:bg-brand-700" : erro ? "border-red-300" : ""}
                       onClick={() => responder(p.id, o)}>
                 {o}
               </Button>
@@ -315,7 +315,7 @@ const AnamnesePreencher = () => {
               <Slider min={cfg.min} max={cfg.max} step={cfg.passo ?? 1} value={[atual]}
                       onValueChange={(v) => responder(p.id, v[0])} className="flex-1" />
               <span className={`text-lg font-bold tabular-nums w-10 text-right ${
-                respondida ? "text-emerald-700" : "text-gray-300"}`}>
+                respondida ? "text-brand-700" : "text-gray-300"}`}>
                 {respondida ? atual : "–"}
               </span>
             </div>
@@ -324,7 +324,7 @@ const AnamnesePreencher = () => {
               <span className="text-[11px] text-gray-500">{cfg.rotulo_max ?? cfg.max}</span>
             </div>
             {!respondida && (
-              <button type="button" className="text-[11px] text-emerald-700 hover:underline mt-1"
+              <button type="button" className="text-[11px] text-brand-700 hover:underline mt-1"
                       onClick={() => responder(p.id, cfg.min)}>
                 Registrar {cfg.min} ({cfg.rotulo_min ?? "mínimo"})
               </button>
@@ -393,7 +393,7 @@ const AnamnesePreencher = () => {
           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-6">
             <div>
               <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-                <ClipboardList className="h-6 w-6 text-emerald-600" /> Anamnese
+                <ClipboardList className="h-6 w-6 text-brand-600" /> Anamnese
               </h1>
               <p className="text-sm text-gray-600 mt-0.5 flex items-center gap-1.5">
                 <User className="h-3.5 w-3.5" />
@@ -429,7 +429,7 @@ const AnamnesePreencher = () => {
                   Publique um modelo de anamnese para poder preencher. Em Modelos, use “Usar modelo pronto”
                   e ligue a chave Publicado.
                 </p>
-                <Button className="mt-4 bg-emerald-600 hover:bg-emerald-700"
+                <Button className="mt-4 bg-brand-600 hover:bg-brand-700"
                         onClick={() => navigate("/anamnese/modelos")}>
                   Ir para modelos
                 </Button>
@@ -538,7 +538,7 @@ const AnamnesePreencher = () => {
                       )}
                     </div>
 
-                    <Button className="w-full bg-emerald-600 hover:bg-emerald-700 gap-2 mt-4"
+                    <Button className="w-full bg-brand-600 hover:bg-brand-700 gap-2 mt-4"
                             onClick={salvar} disabled={salvando || perguntas.length === 0}>
                       {salvando ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
                       Salvar anamnese
@@ -549,7 +549,7 @@ const AnamnesePreencher = () => {
                 <Card className="border-gray-100">
                   <CardContent className="p-5">
                     <h2 className="font-semibold text-gray-900 flex items-center gap-2 mb-3">
-                      <History className="h-4 w-4 text-emerald-600" /> Anamneses anteriores
+                      <History className="h-4 w-4 text-brand-600" /> Anamneses anteriores
                     </h2>
                     {historico.length === 0 ? (
                       <p className="text-sm text-gray-500">

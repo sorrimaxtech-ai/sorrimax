@@ -227,7 +227,7 @@ const Especialidades = () => {
           {/* Header */}
           <div className="mb-8">
             <div className="flex items-center gap-3 mb-2">
-              <Stethoscope className="h-8 w-8 text-emerald-600" />
+              <Stethoscope className="h-8 w-8 text-brand-600" />
               <h1 className="text-3xl font-bold text-gray-900">Especialidades</h1>
             </div>
             <p className="text-gray-600">
@@ -254,7 +254,7 @@ const Especialidades = () => {
                     <Badge
                       key={esp.id}
                       variant="secondary"
-                      className="px-4 py-2 text-sm bg-emerald-100 text-emerald-800 hover:bg-emerald-200 flex items-center gap-2"
+                      className="px-4 py-2 text-sm bg-brand-100 text-brand-800 hover:bg-brand-200 flex items-center gap-2"
                     >
                       {esp.nome}
                       <button
@@ -310,7 +310,7 @@ const Especialidades = () => {
                         }}
                         variant="outline"
                         size="sm"
-                        className="text-emerald-600 border-emerald-600 hover:bg-emerald-50"
+                        className="text-brand-600 border-brand-600 hover:bg-brand-50"
                       >
                         <Plus className="h-4 w-4 mr-2" />
                         Adicionar "{searchTerm}" como nova especialidade
@@ -330,7 +330,7 @@ const Especialidades = () => {
                               <p className="text-sm text-gray-500">{esp.descricao}</p>
                             )}
                           </div>
-                          <Plus className="h-5 w-5 text-emerald-600" />
+                          <Plus className="h-5 w-5 text-brand-600" />
                         </div>
                       ))}
                     </div>
@@ -340,7 +340,7 @@ const Especialidades = () => {
 
               {/* Adicionar Nova Especialidade */}
               {showAddNew && (
-                <div className="border border-emerald-200 rounded-lg p-4 bg-emerald-50">
+                <div className="border border-brand-200 rounded-lg p-4 bg-brand-50">
                   <Label htmlFor="nova">Nova Especialidade</Label>
                   <div className="flex gap-2 mt-2">
                     <Input
@@ -353,7 +353,7 @@ const Especialidades = () => {
                     <Button
                       onClick={handleCreateEspecialidade}
                       disabled={loading}
-                      className="bg-emerald-600 hover:bg-emerald-700"
+                      className="bg-brand-600 hover:bg-brand-700"
                     >
                       <Plus className="h-4 w-4 mr-2" />
                       Criar

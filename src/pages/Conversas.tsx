@@ -120,7 +120,7 @@ const Conversas = () => {
         <div className="w-80 border-r border-border bg-white flex flex-col shrink-0">
           <div className="p-4 border-b border-border">
             <h1 className="text-lg font-semibold flex items-center gap-2 mb-3">
-              <MessageSquare className="h-5 w-5 text-emerald-600" /> Conversas
+              <MessageSquare className="h-5 w-5 text-brand-600" /> Conversas
             </h1>
             <div className="relative">
               <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -144,11 +144,11 @@ const Conversas = () => {
             ) : visiveis.map((c) => (
               <button key={c.id} onClick={() => abrirChat(c.id)}
                 className={cn("w-full text-left px-4 py-3 border-b border-border/50 hover:bg-muted/50 transition-colors",
-                  ativo === c.id && "bg-emerald-50")}>
+                  ativo === c.id && "bg-brand-50")}>
                 <div className="flex items-start justify-between gap-2">
                   <span className="font-medium text-sm truncate">{c.name ?? c.contact_phone}</span>
                   {c.unread_count > 0 && (
-                    <Badge className="bg-emerald-600 hover:bg-emerald-600 text-[10px] h-5 min-w-5 px-1.5">
+                    <Badge className="bg-brand-600 hover:bg-brand-600 text-[10px] h-5 min-w-5 px-1.5">
                       {c.unread_count}
                     </Badge>
                   )}
@@ -171,7 +171,7 @@ const Conversas = () => {
           ) : (
             <>
               <div className="h-16 border-b border-border bg-white px-5 flex items-center gap-3 shrink-0">
-                <div className="h-9 w-9 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center">
+                <div className="h-9 w-9 rounded-full bg-brand-100 text-brand-700 flex items-center justify-center">
                   <Phone className="h-4 w-4" />
                 </div>
                 <div className="min-w-0">
@@ -184,7 +184,7 @@ const Conversas = () => {
                 {mensagens.map((m) => (
                   <div key={m.id} className={cn("flex", m.from_me ? "justify-end" : "justify-start")}>
                     <div className={cn("max-w-[70%] rounded-2xl px-3.5 py-2 text-sm shadow-sm",
-                      m.from_me ? "bg-emerald-600 text-white rounded-br-sm" : "bg-white rounded-bl-sm")}>
+                      m.from_me ? "bg-brand-600 text-white rounded-br-sm" : "bg-white rounded-bl-sm")}>
                       {m.content || <em className="opacity-70">[{m.message_type}]</em>}
                       <div className={cn("flex items-center gap-1 justify-end mt-0.5 text-[10px]",
                         m.from_me ? "text-white/70" : "text-muted-foreground")}>
@@ -206,7 +206,7 @@ const Conversas = () => {
                   onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); enviar(); } }}
                   placeholder="Escreva uma mensagem..." disabled={enviando} />
                 <Button onClick={enviar} disabled={enviando || !texto.trim()}
-                        className="bg-emerald-600 hover:bg-emerald-700">
+                        className="bg-brand-600 hover:bg-brand-700">
                   {enviando ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
                 </Button>
               </div>

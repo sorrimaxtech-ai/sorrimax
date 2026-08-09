@@ -263,7 +263,7 @@ export const PAPEL_DESCRICAO: Record<Papel, string> = {
 };
 
 export const PAPEL_CLASSE: Record<Papel, string> = {
-  admin: "bg-emerald-100 text-emerald-800 border-0",
+  admin: "bg-brand-100 text-brand-800 border-0",
   professional: "bg-sky-100 text-sky-800 border-0",
   receptionist: "bg-amber-100 text-amber-800 border-0",
 };
@@ -275,7 +275,7 @@ export const STATUS_MEMBRO_LABEL: Record<string, string> = {
 };
 
 export const STATUS_MEMBRO_CLASSE: Record<string, string> = {
-  active: "bg-emerald-100 text-emerald-800 border-0",
+  active: "bg-brand-100 text-brand-800 border-0",
   inactive: "bg-gray-100 text-gray-600 border-0",
   pending: "bg-amber-100 text-amber-800 border-0",
 };
@@ -608,7 +608,7 @@ export const WA_STATUS_LABEL: Record<string, string> = {
 };
 
 export const WA_STATUS_CLASSE: Record<string, string> = {
-  connected: "bg-emerald-100 text-emerald-800 border-0",
+  connected: "bg-brand-100 text-brand-800 border-0",
   connecting: "bg-amber-100 text-amber-800 border-0",
   disconnected: "bg-red-100 text-red-800 border-0",
 };

@@ -109,7 +109,7 @@ export const WhatsAppConnect = () => {
         {status === "disconnected" && (
           <div className="text-center">
             <QrCode className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-            <Button onClick={handleConnect} className="bg-green-600 hover:bg-green-700" disabled={status === 'connecting' || !instanceName}>
+            <Button onClick={handleConnect} className="bg-brand-600 hover:bg-brand-700" disabled={status === 'connecting' || !instanceName}>
                {status === 'connecting' ? 'Gerando QR...' : 'Conectar WhatsApp'}
             </Button>
           </div>
@@ -127,15 +127,15 @@ export const WhatsAppConnect = () => {
         
         {status === "connecting" && !qrCode && (
              <div className="flex flex-col items-center gap-3">
-                <RefreshCw className="h-8 w-8 text-emerald-500 animate-spin" />
+                <RefreshCw className="h-8 w-8 text-brand-500 animate-spin" />
                 <p className="text-sm text-gray-500">Iniciando sessão na VPS...</p>
              </div>
         )}
 
         {status === "connected" && (
           <div className="text-center animate-in fade-in slide-in-from-bottom-5 duration-500">
-            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <CheckCircle2 className="h-8 w-8 text-green-600" />
+            <div className="w-16 h-16 bg-brand-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <CheckCircle2 className="h-8 w-8 text-brand-600" />
             </div>
             <h3 className="font-semibold text-green-700 text-lg">Online!</h3>
             <p className="text-sm text-gray-500 mt-1 mb-4">Seu WhatsApp está sincronizado.</p>

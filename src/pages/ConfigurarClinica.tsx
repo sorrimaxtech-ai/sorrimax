@@ -344,7 +344,7 @@ const ConfigurarClinica = () => {
                   <div
                     className={`flex items-center justify-center w-10 h-10 rounded-full border-2 transition-colors ${
                       step >= n
-                        ? 'bg-emerald-600 border-emerald-600 text-white'
+                        ? 'bg-brand-600 border-brand-600 text-white'
                         : 'bg-white border-gray-300 text-gray-400'
                     }`}
                     aria-current={step === n ? 'step' : undefined}
@@ -353,7 +353,7 @@ const ConfigurarClinica = () => {
                   </div>
                   <span
                     className={`mt-2 text-xs whitespace-nowrap ${
-                      step >= n ? 'text-emerald-700 font-medium' : 'text-gray-500'
+                      step >= n ? 'text-brand-700 font-medium' : 'text-gray-500'
                     }`}
                   >
                     {label}
@@ -362,7 +362,7 @@ const ConfigurarClinica = () => {
                 {n < 3 && (
                   <div
                     className={`flex-1 h-1 mx-2 mt-[18px] rounded transition-colors ${
-                      step > n ? 'bg-emerald-600' : 'bg-gray-300'
+                      step > n ? 'bg-brand-600' : 'bg-gray-300'
                     }`}
                   />
                 )}
@@ -428,7 +428,7 @@ const ConfigurarClinica = () => {
 
                 <div className="pt-2 border-t border-gray-200">
                   <div className="flex items-center gap-2 mb-2">
-                    <MapPin className="h-4 w-4 text-emerald-600" />
+                    <MapPin className="h-4 w-4 text-brand-600" />
                     <h3 className="font-semibold text-sm text-gray-900">Endereço</h3>
                   </div>
 
@@ -524,7 +524,7 @@ const ConfigurarClinica = () => {
                     <Label className="text-sm mb-2 block">Selecionadas ({formData.especialidades.length})</Label>
                     <div className="flex flex-wrap gap-1">
                       {formData.especialidades.map(esp => (
-                        <Badge key={esp} variant="secondary" className="bg-emerald-100 text-emerald-800 text-xs">
+                        <Badge key={esp} variant="secondary" className="bg-brand-100 text-brand-800 text-xs">
                           {esp}
                         </Badge>
                       ))}
@@ -616,7 +616,7 @@ const ConfigurarClinica = () => {
                 <Button
                   type="button"
                   onClick={nextStep}
-                  className="bg-emerald-600 hover:bg-emerald-700 h-9"
+                  className="bg-brand-600 hover:bg-brand-700 h-9"
                 >
                   Próximo
                   <ChevronRight className="h-4 w-4 ml-1" />
@@ -626,7 +626,7 @@ const ConfigurarClinica = () => {
                   type="button"
                   onClick={handleSubmit}
                   disabled={loading}
-                  className="bg-emerald-600 hover:bg-emerald-700 h-9"
+                  className="bg-brand-600 hover:bg-brand-700 h-9"
                 >
                   {loading ? 'Salvando...' : 'Finalizar'}
                 </Button>

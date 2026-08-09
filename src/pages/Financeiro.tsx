@@ -35,8 +35,8 @@ const cashFlowData = [
 ];
 
 const revenueByCategory = [
-  { name: "Consultas", value: 18500, color: "#3b82f6" },
-  { name: "Procedimentos", value: 15200, color: "#10b981" },
+  { name: "Consultas", value: 18500, color: "#334155" },
+  { name: "Procedimentos", value: 15200, color: "#00b4d8" },
   { name: "Produtos", value: 8300, color: "#8b5cf6" },
   { name: "Outros", value: 3280, color: "#f59e0b" }
 ];
@@ -162,8 +162,8 @@ const Financeiro = () => {
   ] : cashFlowData;
 
   const currentRevenueByCategory = isDemo ? [
-    { name: "Consultas", value: 28925, color: "#10b981" },
-    { name: "Exames", value: 8900, color: "#3b82f6" },
+    { name: "Consultas", value: 28925, color: "#00b4d8" },
+    { name: "Exames", value: 8900, color: "#334155" },
     { name: "Procedimentos", value: 6675, color: "#8b5cf6" }
   ] : revenueByCategory;
 
@@ -193,7 +193,7 @@ const Financeiro = () => {
             <CardContent>
               <form onSubmit={handleLogin} className="space-y-4">
                 {error && <p className="text-sm text-red-500 text-center">{error}</p>}
-                <Button type="submit" className="w-full bg-emerald-600 hover:bg-emerald-700">
+                <Button type="submit" className="w-full bg-brand-600 hover:bg-brand-700">
                   Entrar no financeiro
                 </Button>
               </form>
@@ -205,7 +205,7 @@ const Financeiro = () => {
   }
 
   return (
-    <div className="flex min-h-full bg-gradient-to-br from-gray-50 to-emerald-50/30 dashboard-theme">
+    <div className="flex min-h-full bg-gradient-to-br from-gray-50 to-brand-50/30 dashboard-theme">
       <main className="flex-1 min-w-0 overflow-auto">
         {/* Demo Mode Banner */}
         {isDemo && (
@@ -221,7 +221,7 @@ const Financeiro = () => {
               <h1 className="text-3xl font-bold text-gray-900 mb-1">Financeiro</h1>
               <p className="text-gray-600">Gestão financeira da clínica</p>
             </div>
-            <Button className="bg-emerald-600 hover:bg-emerald-700 gap-2 shadow-md">
+            <Button className="bg-brand-600 hover:bg-brand-700 gap-2 shadow-md">
               <Plus className="h-4 w-4" />
               Nova transação
             </Button>
@@ -235,7 +235,7 @@ const Financeiro = () => {
               change="+15% vs mês anterior"
               changeType="positive"
               icon={DollarSign}
-              iconColor="text-emerald-600"
+              iconColor="text-brand-600"
             />
             <MetricCard
               title="Despesas Operacionais"
@@ -278,7 +278,7 @@ const Financeiro = () => {
                     <YAxis stroke="#666" />
                     <Tooltip />
                     <Legend />
-                    <Bar isAnimationActive={false} dataKey="receita" fill="#10b981" name="Receita" />
+                    <Bar isAnimationActive={false} dataKey="receita" fill="#00b4d8" name="Receita" />
                     <Bar isAnimationActive={false} dataKey="despesas" fill="#ef4444" name="Despesas" />
                   </BarChart>
                 </ResponsiveContainer>
@@ -385,7 +385,7 @@ const Financeiro = () => {
                               variant="outline" 
                               className={`mt-1 text-xs ${
                                 transaction.type === "RECEITA" 
-                                  ? "bg-emerald-50 text-emerald-700 border-emerald-200" 
+                                  ? "bg-brand-50 text-brand-700 border-brand-200" 
                                   : "bg-red-50 text-red-700 border-red-200"
                               }`}
                             >
@@ -407,7 +407,7 @@ const Financeiro = () => {
                         </td>
                         <td className="py-4 px-4 text-right">
                           <span className={`font-semibold ${
-                            transaction.type === "RECEITA" ? "text-emerald-600" : "text-red-600"
+                            transaction.type === "RECEITA" ? "text-brand-600" : "text-red-600"
                           }`}>
                             R$ {transaction.value.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                           </span>
@@ -416,7 +416,7 @@ const Financeiro = () => {
                           <Badge 
                             className={
                               transaction.status === "Pago"
-                                ? "bg-emerald-100 text-emerald-700 hover:bg-emerald-100"
+                                ? "bg-brand-100 text-brand-700 hover:bg-brand-100"
                                 : "bg-orange-100 text-orange-700 hover:bg-orange-100"
                             }
                           >

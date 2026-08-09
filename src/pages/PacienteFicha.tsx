@@ -180,7 +180,7 @@ const AbaSobre = ({ paciente, clinicaId }: { paciente: PacienteCompleto; clinica
                 {mensagens.map((m) => (
                   <div key={m.id} className={`flex ${m.from_me ? "justify-end" : "justify-start"}`}>
                     <div className={`max-w-[80%] rounded-lg px-3 py-2 text-sm ${
-                      m.from_me ? "bg-emerald-50 text-emerald-950" : "bg-muted text-gray-800"}`}
+                      m.from_me ? "bg-brand-50 text-brand-950" : "bg-muted text-gray-800"}`}
                     >
                       <p className="whitespace-pre-wrap break-words">
                         {m.conteudo || <span className="italic opacity-70">[{m.tipo}]</span>}
@@ -225,7 +225,7 @@ const AbaSobre = ({ paciente, clinicaId }: { paciente: PacienteCompleto; clinica
               <div className="space-y-3">
                 {consultas.map((c) => (
                   <div key={c.id} className="flex gap-2">
-                    <CalendarClock className="h-4 w-4 text-emerald-600 mt-0.5 shrink-0" />
+                    <CalendarClock className="h-4 w-4 text-brand-600 mt-0.5 shrink-0" />
                     <div className="min-w-0">
                       <p className="text-sm font-medium text-gray-900">{dataHoraBr(c.inicio)}</p>
                       <p className="text-xs text-muted-foreground truncate">
@@ -309,7 +309,7 @@ const AbaOrcamentos = ({ clinicaId, pacienteId }: { clinicaId: string; pacienteI
                 {carregando ? "Carregando…" : `${lista.length} orçamento(s) · ${brl(totalAprovado)} aprovado`}
               </p>
             </div>
-            <Button onClick={() => setNovoAberto(true)} className="bg-emerald-600 hover:bg-emerald-700 gap-2">
+            <Button onClick={() => setNovoAberto(true)} className="bg-brand-600 hover:bg-brand-700 gap-2">
               <Plus className="h-4 w-4" /> Novo orçamento
             </Button>
           </div>
@@ -345,7 +345,7 @@ const AbaOrcamentos = ({ clinicaId, pacienteId }: { clinicaId: string; pacienteI
                       <td className="px-4 py-3 font-mono text-xs text-muted-foreground">#{o.numero}</td>
                       <td className="px-4 py-3">{o.titulo ?? "—"}</td>
                       <td className="px-4 py-3 text-right tabular-nums">{brl(Number(o.total_itens))}</td>
-                      <td className="px-4 py-3 text-right tabular-nums font-medium text-emerald-700">
+                      <td className="px-4 py-3 text-right tabular-nums font-medium text-brand-700">
                         {brl(Number(o.total_aprovado))}
                       </td>
                       <td className="px-4 py-3">
@@ -543,7 +543,7 @@ const AbaTratamentos = ({
               <Button
                 onClick={gravarEvolucao}
                 disabled={salvando}
-                className="bg-emerald-600 hover:bg-emerald-700 gap-2 sm:ml-auto"
+                className="bg-brand-600 hover:bg-brand-700 gap-2 sm:ml-auto"
               >
                 {salvando ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
                 Adicionar evolução
@@ -563,7 +563,7 @@ const AbaTratamentos = ({
           ) : (
             <div className="space-y-4">
               {evolucoes.map((ev) => (
-                <div key={ev.id} className="border-l-2 border-emerald-200 pl-4">
+                <div key={ev.id} className="border-l-2 border-brand-200 pl-4">
                   <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
                     <span className="font-medium text-gray-700">
                       {ev.profiles?.full_name ?? "Profissional"}
@@ -793,7 +793,7 @@ const PreencherAnamneseDialog = ({
           <Button
             onClick={salvar}
             disabled={salvando || !modeloId || perguntas.length === 0}
-            className="bg-emerald-600 hover:bg-emerald-700 gap-2"
+            className="bg-brand-600 hover:bg-brand-700 gap-2"
           >
             {salvando && <Loader2 className="h-4 w-4 animate-spin" />}
             Salvar anamnese
@@ -852,7 +852,7 @@ const AbaAnamnese = ({ clinicaId, pacienteId }: { clinicaId: string; pacienteId:
                 Histórico de saúde declarado pelo paciente, com data de preenchimento.
               </p>
             </div>
-            <Button onClick={() => setAberto(true)} className="bg-emerald-600 hover:bg-emerald-700 gap-2">
+            <Button onClick={() => setAberto(true)} className="bg-brand-600 hover:bg-brand-700 gap-2">
               <Plus className="h-4 w-4" /> Preencher
             </Button>
           </div>
@@ -888,7 +888,7 @@ const AbaAnamnese = ({ clinicaId, pacienteId }: { clinicaId: string; pacienteId:
                             ? ` · score ${a.score_total}` : ""}
                         </p>
                       </div>
-                      <span className="text-xs text-emerald-700">{aberta ? "Ocultar" : "Ver respostas"}</span>
+                      <span className="text-xs text-brand-700">{aberta ? "Ocultar" : "Ver respostas"}</span>
                     </button>
                     {aberta && (
                       <div className="px-5 pb-4 space-y-2">
@@ -1197,7 +1197,7 @@ const PacienteFicha = () => {
                   titulo="Paciente não encontrado"
                   texto="O cadastro pode ter sido excluído ou pertence a outra clínica."
                   acao={
-                    <Button onClick={() => navigate("/pacientes")} className="bg-emerald-600 hover:bg-emerald-700">
+                    <Button onClick={() => navigate("/pacientes")} className="bg-brand-600 hover:bg-brand-700">
                       Ver lista de pacientes
                     </Button>
                   }
@@ -1209,7 +1209,7 @@ const PacienteFicha = () => {
               <Card className="border-gray-100 mb-4">
                 <CardContent className="p-5">
                   <div className="flex flex-col lg:flex-row lg:items-center gap-4">
-                    <div className="h-14 w-14 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center text-lg font-semibold shrink-0">
+                    <div className="h-14 w-14 rounded-full bg-brand-50 text-brand-700 flex items-center justify-center text-lg font-semibold shrink-0">
                       {iniciais(paciente.nome_completo)}
                     </div>
 
@@ -1223,7 +1223,7 @@ const PacienteFicha = () => {
                           {paciente.convenios?.nome ?? "Particular"}
                         </Badge>
                         {paciente.tags?.map((t) => (
-                          <Badge key={t} className="bg-emerald-100 text-emerald-800 border-0 font-normal">
+                          <Badge key={t} className="bg-brand-100 text-brand-800 border-0 font-normal">
                             {t}
                           </Badge>
                         ))}
@@ -1257,9 +1257,9 @@ const PacienteFicha = () => {
                           window.open(wa, "_blank", "noopener,noreferrer");
                         }}
                       >
-                        <MessageCircle className="h-4 w-4 text-emerald-600" /> WhatsApp
+                        <MessageCircle className="h-4 w-4 text-brand-600" /> WhatsApp
                       </Button>
-                      <Button onClick={() => setEditando(true)} className="bg-emerald-600 hover:bg-emerald-700 gap-2">
+                      <Button onClick={() => setEditando(true)} className="bg-brand-600 hover:bg-brand-700 gap-2">
                         <Pencil className="h-4 w-4" /> Editar
                       </Button>
                     </div>

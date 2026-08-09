@@ -163,7 +163,7 @@ const Comissoes = () => {
           <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-6">
             <div>
               <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-                <HandCoins className="h-6 w-6 text-emerald-600" /> Comissões
+                <HandCoins className="h-6 w-6 text-brand-600" /> Comissões
               </h1>
               <p className="text-sm text-gray-600 mt-0.5">
                 Quanto cada profissional tem a receber — e o que já pode ser repassado.
@@ -328,7 +328,7 @@ const Comissoes = () => {
                                 {isAdmin && g.idsLiberados.length > 0 ? (
                                   <Button
                                     size="sm"
-                                    className="bg-emerald-600 hover:bg-emerald-700 gap-1.5 h-8"
+                                    className="bg-brand-600 hover:bg-brand-700 gap-1.5 h-8"
                                     onClick={(e) => { e.stopPropagation(); pedirConfirmacaoGrupo(g); }}
                                   >
                                     <CheckCheck className="h-3.5 w-3.5" />
@@ -430,7 +430,7 @@ const Comissoes = () => {
                                               {isAdmin && c.status === "liberada" ? (
                                                 <Button
                                                   size="sm" variant="outline"
-                                                  className="h-7 text-xs border-emerald-200 text-emerald-700 hover:bg-emerald-50"
+                                                  className="h-7 text-xs border-brand-200 text-brand-700 hover:bg-brand-50"
                                                   onClick={() => pedirConfirmacaoItem(c)}
                                                 >
                                                   Marcar paga
@@ -468,7 +468,7 @@ const Comissoes = () => {
           <AlertDialogFooter>
             <AlertDialogCancel disabled={salvando}>Cancelar</AlertDialogCancel>
             <AlertDialogAction
-              className="bg-emerald-600 hover:bg-emerald-700"
+              className="bg-brand-600 hover:bg-brand-700"
               disabled={salvando}
               onClick={(e) => { e.preventDefault(); confirmarPagamento(); }}
             >

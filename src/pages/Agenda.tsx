@@ -426,7 +426,7 @@ const Agenda = () => {
           <div className="flex flex-wrap items-start justify-between gap-3 mb-6">
             <div>
               <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-                <CalendarDays className="h-6 w-6 text-emerald-600" /> Agenda
+                <CalendarDays className="h-6 w-6 text-brand-600" /> Agenda
               </h1>
               <p className="text-sm text-gray-600 mt-0.5">
                 Cadeira vazia é receita que não volta. Veja o dia, a semana e o mês inteiro em um só lugar.
@@ -445,7 +445,7 @@ const Agenda = () => {
                 <CalendarClock className="h-4 w-4" /> Compromisso
               </Button>
               <Button
-                className="bg-emerald-600 hover:bg-emerald-700 gap-2"
+                className="bg-brand-600 hover:bg-brand-700 gap-2"
                 onClick={() => abrirNovaConsulta()}
                 disabled={semClinica || semCadastroBasico}
               >
@@ -647,7 +647,7 @@ const Agenda = () => {
                     // o escolhido e o usuário erra o tipo do agendamento.
                     className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-md text-sm transition-colors ${
                       sel
-                        ? "bg-emerald-600 text-white font-medium shadow-sm"
+                        ? "bg-brand-600 text-white font-medium shadow-sm"
                         : "text-muted-foreground hover:text-foreground"
                     }`}
                   >
@@ -810,7 +810,7 @@ const Agenda = () => {
               {rotulos.length === 0 ? (
                 <p className="mt-1 text-xs text-muted-foreground">
                   Nenhum rótulo cadastrado.{" "}
-                  <Link to="/rotulos" className="text-emerald-700 underline underline-offset-2">
+                  <Link to="/rotulos" className="text-brand-700 underline underline-offset-2">
                     Criar rótulos
                   </Link>
                 </p>
@@ -872,7 +872,7 @@ const Agenda = () => {
                 </Button>
               )}
               <Button variant="outline" onClick={() => setDialogAberto(false)}>Cancelar</Button>
-              <Button className="bg-emerald-600 hover:bg-emerald-700 gap-2" onClick={salvar} disabled={salvando}>
+              <Button className="bg-brand-600 hover:bg-brand-700 gap-2" onClick={salvar} disabled={salvando}>
                 {salvando && <Loader2 className="h-4 w-4 animate-spin" />}
                 {form.id ? "Salvar alterações" : "Agendar"}
               </Button>

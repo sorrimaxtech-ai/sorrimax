@@ -493,7 +493,7 @@ export function calcularScore(
 export function faixaDoScore(score: number): { rotulo: string; classe: string } {
   if (score >= 15) return { rotulo: "Atenção alta", classe: "bg-red-100 text-red-800 border-0" };
   if (score >= 7) return { rotulo: "Atenção moderada", classe: "bg-amber-100 text-amber-800 border-0" };
-  return { rotulo: "Sem alertas relevantes", classe: "bg-emerald-100 text-emerald-800 border-0" };
+  return { rotulo: "Sem alertas relevantes", classe: "bg-brand-100 text-brand-800 border-0" };
 }
 
 // ------------------------------------------------------- banco de perguntas

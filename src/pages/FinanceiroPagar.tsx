@@ -377,7 +377,7 @@ const FinanceiroPagar = () => {
           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-6">
             <div>
               <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-                <ArrowDownCircle className="h-6 w-6 text-emerald-600" /> Contas a Pagar
+                <ArrowDownCircle className="h-6 w-6 text-brand-600" /> Contas a Pagar
               </h1>
               <p className="text-sm text-gray-600 mt-0.5">
                 Tudo que sai do caixa: compras pontuais e as despesas fixas do mês.
@@ -386,7 +386,7 @@ const FinanceiroPagar = () => {
             <div className="flex items-center gap-2">
               <Input type="month" value={mesRef} onChange={(e) => setMesRef(e.target.value || mesAtual())}
                      className="w-[160px]" aria-label="Mês de referência" />
-              <Button onClick={() => setAbrirNova(true)} className="bg-emerald-600 hover:bg-emerald-700 gap-2">
+              <Button onClick={() => setAbrirNova(true)} className="bg-brand-600 hover:bg-brand-700 gap-2">
                 <Plus className="h-4 w-4" /> Nova despesa
               </Button>
             </div>
@@ -508,7 +508,7 @@ const FinanceiroPagar = () => {
                                           </Button>
                                         ) : (
                                           <Button size="sm" variant="ghost"
-                                                  className="gap-1.5 text-emerald-700 hover:text-emerald-800"
+                                                  className="gap-1.5 text-brand-700 hover:text-brand-800"
                                                   onClick={() => marcarPago(p)}>
                                             <Check className="h-3.5 w-3.5" /> Marcar pago
                                           </Button>
@@ -544,7 +544,7 @@ const FinanceiroPagar = () => {
                         {gerando ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
                         Gerar lançamentos do mês
                       </Button>
-                      <Button className="bg-emerald-600 hover:bg-emerald-700 gap-2"
+                      <Button className="bg-brand-600 hover:bg-brand-700 gap-2"
                               onClick={() => { setFixaEditando(null); setAbrirFixa(true); }}>
                         <Plus className="h-4 w-4" /> Nova despesa fixa
                       </Button>
@@ -592,7 +592,7 @@ const FinanceiroPagar = () => {
                                   </td>
                                   <td className="px-4 py-3">
                                     <Badge className={d.ativo
-                                      ? "bg-emerald-100 text-emerald-800 border-0"
+                                      ? "bg-brand-100 text-brand-800 border-0"
                                       : "bg-gray-100 text-gray-700 border-0"}>
                                       {d.ativo ? "Ativa" : "Inativa"}
                                     </Badge>
@@ -842,7 +842,7 @@ const NovaDespesaDialog = ({ aberto, onFechar, onCriado, categorias, contas }: N
 
         <DialogFooter>
           <Button variant="outline" onClick={onFechar} disabled={salvando}>Cancelar</Button>
-          <Button onClick={salvar} disabled={salvando} className="bg-emerald-600 hover:bg-emerald-700 gap-2">
+          <Button onClick={salvar} disabled={salvando} className="bg-brand-600 hover:bg-brand-700 gap-2">
             {salvando && <Loader2 className="h-4 w-4 animate-spin" />} Lançar despesa
           </Button>
         </DialogFooter>

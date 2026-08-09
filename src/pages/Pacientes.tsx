@@ -128,7 +128,7 @@ const Pacientes = () => {
           <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-6">
             <div>
               <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-                <Users className="h-6 w-6 text-emerald-600" /> Pacientes
+                <Users className="h-6 w-6 text-brand-600" /> Pacientes
               </h1>
               <p className="text-sm text-gray-600 mt-0.5">
                 Cadastro único por pessoa — dele saem agenda, orçamento, prontuário e cobrança.
@@ -136,7 +136,7 @@ const Pacientes = () => {
             </div>
             <Button
               onClick={() => { setEmEdicao(null); setDialogAberto(true); }}
-              className="bg-emerald-600 hover:bg-emerald-700 gap-2"
+              className="bg-brand-600 hover:bg-brand-700 gap-2"
             >
               <Plus className="h-4 w-4" /> Novo Paciente
             </Button>
@@ -144,7 +144,7 @@ const Pacientes = () => {
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
             {[
-              { rot: "Ativos", val: kpis.ativos, cor: "text-emerald-600", sub: "em acompanhamento" },
+              { rot: "Ativos", val: kpis.ativos, cor: "text-brand-600", sub: "em acompanhamento" },
               { rot: "Inativos", val: kpis.inativos, cor: "text-gray-500", sub: "histórico preservado" },
               { rot: "Total cadastrado", val: kpis.total, cor: "text-gray-900", sub: "base da clínica" },
             ].map((k) => (
@@ -173,7 +173,7 @@ const Pacientes = () => {
             <Button
               variant={mostrarInativos ? "default" : "outline"}
               onClick={() => setMostrarInativos((v) => !v)}
-              className={`gap-2 ${mostrarInativos ? "bg-emerald-600 hover:bg-emerald-700" : ""}`}
+              className={`gap-2 ${mostrarInativos ? "bg-brand-600 hover:bg-brand-700" : ""}`}
             >
               {mostrarInativos ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
               {mostrarInativos ? "Mostrando inativos" : "Mostrar inativos"}
@@ -260,7 +260,7 @@ const Pacientes = () => {
                                   size="icon"
                                   title="Abrir conversa no WhatsApp"
                                   onClick={() => abrirWhatsApp(p)}
-                                  className="text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50"
+                                  className="text-brand-600 hover:text-brand-700 hover:bg-brand-50"
                                 >
                                   <MessageCircle className="h-4 w-4" />
                                 </Button>

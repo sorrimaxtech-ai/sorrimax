@@ -242,7 +242,7 @@ const PaginaPublica = () => {
           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-6">
             <div>
               <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-                <Globe className="h-6 w-6 text-emerald-600" /> Página Pública
+                <Globe className="h-6 w-6 text-brand-600" /> Página Pública
               </h1>
               <p className="text-sm text-gray-600 mt-0.5">
                 O endereço que o paciente abre para conhecer a clínica e marcar horário.
@@ -259,7 +259,7 @@ const PaginaPublica = () => {
                 </Button>
               )}
               <Button
-                className="bg-emerald-600 hover:bg-emerald-700 gap-2"
+                className="bg-brand-600 hover:bg-brand-700 gap-2"
                 onClick={salvar}
                 disabled={salvando || carregando || !sujo}
               >
@@ -385,7 +385,7 @@ const PaginaPublica = () => {
                           {perfil.especialidades.map((esp) => (
                             <Badge
                               key={esp}
-                              className="bg-emerald-100 text-emerald-800 border-0 gap-1.5 py-1 pl-3 pr-2"
+                              className="bg-brand-100 text-brand-800 border-0 gap-1.5 py-1 pl-3 pr-2"
                             >
                               {esp}
                               <button
@@ -414,7 +414,7 @@ const PaginaPublica = () => {
                                   key={s}
                                   type="button"
                                   onClick={() => adicionarEspecialidade(s)}
-                                  className="text-xs px-2 py-1 rounded border border-gray-200 text-gray-600 hover:border-emerald-300 hover:text-emerald-700"
+                                  className="text-xs px-2 py-1 rounded border border-gray-200 text-gray-600 hover:border-brand-300 hover:text-brand-700"
                                 >
                                   + {s}
                                 </button>
@@ -439,7 +439,7 @@ const PaginaPublica = () => {
                         <Switch
                           checked={perfil.aceitaAgendamento}
                           onCheckedChange={(v) => atualizar("aceitaAgendamento", v)}
-                          className="data-[state=checked]:bg-emerald-600"
+                          className="data-[state=checked]:bg-brand-600"
                         />
                       </div>
 
@@ -447,7 +447,7 @@ const PaginaPublica = () => {
                         <div>
                           <p className="text-sm font-medium text-gray-800 flex items-center gap-2">
                             {perfil.publicado
-                              ? <Eye className="h-4 w-4 text-emerald-600" />
+                              ? <Eye className="h-4 w-4 text-brand-600" />
                               : <EyeOff className="h-4 w-4 text-gray-400" />}
                             Página publicada
                           </p>
@@ -458,7 +458,7 @@ const PaginaPublica = () => {
                         <Switch
                           checked={perfil.publicado}
                           onCheckedChange={(v) => atualizar("publicado", v)}
-                          className="data-[state=checked]:bg-emerald-600"
+                          className="data-[state=checked]:bg-brand-600"
                         />
                       </div>
                     </div>
@@ -471,7 +471,7 @@ const PaginaPublica = () => {
                     <div className="flex items-start justify-between gap-3 mb-1">
                       <div>
                         <p className="font-medium text-gray-900 flex items-center gap-2">
-                          <Link2 className="h-4 w-4 text-emerald-600" /> Link de agendamento
+                          <Link2 className="h-4 w-4 text-brand-600" /> Link de agendamento
                         </p>
                         <p className="text-xs text-gray-500 mt-0.5">
                           Endereço temporário para mandar direto ao paciente. Vale 7 dias e pode ser
@@ -492,7 +492,7 @@ const PaginaPublica = () => {
                         </SelectContent>
                       </Select>
                       <Button
-                        className="bg-emerald-600 hover:bg-emerald-700 gap-2"
+                        className="bg-brand-600 hover:bg-brand-700 gap-2"
                         onClick={gerar}
                         disabled={gerando || !original?.slug}
                       >
@@ -559,7 +559,7 @@ const PaginaPublica = () => {
                                             onClick={() => copiar(link, t.id)}
                                           >
                                             {copiado === t.id
-                                              ? <Check className="h-3.5 w-3.5 text-emerald-600" />
+                                              ? <Check className="h-3.5 w-3.5 text-brand-600" />
                                               : <Copy className="h-3.5 w-3.5" />}
                                             Copiar
                                           </Button>
@@ -594,7 +594,7 @@ const PaginaPublica = () => {
               <div className="lg:sticky lg:top-8 self-start w-full">
                 <p className="text-xs text-gray-500 mb-2">Prévia do card público</p>
                 <Card className="border-gray-100 overflow-hidden">
-                  <div className="h-24 bg-emerald-600/10">
+                  <div className="h-24 bg-brand-600/10">
                     {perfil.capaUrl ? (
                       <img
                         src={perfil.capaUrl}
@@ -603,7 +603,7 @@ const PaginaPublica = () => {
                         onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
                       />
                     ) : (
-                      <div className="h-full w-full flex items-center justify-center text-[11px] text-emerald-700/60">
+                      <div className="h-full w-full flex items-center justify-center text-[11px] text-brand-700/60">
                         sem imagem de capa
                       </div>
                     )}
@@ -611,7 +611,7 @@ const PaginaPublica = () => {
                   <CardContent className="p-5 -mt-8">
                     <Avatar className="h-16 w-16 ring-4 ring-white">
                       {perfil.fotoUrl && <AvatarImage src={perfil.fotoUrl} alt={nomeClinica} />}
-                      <AvatarFallback className="bg-emerald-600 text-white text-lg">
+                      <AvatarFallback className="bg-brand-600 text-white text-lg">
                         {iniciais}
                       </AvatarFallback>
                     </Avatar>
@@ -624,7 +624,7 @@ const PaginaPublica = () => {
                     {perfil.especialidades.length > 0 && (
                       <div className="flex flex-wrap gap-1.5 mt-3">
                         {perfil.especialidades.map((esp) => (
-                          <Badge key={esp} className="bg-emerald-100 text-emerald-800 border-0 text-[11px]">
+                          <Badge key={esp} className="bg-brand-100 text-brand-800 border-0 text-[11px]">
                             {esp}
                           </Badge>
                         ))}
@@ -637,7 +637,7 @@ const PaginaPublica = () => {
 
                     {perfil.aceitaAgendamento && (
                       <Button
-                        className="w-full bg-emerald-600 hover:bg-emerald-700 gap-2 mt-4"
+                        className="w-full bg-brand-600 hover:bg-brand-700 gap-2 mt-4"
                         disabled
                       >
                         <CalendarCheck className="h-4 w-4" /> Agendar consulta
@@ -646,7 +646,7 @@ const PaginaPublica = () => {
 
                     <div className="mt-4 pt-3 border-t border-gray-100">
                       {perfil.publicado ? (
-                        <p className="text-xs text-emerald-700 flex items-center gap-1.5">
+                        <p className="text-xs text-brand-700 flex items-center gap-1.5">
                           <Eye className="h-3.5 w-3.5" /> Visível para qualquer pessoa com o endereço
                         </p>
                       ) : (

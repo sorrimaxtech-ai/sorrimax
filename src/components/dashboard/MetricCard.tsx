@@ -26,7 +26,7 @@ export function MetricCard({ title, value, change, changeType = "neutral", icon:
               </p>
             )}
           </div>
-          <div className={`p-3 rounded-lg bg-gradient-to-br from-emerald-50 to-emerald-100/50 ${iconColor} shadow-sm`}>
+          <div className={`p-3 rounded-lg bg-gradient-to-br from-brand-50 to-brand-100/50 ${iconColor} shadow-sm`}>
             <Icon className="h-6 w-6" />
           </div>
         </div>

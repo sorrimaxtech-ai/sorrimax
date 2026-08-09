@@ -92,7 +92,7 @@ export const MODALIDADE_LABEL: Record<Modalidade, string> = {
 
 /** Cor padrão por especialidade — o bloco da agenda fica legível sem o usuário escolher nada. */
 export const COR_POR_ESPECIALIDADE: Record<string, string> = {
-  "Dentística": "#10B981",
+  "Dentística": "#00b4d8",
   "Endodontia": "#EF4444",
   "Periodontia": "#F59E0B",
   "Ortodontia": "#6366F1",
@@ -105,7 +105,7 @@ export const COR_POR_ESPECIALIDADE: Record<string, string> = {
   "Clínica Geral": "#64748B",
 };
 
-export const COR_PADRAO = "#10B981";
+export const COR_PADRAO = "#00b4d8";
 
 export const brl = (v: number | null | undefined) =>
   new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(v ?? 0);

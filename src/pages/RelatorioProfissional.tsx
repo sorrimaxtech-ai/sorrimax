@@ -61,7 +61,7 @@ const Metrica = ({ rotulo, valor, sub, Icone, cor = "neutro" }: MetricaProps) =>
           <p className={`text-xl font-bold mt-1 ${COR[cor]}`}>{valor}</p>
           <p className="text-[11px] text-gray-400 mt-1">{sub}</p>
         </div>
-        <Icone className="h-5 w-5 text-emerald-600 shrink-0" />
+        <Icone className="h-5 w-5 text-brand-600 shrink-0" />
       </div>
     </CardContent>
   </Card>
@@ -184,7 +184,7 @@ const RelatorioProfissional = () => {
           <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-6">
             <div>
               <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-                <UserCog className="h-6 w-6 text-emerald-600" /> Relatório por profissional
+                <UserCog className="h-6 w-6 text-brand-600" /> Relatório por profissional
               </h1>
               <p className="text-sm text-gray-600 mt-0.5">
                 Quanto cada profissional entregou de agenda, quanto isso faturou e quanto virou comissão.
@@ -407,7 +407,7 @@ const RelatorioProfissional = () => {
                           <p className="text-xl font-bold text-sky-700 mt-1">{brl(dados.comissao.liberada)}</p>
                           <p className="text-[11px] text-gray-400 mt-1">Pronta para repasse</p>
                         </div>
-                        <div className="rounded-lg border border-emerald-100 bg-emerald-50/50 p-4">
+                        <div className="rounded-lg border border-brand-100 bg-brand-50/50 p-4">
                           <p className="text-xs text-gray-500">Paga</p>
                           <p className="text-xl font-bold text-emerald-700 mt-1">{brl(dados.comissao.paga)}</p>
                           <p className="text-[11px] text-gray-400 mt-1">Repasse já efetuado</p>
@@ -443,7 +443,7 @@ const RelatorioProfissional = () => {
                           <YAxis
                             yAxisId="rs"
                             orientation="right"
-                            stroke="#059669"
+                            stroke="#00b4d8"
                             fontSize={12}
                             tickFormatter={(v: number) => brl(v)}
                             width={90}
@@ -454,7 +454,7 @@ const RelatorioProfissional = () => {
                           <Legend />
                           <Bar isAnimationActive={false} yAxisId="qtd" dataKey="concluidas" name="Concluídas" fill="#94a3b8" radius={[4, 4, 0, 0]} />
                           <Bar isAnimationActive={false} yAxisId="qtd" dataKey="faltas" name="Faltas" fill="#f59e0b" radius={[4, 4, 0, 0]} />
-                          <Bar isAnimationActive={false} yAxisId="rs" dataKey="faturamento" name="Faturamento" fill="#059669" radius={[4, 4, 0, 0]} />
+                          <Bar isAnimationActive={false} yAxisId="rs" dataKey="faturamento" name="Faturamento" fill="#00b4d8" radius={[4, 4, 0, 0]} />
                         </BarChart>
                       </ResponsiveContainer>
 
@@ -480,7 +480,7 @@ const RelatorioProfissional = () => {
                                 <td className="px-3 py-2 text-right tabular-nums text-amber-700">{l.noShow}</td>
                                 <td className="px-3 py-2 text-right tabular-nums text-gray-600">{pct(l.taxaNoShowPct)}</td>
                                 <td className="px-3 py-2 text-right tabular-nums text-gray-600">{horas(l.horasAgendadas)}</td>
-                                <td className="px-3 py-2 text-right tabular-nums font-medium text-emerald-700">{brl(l.faturamento)}</td>
+                                <td className="px-3 py-2 text-right tabular-nums font-medium text-brand-700">{brl(l.faturamento)}</td>
                               </tr>
                             ))}
                           </tbody>
@@ -492,7 +492,7 @@ const RelatorioProfissional = () => {
                               <td className="px-3 py-2 text-right tabular-nums">{dados.totais.noShow}</td>
                               <td className="px-3 py-2 text-right tabular-nums">{pct(dados.totais.taxaNoShowPct)}</td>
                               <td className="px-3 py-2 text-right tabular-nums">{horas(dados.totais.horasAgendadas)}</td>
-                              <td className="px-3 py-2 text-right tabular-nums text-emerald-700">{brl(dados.faturamento)}</td>
+                              <td className="px-3 py-2 text-right tabular-nums text-brand-700">{brl(dados.faturamento)}</td>
                             </tr>
                           </tfoot>
                         </table>

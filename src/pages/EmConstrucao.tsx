@@ -49,7 +49,7 @@ const EmConstrucao = () => {
       <main className="flex-1 flex items-center justify-center p-8">
         <Card className="w-full max-w-lg border-gray-100 shadow-sm">
           <CardContent className="p-8 text-center">
-            <div className="mx-auto mb-4 h-12 w-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+            <div className="mx-auto mb-4 h-12 w-12 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center">
               <Hammer className="h-6 w-6" />
             </div>
 
@@ -66,7 +66,7 @@ const EmConstrucao = () => {
                 <ul className="space-y-1.5">
                   {pronto.map((p) => (
                     <li key={p} className="flex items-start gap-2 text-sm text-gray-700">
-                      <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
+                      <CheckCircle2 className="h-4 w-4 text-brand-600 shrink-0 mt-0.5" />
                       <span>{p}</span>
                     </li>
                   ))}
@@ -78,7 +78,7 @@ const EmConstrucao = () => {
               <Button variant="outline" onClick={() => navigate(-1)} className="gap-2">
                 <ArrowLeft className="h-4 w-4" /> Voltar
               </Button>
-              <Button onClick={() => navigate("/dashboard")} className="bg-emerald-600 hover:bg-emerald-700">
+              <Button onClick={() => navigate("/dashboard")} className="bg-brand-600 hover:bg-brand-700">
                 Ir para o início
               </Button>
             </div>

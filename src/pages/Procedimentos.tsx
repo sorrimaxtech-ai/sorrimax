@@ -405,7 +405,7 @@ const Procedimentos = () => {
           <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between mb-6">
             <div>
               <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-                <ClipboardList className="h-6 w-6 text-emerald-600" /> Procedimentos
+                <ClipboardList className="h-6 w-6 text-brand-600" /> Procedimentos
               </h1>
               <p className="text-sm text-gray-600 mt-0.5">
                 O catálogo que define duração e cor na agenda, valor no orçamento e base de comissão no financeiro.
@@ -426,7 +426,7 @@ const Procedimentos = () => {
               <Button
                 onClick={abrirNovo}
                 disabled={!clinicaId}
-                className="bg-emerald-600 hover:bg-emerald-700 gap-2"
+                className="bg-brand-600 hover:bg-brand-700 gap-2"
               >
                 <Plus className="h-4 w-4" /> Novo procedimento
               </Button>
@@ -514,7 +514,7 @@ const Procedimentos = () => {
                             : <Download className="h-4 w-4" />}
                           Importar procedimentos comuns
                         </Button>
-                        <Button onClick={abrirNovo} className="bg-emerald-600 hover:bg-emerald-700 gap-2">
+                        <Button onClick={abrirNovo} className="bg-brand-600 hover:bg-brand-700 gap-2">
                           <Plus className="h-4 w-4" /> Novo procedimento
                         </Button>
                       </div>
@@ -550,7 +550,7 @@ const Procedimentos = () => {
                                 key={p.id}
                                 onClick={() => setSelecionadoId(ativoNaTela ? null : p.id)}
                                 className={`border-b border-border/50 hover:bg-muted/40 cursor-pointer ${
-                                  ativoNaTela ? "bg-emerald-50/60" : ""
+                                  ativoNaTela ? "bg-brand-50/60" : ""
                                 } ${p.ativo ? "" : "opacity-60"}`}
                               >
                                 <td className="px-4 py-3">
@@ -735,7 +735,7 @@ const Procedimentos = () => {
                               size="sm"
                               onClick={gravarPreco}
                               disabled={salvandoPreco}
-                              className="bg-emerald-600 hover:bg-emerald-700 gap-2"
+                              className="bg-brand-600 hover:bg-brand-700 gap-2"
                             >
                               {salvandoPreco
                                 ? <Loader2 className="h-4 w-4 animate-spin" />
@@ -875,7 +875,7 @@ const Procedimentos = () => {
                               size="sm"
                               onClick={gravarHabilitado}
                               disabled={salvandoHab}
-                              className="bg-emerald-600 hover:bg-emerald-700 gap-2"
+                              className="bg-brand-600 hover:bg-brand-700 gap-2"
                             >
                               {salvandoHab
                                 ? <Loader2 className="h-4 w-4 animate-spin" />

@@ -54,9 +54,9 @@ export function PatientCard({ patient, onClick, onChatClick }: PatientCardProps)
     >
       <div className="flex items-start gap-3">
         {/* Avatar */}
-        <Avatar className="h-10 w-10 border border-gray-100 bg-gray-50 text-emerald-600 font-semibold relative overflow-visible">
+        <Avatar className="h-10 w-10 border border-gray-100 bg-gray-50 text-brand-600 font-semibold relative overflow-visible">
           <AvatarImage src={patient.avatar} alt={patient.name} className="rounded-full overflow-hidden" />
-          <AvatarFallback className="bg-emerald-50 text-emerald-600">
+          <AvatarFallback className="bg-brand-50 text-brand-600">
              {getInitials(patient.name)}
           </AvatarFallback>
           {/* Notification Badge */}
@@ -106,7 +106,7 @@ export function PatientCard({ patient, onClick, onChatClick }: PatientCardProps)
                <div className="flex flex-wrap gap-1">
                    {/* Health Plan Badge */}
                    {patient.healthPlan && (
-                       <Badge variant="secondary" className="h-5 px-1.5 text-[10px] font-normal bg-emerald-50 text-emerald-700 hover:bg-emerald-100">
+                       <Badge variant="secondary" className="h-5 px-1.5 text-[10px] font-normal bg-brand-50 text-brand-700 hover:bg-brand-100">
                            {patient.healthPlan}
                        </Badge>
                    )}
@@ -136,7 +136,7 @@ export function PatientCard({ patient, onClick, onChatClick }: PatientCardProps)
                             e.stopPropagation();
                             onChatClick(patient);
                         }}
-                        className="h-7 w-7 rounded-full bg-green-50 text-green-600 hover:bg-green-100 hover:text-green-700 shadow-sm"
+                        className="h-7 w-7 rounded-full bg-brand-50 text-brand-600 hover:bg-brand-100 hover:text-brand-700 shadow-sm"
                         title="Abrir WhatsApp"
                     >
                         <MessageCircle className="h-4 w-4" />

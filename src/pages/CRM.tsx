@@ -28,9 +28,9 @@ const CRM = () => {
       const demoStages = [
         { id: 'new', title: 'Novos Contatos', color: 'bg-blue-50' },
         { id: 'contact', title: 'Em Contato', color: 'bg-purple-50' },
-        { id: 'qualified', title: 'Qualificados', color: 'bg-emerald-50' },
+        { id: 'qualified', title: 'Qualificados', color: 'bg-brand-50' },
         { id: 'scheduled', title: 'Agendados', color: 'bg-orange-50' },
-        { id: 'converted', title: 'Convertidos', color: 'bg-emerald-100' },
+        { id: 'converted', title: 'Convertidos', color: 'bg-brand-100' },
       ];
 
       const newColumns: Column[] = demoStages.map(stage => ({
@@ -439,7 +439,7 @@ const CRM = () => {
               {/* Botão Novo Contato */}
               <Button
                 onClick={() => setIsNewPatientModalOpen(true)}
-                className="bg-emerald-600 hover:bg-emerald-700 text-white gap-2"
+                className="bg-brand-600 hover:bg-brand-700 text-white gap-2"
               >
                 <Plus className="h-4 w-4" />
                 Novo Contato

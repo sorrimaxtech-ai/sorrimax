@@ -124,7 +124,7 @@ const RotulosAgenda = () => {
           <div className="flex items-start justify-between mb-6">
             <div>
               <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-                <Tag className="h-6 w-6 text-emerald-600" /> Rótulos da agenda
+                <Tag className="h-6 w-6 text-brand-600" /> Rótulos da agenda
               </h1>
               <p className="text-sm text-gray-600 mt-0.5">
                 Classificam o agendamento na grade — urgência, retorno, cortesia — sem virar status.
@@ -132,7 +132,7 @@ const RotulosAgenda = () => {
             </div>
             <Button
               onClick={() => { setForm(VAZIO); setDialogo(true); }}
-              className="bg-emerald-600 hover:bg-emerald-700 gap-2"
+              className="bg-brand-600 hover:bg-brand-700 gap-2"
             >
               <Plus className="h-4 w-4" /> Novo rótulo
             </Button>
@@ -273,7 +273,7 @@ const RotulosAgenda = () => {
 
           <DialogFooter className="gap-2">
             <Button variant="outline" onClick={() => setDialogo(false)}>Cancelar</Button>
-            <Button className="bg-emerald-600 hover:bg-emerald-700 gap-2" onClick={salvar} disabled={salvando}>
+            <Button className="bg-brand-600 hover:bg-brand-700 gap-2" onClick={salvar} disabled={salvando}>
               {salvando && <Loader2 className="h-4 w-4 animate-spin" />} Salvar
             </Button>
           </DialogFooter>

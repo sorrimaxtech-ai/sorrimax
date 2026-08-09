@@ -227,7 +227,7 @@ const Coluna = ({
       <div
         ref={setNodeRef}
         className={`flex-1 min-h-[180px] rounded-b-lg border border-t-0 p-2 space-y-2 transition-colors ${
-          isOver ? "border-emerald-400 bg-emerald-50/60" : "border-gray-200 bg-gray-50/60"
+          isOver ? "border-brand-400 bg-brand-50/60" : "border-gray-200 bg-gray-50/60"
         }`}
       >
         {children}
@@ -437,14 +437,14 @@ const Protese = () => {
           <div className="flex flex-wrap items-start justify-between gap-3 mb-6">
             <div>
               <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-                <Smile className="h-6 w-6 text-emerald-600" /> Controle de prótese
+                <Smile className="h-6 w-6 text-brand-600" /> Controle de prótese
               </h1>
               <p className="text-sm text-gray-600 mt-0.5">
                 Cada peça, da moldagem à instalação — com alerta do que já passou da previsão.
               </p>
             </div>
             <Button
-              className="bg-emerald-600 hover:bg-emerald-700 gap-2"
+              className="bg-brand-600 hover:bg-brand-700 gap-2"
               onClick={abrirNovo}
               disabled={semClinica}
             >
@@ -518,7 +518,7 @@ const Protese = () => {
                     </p>
                     {pacientes.length > 0 && (
                       <Button
-                        className="bg-emerald-600 hover:bg-emerald-700 gap-2 mt-4"
+                        className="bg-brand-600 hover:bg-brand-700 gap-2 mt-4"
                         onClick={abrirNovo}
                       >
                         <Plus className="h-4 w-4" /> Novo serviço
@@ -663,8 +663,8 @@ const Protese = () => {
                           onClick={() => alternarDente(dente)}
                           className={`h-7 w-9 rounded text-[11px] font-mono border transition-colors ${
                             marcado
-                              ? "bg-emerald-600 text-white border-emerald-600"
-                              : "bg-white text-gray-600 border-gray-200 hover:border-emerald-400"
+                              ? "bg-brand-600 text-white border-brand-600"
+                              : "bg-white text-gray-600 border-gray-200 hover:border-brand-400"
                           }`}
                         >
                           {dente}
@@ -723,7 +723,7 @@ const Protese = () => {
               Cancelar
             </Button>
             <Button
-              className="bg-emerald-600 hover:bg-emerald-700 gap-2"
+              className="bg-brand-600 hover:bg-brand-700 gap-2"
               onClick={salvar}
               disabled={salvando || opcoesPacientes.length === 0}
             >

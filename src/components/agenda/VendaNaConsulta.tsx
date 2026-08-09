@@ -138,7 +138,7 @@ export const VendaNaConsulta = ({
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Receipt className="h-5 w-5 text-emerald-600" /> Lançar venda do atendimento
+            <Receipt className="h-5 w-5 text-brand-600" /> Lançar venda do atendimento
           </DialogTitle>
           <DialogDescription>
             Procedimentos executados em <strong>{pacienteNome}</strong>. Entram como aprovados no
@@ -209,14 +209,14 @@ export const VendaNaConsulta = ({
           </Button>
           <div className="text-right">
             <p className="text-xs text-gray-500">Total da venda</p>
-            <p className="text-xl font-bold text-emerald-600 tabular-nums">{brl(total)}</p>
+            <p className="text-xl font-bold text-brand-600 tabular-nums">{brl(total)}</p>
           </div>
         </div>
 
         <DialogFooter className="gap-2">
           <Button variant="outline" onClick={onFechar}>Cancelar</Button>
           <Button
-            className="bg-emerald-600 hover:bg-emerald-700 gap-2"
+            className="bg-brand-600 hover:bg-brand-700 gap-2"
             onClick={lancar}
             disabled={salvando || linhas.length === 0}
           >

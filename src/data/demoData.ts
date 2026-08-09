@@ -633,8 +633,8 @@ export const demoRelatoriosData = {
     { month: "Jan", receita: 44500, despesas: 8920 }
   ],
   services: [
-    { name: "Consultas", value: 65, color: "#10b981" },
-    { name: "Exames", value: 20, color: "#3b82f6" },
+    { name: "Consultas", value: 65, color: "#00b4d8" },
+    { name: "Exames", value: 20, color: "#334155" },
     { name: "Procedimentos", value: 15, color: "#f59e0b" }
   ],
   conversion: [

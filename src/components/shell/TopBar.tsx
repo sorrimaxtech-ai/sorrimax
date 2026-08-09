@@ -47,7 +47,7 @@ export const TopBar = () => {
     .join("") || "?";
 
   return (
-    <header className="h-14 shrink-0 bg-emerald-600 text-white flex items-center gap-3 px-4">
+    <header className="h-14 shrink-0 bg-brand-600 text-white flex items-center gap-3 px-4">
       <button
         onClick={() => navigate("/dashboard")}
         className="flex items-center gap-2 shrink-0 rounded-md px-1 py-1 hover:bg-white/10 transition-colors"

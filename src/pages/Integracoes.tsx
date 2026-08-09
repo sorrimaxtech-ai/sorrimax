@@ -201,7 +201,7 @@ const Integracoes = () => {
           <div className="flex items-start justify-between mb-6 gap-4">
             <div className="min-w-0">
               <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-                <Plug className="h-6 w-6 text-emerald-600" /> Integrações
+                <Plug className="h-6 w-6 text-brand-600" /> Integrações
               </h1>
               <p className="text-sm text-gray-600 mt-0.5">
                 Conecte o WhatsApp da clínica para atender pacientes na aba Conversas.
@@ -212,7 +212,7 @@ const Integracoes = () => {
                 <History className="h-4 w-4" /> Histórico
               </Button>
               <Button
-                className="bg-emerald-600 hover:bg-emerald-700 gap-2"
+                className="bg-brand-600 hover:bg-brand-700 gap-2"
                 onClick={() => setDialogNova(true)}
                 disabled={!isAdmin}
                 title={isAdmin ? undefined : "Só o administrador da clínica cria instância"}
@@ -258,7 +258,7 @@ const Integracoes = () => {
                       passam a chegar na aba Conversas.
                     </p>
                     {isAdmin && (
-                      <Button className="mt-4 bg-emerald-600 hover:bg-emerald-700 gap-2" onClick={() => setDialogNova(true)}>
+                      <Button className="mt-4 bg-brand-600 hover:bg-brand-700 gap-2" onClick={() => setDialogNova(true)}>
                         <Plus className="h-4 w-4" /> Conectar WhatsApp
                       </Button>
                     )}
@@ -272,7 +272,7 @@ const Integracoes = () => {
                         <div className="flex items-start justify-between gap-3">
                           <div className="min-w-0">
                             <div className="flex items-center gap-2">
-                              <Smartphone className="h-4 w-4 text-emerald-600 shrink-0" />
+                              <Smartphone className="h-4 w-4 text-brand-600 shrink-0" />
                               <p className="font-medium truncate">{i.name}</p>
                             </div>
                             <p className="text-xs text-muted-foreground mt-0.5">
@@ -465,7 +465,7 @@ const Integracoes = () => {
 
           <DialogFooter className="gap-2">
             <Button variant="outline" onClick={() => setDialogNova(false)}>Cancelar</Button>
-            <Button className="bg-emerald-600 hover:bg-emerald-700 gap-2" onClick={criar} disabled={criando}>
+            <Button className="bg-brand-600 hover:bg-brand-700 gap-2" onClick={criar} disabled={criando}>
               {criando && <Loader2 className="h-4 w-4 animate-spin" />} Criar e conectar
             </Button>
           </DialogFooter>

@@ -214,14 +214,14 @@ const FinanceiroReceber = () => {
           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-6">
             <div>
               <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-                <ArrowDownCircle className="h-6 w-6 text-emerald-600" /> Contas a receber
+                <ArrowDownCircle className="h-6 w-6 text-brand-600" /> Contas a receber
               </h1>
               <p className="text-sm text-gray-600 mt-0.5">
                 Cada parcela a receber da clínica, com baixa de pagamento, taxa de cartão e valor líquido.
               </p>
             </div>
             <Button
-              className="bg-emerald-600 hover:bg-emerald-700 gap-2"
+              className="bg-brand-600 hover:bg-brand-700 gap-2"
               onClick={() => setAbrirAvulso(true)}
               disabled={!clinicaId}
             >
@@ -247,7 +247,7 @@ const FinanceiroReceber = () => {
                 <p className="text-xs text-gray-500 flex items-center gap-1.5">
                   <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" /> Recebido no período
                 </p>
-                <p className="text-xl font-bold text-emerald-700 mt-1">{brl(kpis.liquidado)}</p>
+                <p className="text-xl font-bold text-brand-700 mt-1">{brl(kpis.liquidado)}</p>
                 <p className="text-[11px] text-gray-400 mt-0.5">
                   {kpis.qtdLiquidada} parcela(s) · líquido {brl(kpis.liquidadoLiquido)}
                 </p>
@@ -460,7 +460,7 @@ const FinanceiroReceber = () => {
                             <td className="px-4 py-3 text-right whitespace-nowrap">
                               {p.status === "pago" ? (
                                 <>
-                                  <span className="font-medium text-emerald-700">
+                                  <span className="font-medium text-brand-700">
                                     {brl(p.valor_liquido ?? p.valor_pago)}
                                   </span>
                                   {Number(p.taxa_valor) > 0 && (
@@ -487,7 +487,7 @@ const FinanceiroReceber = () => {
                                 ) : (
                                   <Button
                                     size="sm"
-                                    className="bg-emerald-600 hover:bg-emerald-700 gap-1.5"
+                                    className="bg-brand-600 hover:bg-brand-700 gap-1.5"
                                     onClick={() => setParcelaBaixa(p)}
                                   >
                                     <CheckCircle2 className="h-3.5 w-3.5" /> Marcar pago

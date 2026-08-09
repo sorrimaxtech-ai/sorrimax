@@ -144,7 +144,7 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="flex min-h-full bg-gradient-to-br from-gray-50 to-emerald-50/30 dashboard-theme">
+    <div className="flex min-h-full bg-gradient-to-br from-gray-50 to-brand-50/30 dashboard-theme">
       <main className="flex-1 min-w-0 overflow-auto">
         <div className="p-8">
           {/* Demo Mode Banner */}
@@ -164,7 +164,7 @@ const Dashboard = () => {
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-gray-900 mb-1">Dashboard</h1>
             <div className="flex flex-col">
-              <p className="text-xl text-emerald-700 font-semibold">
+              <p className="text-xl text-brand-700 font-semibold">
                 Bem-vindo de volta, {userName}!
               </p>
               {clinicName && (
@@ -183,7 +183,7 @@ const Dashboard = () => {
               change={isDemo ? "+23 este mês" : "Em breve"}
               changeType={isDemo ? "positive" : "neutral"}
               icon={Users}
-              iconColor="text-emerald-600"
+              iconColor="text-brand-600"
             />
             <MetricCard
               title="Consultas Hoje"
@@ -207,7 +207,7 @@ const Dashboard = () => {
             <Card className="border-gray-100 shadow-lg hover:shadow-xl transition-shadow duration-300">
               <CardHeader>
                 <CardTitle className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                  <Activity className="h-5 w-5 text-emerald-600" />
+                  <Activity className="h-5 w-5 text-brand-600" />
                   Crescimento de Agendamentos
                 </CardTitle>
                 <p className="text-sm text-gray-600">
@@ -232,9 +232,9 @@ const Dashboard = () => {
                       <Line
                         type="monotone"
                         dataKey="agendamentos"
-                        stroke="#10b981"
+                        stroke="#00b4d8"
                         strokeWidth={3}
-                        dot={{ fill: '#10b981', r: 6 }}
+                        dot={{ fill: '#00b4d8', r: 6 }}
                         activeDot={{ r: 8 }}
                         // A animação do recharts anima stroke-dasharray de 0 até o
                         // comprimento da curva. Aqui ela travava no 1º frame

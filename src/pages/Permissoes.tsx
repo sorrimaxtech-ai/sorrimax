@@ -48,7 +48,7 @@ import {
 // ============================================================================
 
 const CLASSE_GRUPO: Record<string, string> = {
-  "Operação": "bg-emerald-50 text-emerald-700",
+  "Operação": "bg-brand-50 text-brand-700",
   "Clínico": "bg-sky-50 text-sky-700",
   "Comercial": "bg-violet-50 text-violet-700",
   "Gestão": "bg-amber-50 text-amber-700",
@@ -276,7 +276,7 @@ const Permissoes = () => {
           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-6">
             <div>
               <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-                <ShieldCheck className="h-6 w-6 text-emerald-600" /> Perfis e Permissões
+                <ShieldCheck className="h-6 w-6 text-brand-600" /> Perfis e Permissões
               </h1>
               <p className="text-sm text-gray-600 mt-0.5">
                 Defina o que cada função enxerga e altera no sistema, e quem da equipe assume cada papel.
@@ -288,7 +288,7 @@ const Permissoes = () => {
                   <RotateCcw className="h-4 w-4" /> Restaurar perfis padrão
                 </Button>
                 <Button
-                  className="bg-emerald-600 hover:bg-emerald-700 gap-2"
+                  className="bg-brand-600 hover:bg-brand-700 gap-2"
                   onClick={() => { setNomeNovo(""); setDialogoNovo(true); }}
                 >
                   <Plus className="h-4 w-4" /> Novo perfil
@@ -370,7 +370,7 @@ const Permissoes = () => {
                             onClick={() => setSelecionadoId(p.id)}
                             className={`w-full text-left rounded-lg border p-3 transition-colors ${
                               ativo
-                                ? "border-emerald-300 bg-emerald-50"
+                                ? "border-brand-300 bg-brand-50"
                                 : "border-gray-100 bg-white hover:bg-muted/40"
                             }`}
                           >
@@ -424,7 +424,7 @@ const Permissoes = () => {
                               )}
                               {podeEditar && (
                                 <Button
-                                  className="bg-emerald-600 hover:bg-emerald-700 gap-2"
+                                  className="bg-brand-600 hover:bg-brand-700 gap-2"
                                   disabled={!sujo || salvando}
                                   onClick={salvar}
                                 >
@@ -464,7 +464,7 @@ const Permissoes = () => {
                                         <div className="flex justify-center gap-1 mt-1 normal-case tracking-normal">
                                           <button
                                             type="button"
-                                            className="text-[10px] text-emerald-700 hover:underline"
+                                            className="text-[10px] text-brand-700 hover:underline"
                                             onClick={() => alternarColuna(a.chave, true)}
                                           >
                                             todos
@@ -510,7 +510,7 @@ const Permissoes = () => {
                                               type="button"
                                               disabled={!podeEditar}
                                               onClick={() => alternarLinha(mod.chave, !tudo)}
-                                              className="text-left text-gray-800 disabled:cursor-default hover:text-emerald-700 disabled:hover:text-gray-800"
+                                              className="text-left text-gray-800 disabled:cursor-default hover:text-brand-700 disabled:hover:text-gray-800"
                                               title={podeEditar ? "Ligar/desligar a linha inteira" : undefined}
                                             >
                                               {mod.rotulo}
@@ -523,7 +523,7 @@ const Permissoes = () => {
                                                 disabled={!podeEditar}
                                                 onCheckedChange={() => alternar(mod.chave, a.chave)}
                                                 aria-label={`${a.rotulo} ${mod.rotulo}`}
-                                                className="data-[state=checked]:bg-emerald-600 data-[state=checked]:border-emerald-600"
+                                                className="data-[state=checked]:bg-brand-600 data-[state=checked]:border-brand-600"
                                               />
                                             </td>
                                           ))}
@@ -669,7 +669,7 @@ const Permissoes = () => {
           <DialogFooter>
             <Button variant="outline" onClick={() => setDialogoNovo(false)}>Cancelar</Button>
             <Button
-              className="bg-emerald-600 hover:bg-emerald-700 gap-2"
+              className="bg-brand-600 hover:bg-brand-700 gap-2"
               onClick={criar}
               disabled={salvando || !nomeNovo.trim()}
             >
@@ -713,7 +713,7 @@ const Permissoes = () => {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction className="bg-emerald-600 hover:bg-emerald-700" onClick={restaurar}>
+            <AlertDialogAction className="bg-brand-600 hover:bg-brand-700" onClick={restaurar}>
               Restaurar
             </AlertDialogAction>
           </AlertDialogFooter>

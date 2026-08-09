@@ -41,7 +41,7 @@ export const Sidebar = () => {
         className={cn(
           "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors",
           ativo
-            ? "bg-emerald-50 text-emerald-700 font-medium"
+            ? "bg-brand-50 text-brand-700 font-medium"
             : "text-muted-foreground hover:bg-muted hover:text-foreground",
           recolhida && "justify-center",
         )}
@@ -51,7 +51,7 @@ export const Sidebar = () => {
           <>
             <span className="flex-1 text-left truncate">{m.label}</span>
             {m.badge && (
-              <span className="text-[9px] leading-none px-1 py-[3px] rounded bg-emerald-100 text-emerald-700 font-medium shrink-0">
+              <span className="text-[9px] leading-none px-1 py-[3px] rounded bg-brand-100 text-brand-700 font-medium shrink-0">
                 {m.badge}
               </span>
             )}

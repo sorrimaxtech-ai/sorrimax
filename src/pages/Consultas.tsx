@@ -90,7 +90,7 @@ const LinhaConsulta = ({
         <div className="flex items-center gap-1.5">
           <span className="font-medium">{c.pacientes?.nome_completo ?? "—"}</span>
           {c.recorrencia_id && (
-            <Repeat className="h-3 w-3 text-emerald-600 shrink-0" aria-label="Parte de uma série" />
+            <Repeat className="h-3 w-3 text-brand-600 shrink-0" aria-label="Parte de uma série" />
           )}
         </div>
         {c.pacientes?.celular && (
@@ -117,7 +117,7 @@ const LinhaConsulta = ({
           </Button>
         )}
         {c.status === "em_atendimento" && (
-          <Button size="sm" variant="ghost" className="h-8 gap-1.5 text-emerald-700 hover:text-emerald-800"
+          <Button size="sm" variant="ghost" className="h-8 gap-1.5 text-brand-700 hover:text-brand-800"
                   onClick={() => onStatus(c, "concluido")}>
             <CheckCircle2 className="h-3.5 w-3.5" /> Concluir
           </Button>
@@ -331,7 +331,7 @@ const Consultas = () => {
           <div className="flex items-start justify-between mb-6 gap-4 flex-wrap">
             <div>
               <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-                <CalendarDays className="h-6 w-6 text-emerald-600" /> Consultas
+                <CalendarDays className="h-6 w-6 text-brand-600" /> Consultas
               </h1>
               <p className="text-sm text-gray-600 mt-0.5">
                 Confirme, faça check-in e conclua os atendimentos do período.
@@ -339,7 +339,7 @@ const Consultas = () => {
             </div>
             <Button
               onClick={() => { setEmEdicao(null); setDialogAberto(true); }}
-              className="bg-emerald-600 hover:bg-emerald-700 gap-2"
+              className="bg-brand-600 hover:bg-brand-700 gap-2"
             >
               <Plus className="h-4 w-4" /> Nova consulta
             </Button>
@@ -367,7 +367,7 @@ const Consultas = () => {
           <Card className="border-gray-100 mb-4">
             <CardContent className="p-5 space-y-4">
               <div className="flex items-center gap-2 text-sm font-medium text-gray-700">
-                <Filter className="h-4 w-4 text-emerald-600" /> Filtros
+                <Filter className="h-4 w-4 text-brand-600" /> Filtros
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
@@ -518,7 +518,7 @@ const Consultas = () => {
                     type="button"
                     onClick={() => setVisao("lista")}
                     className={`px-3 py-1.5 text-xs font-medium rounded ${
-                      visao === "lista" ? "bg-emerald-600 text-white" : "text-gray-600 hover:bg-gray-50"
+                      visao === "lista" ? "bg-brand-600 text-white" : "text-gray-600 hover:bg-gray-50"
                     }`}
                   >
                     Lista
@@ -527,7 +527,7 @@ const Consultas = () => {
                     type="button"
                     onClick={() => setVisao("paciente")}
                     className={`px-3 py-1.5 text-xs font-medium rounded inline-flex items-center gap-1.5 ${
-                      visao === "paciente" ? "bg-emerald-600 text-white" : "text-gray-600 hover:bg-gray-50"
+                      visao === "paciente" ? "bg-brand-600 text-white" : "text-gray-600 hover:bg-gray-50"
                     }`}
                   >
                     <Users className="h-3.5 w-3.5" /> Por paciente
@@ -536,7 +536,7 @@ const Consultas = () => {
 
                 <div className="flex gap-2">
                   <Button variant="outline" onClick={limpar}>Limpar</Button>
-                  <Button onClick={aplicar} className="bg-emerald-600 hover:bg-emerald-700">
+                  <Button onClick={aplicar} className="bg-brand-600 hover:bg-brand-700">
                     Aplicar
                   </Button>
                 </div>

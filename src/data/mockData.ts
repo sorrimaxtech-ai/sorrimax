@@ -108,7 +108,7 @@ export const initialColumns: Column[] = [
   {
     id: "confirmed",
     title: "Confirmados",
-    color: "bg-green-500",
+    color: "bg-brand-500",
     patients: [
          {
             id: "5",
