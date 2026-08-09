@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { AsaasCard } from "@/components/integracoes/AsaasCard";
 import { Button } from "@/components/ui/button";
@@ -23,13 +23,11 @@ import {
   MoreVertical, QrCode, Link2Off, Trash2, History, Smartphone, AlertTriangle,
 } from "lucide-react";
 import { toast } from "sonner";
-import { useTenant } from "@/hooks/useTenant";
 import {
-  listarInstanciasWa, criarInstanciaWa, conectarInstanciaWa, sincronizarInstanciaWa,
-  desconectarInstanciaWa, excluirInstanciaWa, listarEventosInstancia,
   STATUS_WA_LABEL, STATUS_WA_CLASSE, ACAO_LABEL, formatarNumeroWa, dataHoraWa,
-  ErroInstancia, type InstanciaWa, type EventoInstancia, type ProviderWa,
+  type InstanciaWa, type ProviderWa,
 } from "@/services/whatsapp/instancias";
+import { useInstanciasWa } from "@/hooks/useInstanciasWa";
 
 // ============================================================================
 // Integrações — conectar e gerenciar o WhatsApp da clínica
@@ -45,155 +43,26 @@ import {
 // a terceira camada, não a única.
 // ============================================================================
 
-const erroToast = (titulo: string, e: unknown) => {
-  const err = e as ErroInstancia;
-  toast.error(titulo, { description: err?.detalhe ? `${err.message} (${err.detalhe})` : err?.message });
-};
-
 const Integracoes = () => {
-  const { clinicaId, carregando: carregandoCtx, isAdmin } = useTenant();
-
-  const [instancias, setInstancias] = useState<InstanciaWa[]>([]);
-  const [eventos, setEventos] = useState<EventoInstancia[]>([]);
-  const [carregando, setCarregando] = useState(true);
-  const [ocupado, setOcupado] = useState<string | null>(null);
-  // falha de carga ≠ lista vazia: dizer "nenhum conectado" quando na verdade
-  // não deu pra consultar faria a tela afirmar algo que não verificou.
-  const [falhouCarga, setFalhouCarga] = useState<string | null>(null);
+  // Mesmo hook que a tela de Conversas usa. A lógica de conectar/sincronizar/
+  // remover número vive em um lugar só — aqui é a visão completa (com histórico),
+  // lá é o atalho de quem está atendendo.
+  const {
+    instancias, proprias, compartilhadas, eventos,
+    carregando, ocupado, falhouCarga, criando, conexao, excluir, isAdmin,
+    carregar, criar: criarInstancia, abrirConexao, sincronizar, desconectar,
+    confirmarExclusao, setConexao, setExcluir,
+  } = useInstanciasWa({ comHistorico: true });
 
   const [dialogNova, setDialogNova] = useState(false);
   const [nome, setNome] = useState("");
   const [provider, setProvider] = useState<ProviderWa>("uazapi");
-  const [criando, setCriando] = useState(false);
-
-  const [conexao, setConexao] = useState<{ inst: InstanciaWa; qr: string | null; codigo: string | null } | null>(null);
-  const [excluir, setExcluir] = useState<InstanciaWa | null>(null);
   const [mostrarHistorico, setMostrarHistorico] = useState(false);
 
-  const pollRef = useRef<number | null>(null);
-
-  const carregar = useCallback(async (silencioso = false) => {
-    if (!clinicaId) { if (!carregandoCtx) setCarregando(false); return; }
-    if (!silencioso) setCarregando(true);
-    try {
-      const [lista, hist] = await Promise.all([
-        listarInstanciasWa(),
-        listarEventosInstancia(clinicaId).catch(() => [] as EventoInstancia[]),
-      ]);
-      setInstancias(lista);
-      setEventos(hist);
-      setFalhouCarga(null);
-    } catch (e) {
-      setFalhouCarga((e as ErroInstancia)?.message ?? "Falha ao consultar o servidor.");
-      erroToast("Erro ao carregar integrações", e);
-    } finally {
-      setCarregando(false);
-    }
-  }, [clinicaId, carregandoCtx]);
-
-  useEffect(() => { carregar(); }, [carregar]);
-
-  // Enquanto o QR está na tela, o servidor é consultado a cada 4s até o
-  // provedor confirmar a conexão. Sem isso o usuário escaneia e fica olhando
-  // um QR morto sem saber se deu certo.
-  useEffect(() => {
-    if (!conexao) {
-      if (pollRef.current) { clearInterval(pollRef.current); pollRef.current = null; }
-      return;
-    }
-    pollRef.current = window.setInterval(async () => {
-      try {
-        const r = await sincronizarInstanciaWa(conexao.inst.id);
-        if (r.status === "connected") {
-          toast.success("WhatsApp conectado", {
-            description: r.owner_number ? `Número ${formatarNumeroWa(r.owner_number)}` : undefined,
-          });
-          setConexao(null);
-          carregar(true);
-        }
-      } catch { /* provedor instável: a próxima volta tenta de novo */ }
-    }, 4000);
-    return () => { if (pollRef.current) clearInterval(pollRef.current); };
-  }, [conexao, carregar]);
-
   const criar = async () => {
-    if (nome.trim().length < 2) { toast.error("Dê um nome à instância"); return; }
-    setCriando(true);
-    try {
-      const nova = await criarInstanciaWa(nome.trim(), provider);
-      toast.success("Instância criada", { description: "Agora conecte lendo o QR code." });
-      setDialogNova(false);
-      setNome("");
-      await carregar(true);
-      // leva direto ao QR: instância criada e não conectada não serve pra nada
-      abrirConexao({ ...(nova as InstanciaWa), shared_external: false } as InstanciaWa);
-    } catch (e) {
-      erroToast("Erro ao criar instância", e);
-    } finally {
-      setCriando(false);
-    }
+    const ok = await criarInstancia(nome, provider);
+    if (ok) { setDialogNova(false); setNome(""); }
   };
-
-  const abrirConexao = async (inst: InstanciaWa) => {
-    setOcupado(inst.id);
-    try {
-      const r = await conectarInstanciaWa(inst.id);
-      setConexao({ inst, qr: r.qrcode, codigo: r.codigo });
-      if (!r.qrcode && !r.codigo && r.status === "connected") {
-        toast.info("Esta instância já está conectada.");
-        setConexao(null);
-        carregar(true);
-      }
-    } catch (e) {
-      erroToast("Erro ao iniciar a conexão", e);
-    } finally {
-      setOcupado(null);
-    }
-  };
-
-  const sincronizar = async (inst: InstanciaWa) => {
-    setOcupado(inst.id);
-    try {
-      const r = await sincronizarInstanciaWa(inst.id);
-      toast.success("Sincronizado", { description: STATUS_WA_LABEL[r.status] ?? r.status });
-      await carregar(true);
-    } catch (e) {
-      erroToast("Erro ao sincronizar", e);
-    } finally {
-      setOcupado(null);
-    }
-  };
-
-  const desconectar = async (inst: InstanciaWa) => {
-    setOcupado(inst.id);
-    try {
-      await desconectarInstanciaWa(inst.id);
-      toast.success("Instância desconectada");
-      await carregar(true);
-    } catch (e) {
-      erroToast("Erro ao desconectar", e);
-    } finally {
-      setOcupado(null);
-    }
-  };
-
-  const confirmarExclusao = async () => {
-    if (!excluir) return;
-    setOcupado(excluir.id);
-    try {
-      await excluirInstanciaWa(excluir.id);
-      toast.success("Instância excluída", { description: "Removida também no provedor." });
-      setExcluir(null);
-      await carregar(true);
-    } catch (e) {
-      erroToast("Erro ao excluir", e);
-    } finally {
-      setOcupado(null);
-    }
-  };
-
-  const proprias = instancias.filter((i) => !i.shared_external);
-  const compartilhadas = instancias.filter((i) => i.shared_external);
 
   return (
     <div className="flex min-h-full bg-gray-50">
@@ -223,7 +92,7 @@ const Integracoes = () => {
             </div>
           </div>
 
-          {carregandoCtx || carregando ? (
+          {carregando ? (
             <div className="p-12 flex justify-center">
               <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
             </div>
