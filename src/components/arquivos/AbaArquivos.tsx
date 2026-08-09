@@ -125,9 +125,25 @@ export function AbaArquivos({ clinicaId, pacienteId }: { clinicaId: string; paci
       {carregando ? (
         <div className="flex justify-center py-12"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>
       ) : arquivos.length === 0 ? (
-        <div className="flex flex-col items-center gap-2 rounded-lg border border-dashed py-12 text-center text-sm text-muted-foreground">
-          <Paperclip className="h-8 w-8 opacity-50" />
-          Nenhum arquivo ainda. Envie exames, raio-x, fotos ou documentos (imagem ou PDF, até 25 MB).
+        // Mesmo padrão de vazio da ficha do paciente: ícone grande, título,
+        // texto de apoio e ação central — nada de caixa tracejada destoando.
+        <div className="p-12 text-center">
+          <Paperclip className="h-10 w-10 mx-auto text-gray-300 mb-3" />
+          <p className="font-medium text-gray-800">Nenhum documento pessoal ainda</p>
+          <p className="text-sm text-gray-500 mt-1 max-w-md mx-auto">
+            Envie exames, raio-x, fotos e documentos do paciente (imagem ou PDF, até 25 MB) — organizados por categoria.
+          </p>
+          <div className="mt-4">
+            <Button
+              variant="outline"
+              onClick={() => inputRef.current?.click()}
+              disabled={enviando}
+              className="gap-2 text-brand-700 border-brand-200 hover:bg-brand-50"
+            >
+              {enviando ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+              Enviar arquivo
+            </Button>
+          </div>
         </div>
       ) : (
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
