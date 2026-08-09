@@ -319,6 +319,11 @@ const AbaOrcamentos = ({ clinicaId, pacienteId }: { clinicaId: string; pacienteI
               icone={Receipt}
               titulo="Nenhum orçamento para este paciente"
               texto="O orçamento é o que transforma o plano de tratamento em tratamento executado e em conta a receber."
+              acao={
+                <Button onClick={() => setNovoAberto(true)} className="bg-brand-600 hover:bg-brand-700 gap-2">
+                  <Plus className="h-4 w-4" /> Criar primeiro orçamento
+                </Button>
+              }
             />
           ) : (
             <div className="overflow-x-auto">
@@ -532,8 +537,10 @@ const AbaProntuario = ({
 
 // ---------------------------------------------------------------- aba: Tratamentos
 const AbaTratamentos = ({ clinicaId, pacienteId }: { clinicaId: string; pacienteId: string }) => {
+  const navigate = useNavigate();
   const [registros, setRegistros] = useState<RegistroComProcedimento[]>([]);
   const [carregando, setCarregando] = useState(true);
+  const [novoOrcamento, setNovoOrcamento] = useState(false);
 
   useEffect(() => {
     let vivo = true;
@@ -565,6 +572,11 @@ const AbaTratamentos = ({ clinicaId, pacienteId }: { clinicaId: string; paciente
               icone={Stethoscope}
               titulo="Sem tratamentos registrados"
               texto="Aprovar itens de um orçamento cria automaticamente os tratamentos planejados aqui."
+              acao={
+                <Button onClick={() => setNovoOrcamento(true)} className="bg-brand-600 hover:bg-brand-700 gap-2">
+                  <Plus className="h-4 w-4" /> Criar orçamento para este paciente
+                </Button>
+              }
             />
           ) : (
             <div className="overflow-x-auto">
@@ -616,6 +628,13 @@ const AbaTratamentos = ({ clinicaId, pacienteId }: { clinicaId: string; paciente
           )}
         </CardContent>
       </Card>
+
+      <NovoOrcamentoDialog
+        aberto={novoOrcamento}
+        pacienteIdFixo={pacienteId}
+        onFechar={() => setNovoOrcamento(false)}
+        onCriado={(id) => { setNovoOrcamento(false); navigate(`/orcamentos/${id}`); }}
+      />
     </div>
   );
 };
@@ -967,6 +986,7 @@ const AbaAnamnese = ({ clinicaId, pacienteId }: { clinicaId: string; pacienteId:
 
 // ---------------------------------------------------------------- aba: Documentos
 const AbaDocumentos = ({ clinicaId, pacienteId }: { clinicaId: string; pacienteId: string }) => {
+  const navigate = useNavigate();
   const [lista, setLista] = useState<any[]>([]);
   const [carregando, setCarregando] = useState(true);
   const [visualizando, setVisualizando] = useState<any | null>(null);
@@ -998,6 +1018,15 @@ const AbaDocumentos = ({ clinicaId, pacienteId }: { clinicaId: string; pacienteI
               icone={FileText}
               titulo="Nenhum documento emitido"
               texto="Atestados, receituários, termos de consentimento e orientações emitidos para este paciente aparecem aqui, com data e hash de integridade."
+              acao={
+                <Button
+                  variant="outline"
+                  onClick={() => navigate("/documentos")}
+                  className="gap-2 text-brand-700 border-brand-200 hover:bg-brand-50"
+                >
+                  <FileText className="h-4 w-4" /> Emitir documento
+                </Button>
+              }
             />
           ) : (
             <div className="overflow-x-auto">
