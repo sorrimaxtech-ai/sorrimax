@@ -16,6 +16,7 @@ const CadastroClinica = lazy(() => import("./pages/CadastroClinica"));
 const ConfigurarClinica = lazy(() => import("./pages/ConfigurarClinica"));
 const OnboardingClinica = lazy(() => import("./pages/OnboardingClinica"));
 const Feedback = lazy(() => import("./pages/Feedback"));
+const PreencherAnamneseLink = lazy(() => import("./pages/PreencherAnamneseLink"));
 const OnboardingPreview = lazy(() => import("./pages/OnboardingPreview"));
 const RedefinirSenha = lazy(() => import("./pages/RedefinirSenha"));
 const AgendamentoPublico = lazy(() => import("./pages/AgendamentoPublico"));
@@ -100,6 +101,7 @@ const App = () => (
           <Route path="/auth" element={<Auth />} />
           <Route path="/redefinir-senha" element={<RedefinirSenha />} />
           <Route path="/c/:slug" element={<AgendamentoPublico />} />
+          <Route path="/p/:token" element={<PreencherAnamneseLink />} />
           <Route path="/demo" element={<DemoLoader />} />
           <Route path="/cadastro" element={<CadastroClinica />} />
           <Route path="/configurar-clinica" element={<OnboardingClinica />} />

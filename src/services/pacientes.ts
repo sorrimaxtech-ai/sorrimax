@@ -784,3 +784,40 @@ export async function importarPacientes(
 
   return { inseridos, pulados: linhas.length - inseridos - 0, erros };
 }
+
+// ---------------------------------------------------------------- link online de anamnese
+/** Cria um link público de preenchimento para um modelo e devolve a URL completa. */
+export async function criarLinkAnamnese(clinicaId: string, modeloId: string): Promise<string> {
+  const { data, error } = await sbLivre
+    .from("anamnese_links")
+    .insert({ clinica_id: clinicaId, modelo_id: modeloId })
+    .select("token")
+    .single();
+  if (error) throw error;
+  return `${window.location.origin}/p/${data.token}`;
+}
+
+/** Carrega o formulário público a partir do token (função SECURITY DEFINER). */
+export async function infoLinkAnamnese(token: string): Promise<{
+  clinica: string; modelo: string; perguntas: PerguntaAnamnese[];
+}> {
+  const { data, error } = await sbLivre.rpc("anamnese_link_info", { p_token: token });
+  if (error) throw error;
+  return data as { clinica: string; modelo: string; perguntas: PerguntaAnamnese[] };
+}
+
+/** Envia a resposta do paciente pelo link público. Retorna o id do paciente. */
+export async function responderLinkAnamnese(input: {
+  token: string; nome: string; celular: string; nascimento: string;
+  respostas: Record<string, unknown>;
+}): Promise<string> {
+  const { data, error } = await sbLivre.rpc("anamnese_link_responder", {
+    p_token: input.token,
+    p_nome: input.nome,
+    p_celular: input.celular,
+    p_nascimento: input.nascimento,
+    p_respostas: input.respostas,
+  });
+  if (error) throw error;
+  return data as string;
+}
