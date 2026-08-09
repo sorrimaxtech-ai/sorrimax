@@ -9,7 +9,7 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import {
-  ArrowLeft, Plus, Trash2, Check, X, Loader2, Send, Wallet, Receipt,
+  ArrowLeft, Plus, Trash2, Check, X, Loader2, Send, Wallet, Receipt, Ban,
 } from "lucide-react";
 import { useTenant } from "@/hooks/useTenant";
 import { Odontograma } from "@/components/odontograma/Odontograma";
@@ -17,10 +17,15 @@ import type { FaceDental, RegistroOdontograma, Denticao } from "@/types/odonto";
 import {
   obterOrcamento, listarItens, adicionarItem, removerItem, definirStatusItem,
   publicarOrcamento, definirDesconto, gerarDebitos, listarProcedimentos,
+  cancelarOrcamento, excluirOrcamento,
   listarRegioesFaciais, precoDoProcedimento, brl, type RegiaoFacial,
   STATUS_LABEL, STATUS_CLASSE, type StatusOrcamento,
 } from "@/services/orcamentos";
 import { toast } from "sonner";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { cn } from "@/lib/utils";
 
 // ============================================================================
@@ -166,6 +171,29 @@ const OrcamentoEditor = () => {
     }
   };
 
+  const [confirmando, setConfirmando] = useState<"excluir" | "cancelar" | null>(null);
+
+  const confirmarAcao = async () => {
+    if (!id || !confirmando) return;
+    const excluindo = confirmando === "excluir";
+    setConfirmando(null);
+    try {
+      if (excluindo) {
+        await excluirOrcamento(id);
+        toast.success("Rascunho excluído");
+        navigate("/orcamentos");
+      } else {
+        await cancelarOrcamento(id);
+        await recarregar();
+        toast.success("Orçamento cancelado");
+      }
+    } catch (e: any) {
+      toast.error(excluindo ? "Não foi possível excluir" : "Não foi possível cancelar", {
+        description: e.message,
+      });
+    }
+  };
+
   const faturar = async () => {
     if (!id) return;
     setSalvando(true);
@@ -233,7 +261,42 @@ const OrcamentoEditor = () => {
                 <Send className="h-4 w-4" /> Enviar ao paciente
               </Button>
             )}
+            {/* Ciclo de vida completo: rascunho errado se exclui; proposta morta
+                se cancela (débito/funil ficam intactos — auditoria A2). */}
+            {orc.status === "rascunho" ? (
+              <Button variant="outline" className="gap-2 text-destructive hover:text-destructive"
+                      onClick={() => setConfirmando("excluir")}>
+                <Trash2 className="h-4 w-4" /> Excluir rascunho
+              </Button>
+            ) : !["cancelado", "reprovado", "expirado"].includes(orc.status) && (
+              <Button variant="outline" className="gap-2 text-destructive hover:text-destructive"
+                      onClick={() => setConfirmando("cancelar")}>
+                <Ban className="h-4 w-4" /> Cancelar
+              </Button>
+            )}
           </div>
+
+          <AlertDialog open={confirmando !== null} onOpenChange={(v) => !v && setConfirmando(null)}>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>
+                  {confirmando === "excluir" ? "Excluir este rascunho?" : "Cancelar este orçamento?"}
+                </AlertDialogTitle>
+                <AlertDialogDescription>
+                  {confirmando === "excluir"
+                    ? "O rascunho e seus itens somem de vez. Só é possível porque ele ainda não gerou débitos nem entrou no funil."
+                    : "O orçamento fica marcado como cancelado e sai das pendências. Débitos já gerados continuam no financeiro."}
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Voltar</AlertDialogCancel>
+                <AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                   onClick={confirmarAcao}>
+                  {confirmando === "excluir" ? "Excluir" : "Cancelar orçamento"}
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
 
           {/* Adicionar tratamento */}
           <Card className="border-gray-100 mb-6">

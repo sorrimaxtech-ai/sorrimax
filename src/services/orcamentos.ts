@@ -192,6 +192,37 @@ export async function definirDesconto(id: string, desconto: number) {
 }
 
 /**
+ * Cancela o orçamento inteiro (paciente desistiu, proposta morreu). Débitos já
+ * gerados NÃO são tocados — cobrança se resolve no financeiro, não aqui.
+ */
+export async function cancelarOrcamento(id: string) {
+  const { error } = await supabase.from("orcamentos").update({ status: "cancelado" }).eq("id", id);
+  if (error) throw error;
+}
+
+/**
+ * Exclui um rascunho criado por engano. Só rascunho e só sem vínculos: com
+ * débito gerado ou card no funil, excluir apagaria história — aí é cancelar.
+ * (A FK de oportunidades é CASCADE: o delete levaria o card do CRM junto.)
+ */
+export async function excluirOrcamento(id: string) {
+  const { data: orc, error: e0 } = await supabase
+    .from("orcamentos").select("status").eq("id", id).single();
+  if (e0) throw e0;
+  if (orc.status !== "rascunho") throw new Error("Só rascunhos podem ser excluídos — use cancelar.");
+
+  const [{ count: debitos }, { count: cards }] = await Promise.all([
+    supabase.from("lancamentos").select("id", { count: "exact", head: true }).eq("orcamento_id", id),
+    supabase.from("oportunidades").select("id", { count: "exact", head: true }).eq("orcamento_id", id),
+  ]);
+  if ((debitos ?? 0) > 0) throw new Error("Este orçamento já gerou débitos — cancele em vez de excluir.");
+  if ((cards ?? 0) > 0) throw new Error("Este orçamento está vinculado ao funil de vendas — cancele em vez de excluir.");
+
+  const { error } = await supabase.from("orcamentos").delete().eq("id", id);
+  if (error) throw error;
+}
+
+/**
  * Fecha o orçamento aprovado: gera lançamento financeiro + parcelas + comissões.
  * Roda no servidor (SECURITY DEFINER) e é idempotente — recusa se já gerou.
  */

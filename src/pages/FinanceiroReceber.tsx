@@ -14,6 +14,7 @@ import {
 import {
   ArrowDownCircle, Plus, Loader2, Search, Trash2, Undo2, CheckCircle2,
   AlertTriangle, Wallet, TrendingUp, Info,
+, Ban,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useTenant } from "@/hooks/useTenant";
@@ -21,6 +22,7 @@ import { ParcelaDialog, LancamentoAvulsoDialog } from "@/components/financeiro/P
 import {
   listarParcelas, listarContasFinanceiras, listarCategorias, listarTaxasCartao,
   listarPacientesResumo, totalEmAtraso, calcularKpis, estornarParcela, excluirLancamento,
+  cancelarParcela,
   statusEfetivo, brl, dataBR, hojeISO, mesCorrente, LIMITE_PARCELAS,
   STATUS_PARCELA_LABEL, STATUS_PARCELA_CLASSE, FORMA_PAGAMENTO_LABEL, FORMAS_PAGAMENTO,
   type ParcelaComLancamento, type ContaFinanceira, type CategoriaFinanceira,
@@ -69,6 +71,7 @@ const FinanceiroReceber = () => {
   const [abrirAvulso, setAbrirAvulso] = useState(false);
   const [aExcluir, setAExcluir] = useState<ParcelaComLancamento | null>(null);
   const [aEstornar, setAEstornar] = useState<ParcelaComLancamento | null>(null);
+  const [aCancelar, setACancelar] = useState<ParcelaComLancamento | null>(null);
   const [agindo, setAgindo] = useState(false);
 
   // cadastros auxiliares mudam pouco: carregam uma vez por clínica
@@ -183,6 +186,23 @@ const FinanceiroReceber = () => {
       await carregar();
     } catch (e: any) {
       toast.error("Erro ao estornar", { description: e.message });
+    } finally {
+      setAgindo(false);
+    }
+  };
+
+  const confirmarCancelamento = async () => {
+    if (!aCancelar || !clinicaId) return;
+    setAgindo(true);
+    try {
+      await cancelarParcela(aCancelar.id, clinicaId);
+      toast.success("Parcela cancelada", {
+        description: "Ela sai das pendências e do total em atraso, mas fica no histórico do lançamento.",
+      });
+      setACancelar(null);
+      await carregar();
+    } catch (e: any) {
+      toast.error("Erro ao cancelar", { description: e.message });
     } finally {
       setAgindo(false);
     }
@@ -485,13 +505,24 @@ const FinanceiroReceber = () => {
                                 ) : p.status === "cancelado" || p.status === "estornado" ? (
                                   <span className="text-xs text-gray-400">Sem ação</span>
                                 ) : (
-                                  <Button
-                                    size="sm"
-                                    className="bg-brand-600 hover:bg-brand-700 gap-1.5"
-                                    onClick={() => setParcelaBaixa(p)}
-                                  >
-                                    <CheckCircle2 className="h-3.5 w-3.5" /> Marcar pago
-                                  </Button>
+                                  <>
+                                    <Button
+                                      size="sm"
+                                      className="bg-brand-600 hover:bg-brand-700 gap-1.5"
+                                      onClick={() => setParcelaBaixa(p)}
+                                    >
+                                      <CheckCircle2 className="h-3.5 w-3.5" /> Marcar pago
+                                    </Button>
+                                    {/* cancelamento formal: negociou, perdoou ou renegociou — a
+                                        parcela sai do "em atraso" sem sumir do histórico */}
+                                    <Button
+                                      size="sm" variant="ghost"
+                                      className="gap-1.5 text-gray-500 hover:text-red-600"
+                                      onClick={() => setACancelar(p)}
+                                    >
+                                      <Ban className="h-3.5 w-3.5" /> Cancelar
+                                    </Button>
+                                  </>
                                 )}
                                 <Button
                                   size="icon" variant="ghost"
@@ -540,6 +571,26 @@ const FinanceiroReceber = () => {
         onFechar={() => setAbrirAvulso(false)}
         onCriado={carregar}
       />
+
+      <AlertDialog open={!!aCancelar} onOpenChange={(o) => !o && setACancelar(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Cancelar esta parcela?</AlertDialogTitle>
+            <AlertDialogDescription>
+              A parcela de {brl(aCancelar?.valor)} deixa de ser cobrada: sai das pendências, do
+              total em atraso e da campanha de cobrança. O lançamento e as demais parcelas não mudam.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={agindo}>Voltar</AlertDialogCancel>
+            <AlertDialogAction disabled={agindo}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={confirmarCancelamento}>
+              Cancelar parcela
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <AlertDialog open={!!aEstornar} onOpenChange={(o) => !o && setAEstornar(null)}>
         <AlertDialogContent>
