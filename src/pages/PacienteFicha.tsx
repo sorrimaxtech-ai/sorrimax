@@ -17,8 +17,9 @@ import {
 } from "@/components/ui/select";
 import {
   ArrowLeft, Loader2, MessageCircle, Pencil, Receipt, Stethoscope, ClipboardList,
-  FileText, Wallet, User, CalendarClock, AlertTriangle, Plus, Lock, ExternalLink,
+  FileText, Wallet, User, CalendarClock, AlertTriangle, Plus, Lock, ExternalLink, Paperclip,
 } from "lucide-react";
+import { AbaArquivos } from "@/components/arquivos/AbaArquivos";
 import { toast } from "sonner";
 import { traduzErro } from "@/lib/erros";
 import { useTenant } from "@/hooks/useTenant";
@@ -1279,6 +1280,7 @@ const PacienteFicha = () => {
                   <TabsTrigger value="tratamentos" className="gap-1.5"><Stethoscope className="h-4 w-4" /> Tratamentos</TabsTrigger>
                   <TabsTrigger value="anamnese" className="gap-1.5"><ClipboardList className="h-4 w-4" /> Anamnese</TabsTrigger>
                   <TabsTrigger value="documentos" className="gap-1.5"><FileText className="h-4 w-4" /> Documentos</TabsTrigger>
+                  <TabsTrigger value="arquivos" className="gap-1.5"><Paperclip className="h-4 w-4" /> Arquivos</TabsTrigger>
                   <TabsTrigger value="debitos" className="gap-1.5"><Wallet className="h-4 w-4" /> Débitos</TabsTrigger>
                 </TabsList>
 
@@ -1300,6 +1302,9 @@ const PacienteFicha = () => {
                 </TabsContent>
                 <TabsContent value="documentos">
                   <AbaDocumentos clinicaId={clinicaId!} pacienteId={paciente.id} />
+                </TabsContent>
+                <TabsContent value="arquivos">
+                  <AbaArquivos clinicaId={clinicaId!} pacienteId={paciente.id} />
                 </TabsContent>
                 <TabsContent value="debitos">
                   <AbaDebitos clinicaId={clinicaId!} pacienteId={paciente.id} />

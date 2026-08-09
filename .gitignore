@@ -34,3 +34,4 @@ supabase/.temp/
 
 # Credencial local do banco (nunca versionar)
 .pgpass.local
+deno.lock
