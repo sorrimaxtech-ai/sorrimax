@@ -302,8 +302,11 @@ Deno.serve(async (req) => {
     return Response.json({ ok: true, ignored: event });
   } catch (e) {
     // 200 de propósito: 5xx faz o provedor REENTREGAR o mesmo evento, e com
-    // external_id ausente isso vira duplicata. Erro fica no log.
-    console.error("webhook error", e);
-    return Response.json({ ok: false, error: String(e) }, { status: 200 });
+    // external_id ausente isso vira duplicata. Erro fica no log — mas SÓ o
+    // tipo+mensagem, nunca o objeto inteiro nem o payload: erro de banco pode
+    // carregar valores da linha (PII de saúde) e log de edge é retido (LGPD).
+    const err = e as { name?: string; message?: string };
+    console.error(`webhook error: ${err?.name ?? "Error"} - ${err?.message ?? "sem mensagem"}`);
+    return Response.json({ ok: false }, { status: 200 });
   }
 });
