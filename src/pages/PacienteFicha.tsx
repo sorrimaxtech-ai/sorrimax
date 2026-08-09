@@ -124,15 +124,11 @@ const AbaSobre = ({ paciente, clinicaId }: { paciente: PacienteCompleto; clinica
             <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
               Dados pessoais
             </p>
+            {/* Nome, idade, CPF e celular: sem repetir o que o cabeçalho da ficha
+                já mostra — cada dado aparece em um único lugar da tela. */}
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              <Campo rotulo="Nome completo" valor={paciente.nome_completo} />
               <Campo rotulo="Apelido" valor={paciente.apelido} />
-              <Campo
-                rotulo="Nascimento"
-                valor={`${dataBr(paciente.data_nascimento)}${
-                  idadeEmAnos(paciente.data_nascimento) !== null
-                    ? ` (${idadeEmAnos(paciente.data_nascimento)} anos)` : ""}`}
-              />
+              <Campo rotulo="Nascimento" valor={dataBr(paciente.data_nascimento)} />
               <Campo rotulo="CPF" valor={paciente.cpf ? formatarCpf(paciente.cpf) : null} />
               <Campo rotulo="RG" valor={paciente.rg} />
               <Campo rotulo="Gênero" valor={rotuloDe(GENEROS, paciente.genero)} />
@@ -1233,8 +1229,6 @@ const PacienteFicha = () => {
                       <p className="text-sm text-gray-600 mt-1">
                         Prontuário <span className="font-mono">#{String(prontuario ?? 0).padStart(4, "0")}</span>
                         {idade !== null && ` · ${idade} anos`}
-                        {paciente.cpf && ` · CPF ${formatarCpf(paciente.cpf)}`}
-                        {` · ${formatarCelular(paciente.celular)}`}
                       </p>
                       {paciente.alergias?.length > 0 && (
                         <div className="flex flex-wrap items-center gap-1.5 mt-2">
