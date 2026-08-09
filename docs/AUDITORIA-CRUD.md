@@ -23,12 +23,15 @@ regras de FK direto no banco (pooler), `auditoria_saude()` e navegação nas tel
 
 ## Buracos encontrados (por severidade)
 
-### A1 — Demo mode cobre 4 de 43 páginas
-`useDemoMode/demoData` só em Dashboard, CRM, Financeiro e Index. Agenda em demo mostra
-"Nenhuma clínica vinculada". Para venda por tráfego pago (usuário explora sozinho), o demo
-furado derruba a conversão exatamente onde o Codental brilha (dados de exemplo semeados no
-onboarding). **Recomendação estrutural**: em vez de esticar o demo fake, semear dados reais
-no onboarding (paciente exemplo + consulta + orçamento + débito), como o Codental faz.
+### A1 — Demo mode cobre 4 de 43 páginas ✅ ENDEREÇADO
+Duas frentes resolvidas:
+1. **Recomendação estrutural feita** (migration 0025): onboarding semeia "conta viva"
+   (paciente exemplo + consulta + orçamento + débito) — dado REAL, não fake, como o Codental.
+   A vitrine deixa de depender do demo furado.
+2. **Bug sticky corrigido** (commit `bf5a2db`): o flag de demo em localStorage vazava pra
+   conta real do dono. Agora sessão real sempre vence a demo e zera o flag.
+O demo fake (`demoData`) fica só como vitrine leve pra visitante deslogado; não vale a pena
+esticá-lo pras 43 páginas — o caminho é a conta viva semeada.
 
 ### A2 — Orçamento não tem ciclo de vida completo ✅ RESOLVIDO (lifecycle)
 `cancelarOrcamento` marca `cancelado` (o "perdido" que faltava no funil) sem tocar débitos já
