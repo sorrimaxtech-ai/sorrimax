@@ -30,30 +30,32 @@ furado derruba a conversão exatamente onde o Codental brilha (dados de exemplo 
 onboarding). **Recomendação estrutural**: em vez de esticar o demo fake, semear dados reais
 no onboarding (paciente exemplo + consulta + orçamento + débito), como o Codental faz.
 
-### A2 — Orçamento não tem ciclo de vida completo
-`orcamentos.ts`: cria (rascunho), publica, aprova/recusa **por item**, desconto, gera débitos.
-Não existem: `excluirOrcamento` (rascunho errado fica pra sempre), cancelar/perder o orçamento
-inteiro (funil de vendas sem "perdido" — o CRM tem, o orçamento não), nem editar cabeçalho
-(profissional/convênio) depois de criado.
+### A2 — Orçamento não tem ciclo de vida completo ✅ RESOLVIDO (lifecycle)
+`cancelarOrcamento` marca `cancelado` (o "perdido" que faltava no funil) sem tocar débitos já
+gerados; `excluirOrcamento` apaga **só rascunho sem vínculo** (senão manda cancelar — mesmo padrão
+protetor da 0033), evitando levar junto o card do CRM (FK CASCADE). Ambos com UI em `OrcamentoEditor`.
+Backlog menor: editar cabeçalho (profissional/convênio) depois de criado.
 
-### A3 — `cancelarParcela` existe no service e nenhuma UI chama
-Feature órfã em `financeiro.ts`. Ou expor (menu da parcela em FinanceiroReceber) ou remover.
+### A3 — `cancelarParcela` existe no service e nenhuma UI chama ✅ RESOLVIDO
+Exposto no menu da parcela em `FinanceiroReceber.tsx`.
 
-### B1 — Consultas: `excluirConsulta` é hard delete
-Existe máquina de status com cancelamentos (correto), mas o delete físico apaga histórico que
-alimenta "última consulta" (campanha de retorno). Aceitável para erro de lançamento; ideal:
-restringir a consultas sem venda vinculada.
+### B1 — Consultas: `excluirConsulta` é hard delete ✅ RESOLVIDO (migration 0033)
+Trigger `consulta_protege_exclusao` (BEFORE DELETE) recusa apagar consulta já
+atendida (em_atendimento/concluído/faltou) ou com registros clínicos/financeiros
+vinculados, mandando **cancelar** para preservar histórico. Erro de lançamento
+(agendamento futuro sem nada anexado) segue excluível. Vale pros dois code paths.
 
-### B2 — Sem trilha de auditoria de ações
-Nenhum `audit_log` de quem excluiu/estornou/alterou. Para clínica com equipe, "quem apagou a
-consulta do paciente X?" precisa de resposta.
+### B2 — Sem trilha de auditoria de ações ✅ RESOLVIDO (migration 0032)
+`audit_log` + trigger `registrar_auditoria` em consultas/parcelas/orçamentos/pacientes
+(DELETE e mudança de status), com tela **Ajustes → Atividades**. Responde "quem apagou?".
 
 ### B3 — WhatsApp: envio 1-a-1 apenas
 `enqueueText(chatId, texto)` exige chat existente. Campanha precisa enfileirar por
 `to_number` sem chat prévio (a outbox aceita `chat_id NULL` — falta a RPC em lote).
 
 ### C — Menores
-- `evolution.ts` vazio (resquício; remover).
+- ~~`evolution.ts` vazio (resquício; remover).~~ **Falso alarme**: tem 406 linhas e é o
+  `EvolutionService` usado por ConversationList, WhatsAppConnect, ChatWindow e CRM.tsx. Fica.
 - Órfãs de UI: `alternarAtivoCadeira` tem UI, ok; `duplicarModelo` (documentos) tem UI, ok.
 - Faltas vs. Codental (não são bugs, são backlog): repasse/taxas de maquininha, baixa
   automática de boleto/Pix, convênios com tabela própria (temos preço por convênio em
