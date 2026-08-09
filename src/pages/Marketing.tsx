@@ -15,6 +15,7 @@ import {
   type Campanha, type EnvioCampanha, type TipoCampanha,
 } from "@/services/campanhas";
 import { toast } from "sonner";
+import { LembreteConsultaCard } from "@/components/marketing/LembreteConsultaCard";
 import { cn } from "@/lib/utils";
 
 // ============================================================================
@@ -199,6 +200,12 @@ const Marketing = () => {
             );
           })}
         </div>
+
+        {/* Confirmação automática de consulta */}
+        <section className="mt-8">
+          <h2 className="mb-3 text-lg font-semibold">Confirmação de consultas</h2>
+          <LembreteConsultaCard />
+        </section>
 
         {/* Histórico */}
         <section className="mt-10">

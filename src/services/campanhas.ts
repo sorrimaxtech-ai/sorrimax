@@ -148,3 +148,31 @@ export async function listarEnvios(clinicaId: string, limite = 100): Promise<Env
   if (error) throw error;
   return (data ?? []) as EnvioCampanha[];
 }
+
+// ---------------------------------------------------------------- lembrete de consulta
+export interface ConfigLembrete {
+  ativo: boolean;
+  horas_antes: number;
+  template: string;
+}
+
+export async function obterConfigLembrete(clinicaId: string): Promise<ConfigLembrete | null> {
+  const { data, error } = await supabase
+    .from("clinicas")
+    .select("lembrete_consulta_ativo, lembrete_horas_antes, lembrete_template")
+    .eq("id", clinicaId)
+    .single();
+  if (error) return null;
+  return {
+    ativo: data.lembrete_consulta_ativo,
+    horas_antes: data.lembrete_horas_antes,
+    template: data.lembrete_template,
+  };
+}
+
+export async function salvarConfigLembrete(
+  clinicaId: string, patch: Partial<{ lembrete_consulta_ativo: boolean; lembrete_horas_antes: number; lembrete_template: string }>,
+): Promise<void> {
+  const { error } = await supabase.from("clinicas").update(patch).eq("id", clinicaId);
+  if (error) throw error;
+}
