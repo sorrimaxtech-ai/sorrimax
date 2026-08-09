@@ -80,13 +80,36 @@ export interface Assinatura {
   trial_termina_em: string | null;
 }
 
+const DIAS_TRIAL = 7;
+
 export async function obterAssinatura(): Promise<Assinatura | null> {
-  const { data, error } = await supabase
+  // 1) já assinou? asaas_assinaturas tem a linha (plano/status/vencimento).
+  const { data } = await supabase
     .from("asaas_assinaturas")
     .select("plano, status, proximo_vencimento, trial_termina_em")
     .maybeSingle();
-  if (error) return null;
-  return data as Assinatura | null;
+  if (data) return data as Assinatura;
+
+  // 2) sem assinatura → trial implícito da clínica: created_at + 7 dias.
+  //    (o asaas_assinaturas só nasce quando a clínica escolhe um plano)
+  const { data: cl } = await supabase
+    .from("clinicas")
+    .select("plano, assinatura_status, created_at")
+    .maybeSingle();
+  if (!cl) return null;
+
+  const criada = cl.created_at ? new Date(cl.created_at) : null;
+  const trialFim = criada ? new Date(criada.getTime() + DIAS_TRIAL * 86_400_000).toISOString() : null;
+  const st = String(cl.assinatura_status ?? "trial");
+  const status: Assinatura["status"] =
+    st === "ativa" || st === "atrasada" || st === "cancelada" ? (st as Assinatura["status"]) : "trial";
+
+  return {
+    plano: String(cl.plano ?? "trial"),
+    status,
+    proximo_vencimento: null,
+    trial_termina_em: trialFim,
+  };
 }
 
 export function assinarPlano(

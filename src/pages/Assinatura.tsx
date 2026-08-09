@@ -69,6 +69,9 @@ export default function Assinatura() {
   const fecharDialog = () => { setEscolhido(null); setFatura(null); setCpfCnpj(""); };
 
   const statusAtual = assinatura?.status ?? "trial";
+  const TRIAL_DIAS = 7;
+  const trialFim = assinatura?.trial_termina_em ? new Date(assinatura.trial_termina_em) : null;
+  const diasRestantes = trialFim ? Math.ceil((trialFim.getTime() - Date.now()) / 86_400_000) : null;
 
   return (
     <div className="flex min-h-full bg-background dashboard-theme">
@@ -88,26 +91,51 @@ export default function Assinatura() {
           <>
             {/* Estado atual */}
             <Card className="mb-6">
-              <CardContent className="flex flex-wrap items-center justify-between gap-3 p-5">
-                <div>
-                  <p className="text-sm text-muted-foreground">Seu plano</p>
-                  <p className="text-lg font-bold capitalize">{assinatura?.plano ?? "trial"}</p>
-                </div>
-                <div className="text-right">
+              <CardContent className="p-5">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Seu plano</p>
+                    <p className="text-lg font-bold capitalize">{assinatura?.plano ?? "trial"}</p>
+                  </div>
                   <Badge className={cn("border-0", STATUS_BADGE[statusAtual].classe)}>
                     {STATUS_BADGE[statusAtual].rotulo}
                   </Badge>
-                  {statusAtual === "trial" && assinatura?.trial_termina_em && (
-                    <p className="mt-1 text-xs text-muted-foreground">
-                      Teste até {new Date(assinatura.trial_termina_em).toLocaleDateString("pt-BR")}
-                    </p>
-                  )}
-                  {assinatura?.proximo_vencimento && statusAtual !== "trial" && (
-                    <p className="mt-1 text-xs text-muted-foreground">
-                      Próximo vencimento: {new Date(assinatura.proximo_vencimento).toLocaleDateString("pt-BR")}
-                    </p>
-                  )}
                 </div>
+
+                {/* Contador do teste grátis */}
+                {statusAtual === "trial" && diasRestantes !== null && (
+                  diasRestantes > 0 ? (
+                    <div className="mt-4">
+                      <div className="flex flex-wrap items-baseline justify-between gap-1">
+                        <p className="text-sm font-medium text-gray-900">
+                          {diasRestantes === 1 ? "Falta 1 dia" : `Faltam ${diasRestantes} dias`} de teste grátis
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          termina em {trialFim!.toLocaleDateString("pt-BR")}
+                        </p>
+                      </div>
+                      <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-muted">
+                        <div
+                          className="h-full rounded-full bg-brand-500 transition-all"
+                          style={{ width: `${Math.max(6, Math.min(100, (diasRestantes / TRIAL_DIAS) * 100))}%` }}
+                        />
+                      </div>
+                      <p className="mt-2 text-xs text-muted-foreground">
+                        Assine um plano abaixo antes do fim do teste para não perder o acesso.
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="mt-4 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800">
+                      Seu teste grátis terminou. Escolha um plano abaixo para continuar usando o Sorrimax.
+                    </div>
+                  )
+                )}
+
+                {assinatura?.proximo_vencimento && statusAtual !== "trial" && (
+                  <p className="mt-3 text-xs text-muted-foreground">
+                    Próximo vencimento: {new Date(assinatura.proximo_vencimento).toLocaleDateString("pt-BR")}
+                  </p>
+                )}
               </CardContent>
             </Card>
 

@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
   MessageSquare, Search, Send, Loader2, Smartphone, QrCode,
-  MoreVertical, RefreshCw, Settings2, Paperclip,
+  MoreVertical, RefreshCw, Settings2, Paperclip, Archive,
 } from "lucide-react";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
@@ -170,6 +170,19 @@ const Conversas = () => {
     }
   };
 
+  const alternarArquivo = async (c: WaChatRow) => {
+    const arquivando = !c.archived_at;
+    const { error } = await supabase
+      .from("whatsapp_chats")
+      .update({ archived_at: arquivando ? new Date().toISOString() : null })
+      .eq("id", c.id);
+    if (error) { toast.error("Não foi possível arquivar", { description: traduzErro(error) }); return; }
+    setChats((prev) => prev.map((x) =>
+      x.id === c.id ? { ...x, archived_at: arquivando ? new Date().toISOString() : null } : x));
+    toast.success(arquivando ? "Conversa arquivada" : "Conversa de volta à lista");
+    if (arquivando) setAtivo(null);
+  };
+
   const enviarArquivo = async (file: File) => {
     if (!ativo || enviando) return;
     // 25 MB é o teto do nosso armazenamento; avisar antes de subir evita o
@@ -214,7 +227,7 @@ const Conversas = () => {
     <div className="flex h-full bg-gray-50 overflow-hidden">
       <main className="flex-1 min-w-0 flex overflow-hidden">
         {/* Lista de conversas */}
-        <div className="w-80 border-r border-border bg-white flex flex-col shrink-0 h-full">
+        <div className="w-[340px] border-r border-border bg-white flex flex-col shrink-0 h-full">
           <div className="p-4 border-b border-border">
             <div className="flex items-center justify-between gap-2 mb-3">
               <h1 className="text-lg font-semibold flex items-center gap-2">
@@ -302,7 +315,7 @@ const Conversas = () => {
             </div>
           </div>
 
-          <div className="flex-1 overflow-y-auto">
+          <div className="flex-1 overflow-y-auto px-2 py-1 space-y-0.5">
             {carregandoCtx || carregando ? (
               <div className="p-8 flex justify-center"><Loader2 className="h-5 w-5 animate-spin text-muted-foreground" /></div>
             ) : visiveis.length === 0 ? (
@@ -353,29 +366,56 @@ const Conversas = () => {
               </div>
             ) : visiveis.map((c) => (
               <button key={c.id} onClick={() => abrirChat(c.id)}
-                className={cn("w-full text-left px-3 py-3 border-b border-border/50 hover:bg-muted/50 transition-colors flex items-center gap-3",
-                  ativo === c.id && "bg-brand-50")}>
+                className={cn(
+                  "group w-full text-left px-3 py-3 flex items-center gap-3 rounded-xl",
+                  "transition-colors duration-200 hover:bg-muted/60",
+                  ativo === c.id && "bg-brand-50/80",
+                )}>
                 <AvatarContato nome={c.name} telefone={c.contact_phone}
-                               fotoUrl={c.profile_pic_url} tamanho="md" />
+                               fotoUrl={c.profile_pic_url} tamanho="md" comCanal />
                 <div className="min-w-0 flex-1">
-                  <div className="flex items-baseline justify-between gap-2">
-                    <span className={cn("text-sm truncate",
-                      c.unread_count > 0 ? "font-semibold text-gray-900" : "font-medium")}>
+                  <div className="flex items-baseline justify-between gap-3">
+                    <span className={cn(
+                      "text-[14.5px] truncate transition-colors duration-200",
+                      "group-hover:text-brand-700",
+                      c.unread_count > 0 ? "font-semibold text-gray-900" : "font-medium text-gray-800",
+                    )}>
                       {c.name ?? formatarNumeroWa(c.contact_phone)}
                     </span>
                     {c.last_message_time && (
-                      <span className="text-[10px] text-muted-foreground shrink-0">
+                      <span className={cn(
+                        "text-[10px] font-medium shrink-0",
+                        c.unread_count > 0 ? "text-brand-600 font-bold" : "text-muted-foreground",
+                      )}>
                         {horaCurta(c.last_message_time)}
                       </span>
                     )}
                   </div>
+
+                  {/* etiquetas: paciente vinculado e arquivada — o que muda a
+                      decisão de quem atende, sem precisar abrir a conversa */}
+                  {(c.paciente_id || c.archived_at) && (
+                    <div className="flex items-center gap-1 mt-1">
+                      {c.paciente_id && (
+                        <span className="inline-flex items-center gap-0.5 rounded-md bg-brand-50 px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-wide text-brand-700">
+                          Paciente
+                        </span>
+                      )}
+                      {c.archived_at && (
+                        <span className="inline-flex items-center rounded-md bg-slate-100 px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-wide text-slate-500">
+                          Arquivada
+                        </span>
+                      )}
+                    </div>
+                  )}
+
                   <div className="flex items-center justify-between gap-2 mt-0.5">
                     <p className={cn("text-xs truncate",
                       c.unread_count > 0 ? "text-gray-700" : "text-muted-foreground")}>
                       {c.last_message_content ?? "—"}
                     </p>
                     {c.unread_count > 0 && (
-                      <Badge className="bg-brand-600 hover:bg-brand-600 text-[10px] h-5 min-w-5 px-1.5 shrink-0">
+                      <Badge className="bg-brand-600 hover:bg-brand-600 text-[10px] h-5 min-w-5 px-1.5 shrink-0 rounded-full">
                         {c.unread_count}
                       </Badge>
                     )}
@@ -422,6 +462,20 @@ const Conversas = () => {
                     {formatarNumeroWa(chatAtivo.contact_phone)}
                   </p>
                 </div>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0"
+                            aria-label="Ações da conversa">
+                      <MoreVertical className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-52">
+                    <DropdownMenuItem onClick={() => alternarArquivo(chatAtivo)}>
+                      <Archive className="h-4 w-4 mr-2" />
+                      {chatAtivo.archived_at ? "Desarquivar" : "Arquivar conversa"}
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
                 <VincularPacienteBotao
                   chatId={chatAtivo.id}
                   pacienteId={(chatAtivo as any).paciente_id ?? null}
