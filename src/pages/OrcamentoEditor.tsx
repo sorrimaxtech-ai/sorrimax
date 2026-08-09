@@ -15,6 +15,14 @@ import {
 import { useTenant } from "@/hooks/useTenant";
 import { Odontograma } from "@/components/odontograma/Odontograma";
 import type { FaceDental, RegistroOdontograma, Denticao } from "@/types/odonto";
+import { faceInternaDoDente, faceCentralDoDente } from "@/types/odonto";
+import { cn } from "@/lib/utils";
+
+// Faces relevantes de um dente, na notação certa (interna e central mudam por
+// arcada/posição): vestibular, mesial, distal + palatina|lingual + incisal|oclusal.
+const facesDoDente = (dente: number): FaceDental[] => [
+  "vestibular", "mesial", "distal", faceInternaDoDente(dente), faceCentralDoDente(dente),
+];
 import {
   obterOrcamento, listarItens, adicionarItem, removerItem, definirStatusItem,
   publicarOrcamento, definirDesconto, gerarDebitos, listarProcedimentos,
@@ -376,13 +384,35 @@ const OrcamentoEditor = () => {
                   registros={registros}
                   denticaoInicial={aba === "decidua" ? "decidua" : "permanente"}
                   onSelecionarDente={(d) => { setDente(d); setFaces([]); setRegiao(""); }}
-                  onSelecionarFace={(d, f) => {
-                    setDente(d);
-                    setRegiao("");
-                    setFaces((prev) => prev.includes(f) ? prev.filter((x) => x !== f) : [...prev, f]);
-                  }}
                   onSelecionarRegiao={(r) => { setRegiao(r); setDente(null); setFaces([]); }}
                 />
+              )}
+
+              {/* seletor de faces do dente escolhido (opcional — restauração numa
+                  superfície específica). O odontograma agora seleciona o dente; a
+                  face fina é marcada aqui, que é onde ela importa. */}
+              {dente != null && aba !== "hof" && (
+                <div className="mt-3 flex flex-wrap items-center gap-2 rounded-lg border bg-muted/30 p-2.5">
+                  <span className="text-xs text-muted-foreground">Faces do dente {dente} <span className="opacity-70">(opcional)</span>:</span>
+                  {facesDoDente(dente).map((f) => (
+                    <button
+                      key={f}
+                      type="button"
+                      onClick={() => setFaces((prev) => prev.includes(f) ? prev.filter((x) => x !== f) : [...prev, f])}
+                      className={cn(
+                        "rounded-full px-2.5 py-1 text-xs capitalize transition-colors",
+                        faces.includes(f) ? "bg-brand-600 text-white" : "border bg-white text-muted-foreground hover:border-brand-300",
+                      )}
+                    >
+                      {f}
+                    </button>
+                  ))}
+                  {faces.length > 0 && (
+                    <button type="button" onClick={() => setFaces([])} className="text-xs text-muted-foreground underline hover:text-foreground">
+                      limpar
+                    </button>
+                  )}
+                </div>
               )}
 
               <div className="flex justify-end mt-4">

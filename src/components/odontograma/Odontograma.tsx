@@ -4,10 +4,7 @@ import {
   CORES_ESTADO,
   DENTES_DECIDUOS,
   DENTES_PERMANENTES,
-  faceCentralDoDente,
-  faceInternaDoDente,
   isArcadaSuperior,
-  isLadoDireitoDoPaciente,
   type Denticao,
   type EstadoOdontograma,
   type FaceDental,
@@ -15,133 +12,94 @@ import {
 } from '@/types/odonto';
 
 // ============================================================================
-// Odontograma — notação FDI, faces clicáveis, estado por cor
+// Odontograma — notação FDI, dentes anatômicos, estado por cor
 // ----------------------------------------------------------------------------
-// Cada dente é um quadrado dividido em 5 regiões clicáveis:
-//
-//        ┌─────────────┐
-//        │ \  externa / │        externa = vestibular
-//        │  ┌────────┐  │        centro  = oclusal (posterior) ou incisal (anterior)
-//        │  │ centro │  │        interna = palatina (superior) ou lingual (inferior)
-//        │  └────────┘  │        laterais = mesial / distal, conforme o quadrante
-//        │ /  interna \ │
-//        └─────────────┘
-//
-// A face mesial é a que aponta para a linha média do arco. Como os quadrantes
-// direitos do paciente são desenhados à esquerda da tela, o lado da mesial
-// inverte entre os hemiarcos — detalhe que dentista percebe na hora.
+// Cada dente é uma silhueta (coroa + raiz) em vez de um quadrado abstrato. A
+// coroa aponta para a linha média (superior: coroa pra baixo; inferior: pra
+// cima), e a largura muda pelo tipo: incisivo estreito, molar largo. O dente
+// pinta inteiro pela cor do estado predominante — leitura de "o que tem nesse
+// dente" na hora. A marcação por FACE (restauração vestibular etc.) é feita no
+// editor de orçamento, onde ela importa; aqui o clique seleciona o dente todo.
 // ============================================================================
 
-const T = 44; // lado do quadrado do dente, em px
-const M = 13; // margem até o centro
+// silhueta base (viewBox 40x48): coroa arredondada embaixo + raiz cônica no topo
+const TOOTH_PATH =
+  'M20 4 C17 5 17 9 17 13 C12 14 9 18 9 24 C9 39 12 44 20 44 C28 44 31 39 31 24 C31 18 28 14 23 13 C23 9 23 5 20 4 Z';
+const VB_W = 40;
+const VB_H = 48;
 
-type PoligonoFace = { face: FaceDental; points: string };
-
-/** Monta os 5 polígonos do dente já com as faces certas para o quadrante. */
-function poligonosDoDente(dente: number): PoligonoFace[] {
-  const externa: FaceDental = 'vestibular';
-  const interna = faceInternaDoDente(dente);
-  const centro = faceCentralDoDente(dente);
-
-  // Superior: vestibular para cima. Inferior: vestibular para baixo.
-  const superior = isArcadaSuperior(dente);
-  const faceTopo = superior ? externa : interna;
-  const faceBase = superior ? interna : externa;
-
-  // Mesial aponta para a linha média (centro da imagem).
-  const direitaDoPaciente = isLadoDireitoDoPaciente(dente);
-  const faceEsquerda: FaceDental = direitaDoPaciente ? 'distal' : 'mesial';
-  const faceDireita: FaceDental = direitaDoPaciente ? 'mesial' : 'distal';
-
-  return [
-    { face: faceTopo, points: `0,0 ${T},0 ${T - M},${M} ${M},${M}` },
-    { face: faceDireita, points: `${T},0 ${T},${T} ${T - M},${T - M} ${T - M},${M}` },
-    { face: faceBase, points: `0,${T} ${T},${T} ${T - M},${T - M} ${M},${T - M}` },
-    { face: faceEsquerda, points: `0,0 0,${T} ${M},${T - M} ${M},${M}` },
-    { face: centro, points: `${M},${M} ${T - M},${M} ${T - M},${T - M} ${M},${T - M}` },
-  ];
+/** Largura relativa por tipo de dente (2º dígito do FDI). */
+function larguraDoDente(dente: number): number {
+  const pos = dente % 10;
+  if (pos <= 2) return 0.82; // incisivo
+  if (pos === 3) return 0.88; // canino
+  if (pos <= 5) return 1.0; // pré-molar
+  return 1.32; // molar
 }
+
+const PRIORIDADE: Record<EstadoOdontograma, number> = {
+  condicao: 0,
+  planejado: 1,
+  em_execucao: 2,
+  finalizado: 3,
+};
 
 interface DenteProps {
   numero: number;
   registros: RegistroOdontograma[];
   selecionado: boolean;
-  onSelecionarFace: (dente: number, face: FaceDental) => void;
-  onSelecionarDente: (dente: number) => void;
+  onSelecionar: (dente: number) => void;
 }
 
-function Dente({
-  numero,
-  registros,
-  selecionado,
-  onSelecionarFace,
-  onSelecionarDente,
-}: DenteProps) {
-  const poligonos = useMemo(() => poligonosDoDente(numero), [numero]);
-
-  // Estado predominante por face. Se houver mais de um registro para a mesma
-  // face, o mais avançado no fluxo vence — o dentista precisa ver o que já foi
-  // feito, não o que ainda está planejado.
-  const prioridade: Record<EstadoOdontograma, number> = {
-    condicao: 0,
-    planejado: 1,
-    em_execucao: 2,
-    finalizado: 3,
-  };
-
-  const estadoPorFace = useMemo(() => {
-    const mapa = new Map<FaceDental, EstadoOdontograma>();
+function Dente({ numero, registros, selecionado, onSelecionar }: DenteProps) {
+  // estado predominante do dente inteiro (o mais avançado no fluxo vence)
+  const estado = useMemo<EstadoOdontograma | null>(() => {
+    let melhor: EstadoOdontograma | null = null;
     for (const r of registros) {
       if (r.dente !== numero) continue;
-      // registro sem face marcada pinta o dente inteiro
-      const faces = r.faces.length ? r.faces : poligonos.map((p) => p.face);
-      for (const f of faces) {
-        const atual = mapa.get(f);
-        if (!atual || prioridade[r.estado] > prioridade[atual]) mapa.set(f, r.estado);
-      }
+      if (!melhor || PRIORIDADE[r.estado] > PRIORIDADE[melhor]) melhor = r.estado;
     }
-    return mapa;
-  }, [registros, numero, poligonos]);
+    return melhor;
+  }, [registros, numero]);
 
   const temAnotacao = registros.some((r) => r.dente === numero && r.anotacao);
 
+  const flip = !isArcadaSuperior(numero);
+  const sx = larguraDoDente(numero);
+  const transform =
+    `${flip ? `translate(0,${VB_H}) scale(1,-1) ` : ''}` +
+    `translate(${VB_W / 2},0) scale(${sx},1) translate(${-VB_W / 2},0)`;
+
+  const rotuloEstado = estado ? ` — ${CORES_ESTADO[estado].label}` : '';
+
   return (
     <div className="flex flex-col items-center gap-1">
-      <svg
-        width={T}
-        height={T}
-        viewBox={`0 0 ${T} ${T}`}
+      <button
+        type="button"
+        onClick={() => onSelecionar(numero)}
+        aria-label={`Dente ${numero}${rotuloEstado}`}
         className={cn(
-          'text-muted-foreground/60 transition-shadow',
-          selecionado && 'ring-2 ring-primary rounded-sm',
+          'rounded-lg p-0.5 text-muted-foreground/70 transition-colors hover:bg-primary/5 hover:text-primary',
+          selecionado && 'ring-2 ring-primary',
         )}
-        role="group"
-        aria-label={`Dente ${numero}`}
       >
-        {poligonos.map(({ face, points }) => {
-          const estado = estadoPorFace.get(face);
-          return (
-            <polygon
-              key={face}
-              points={points}
-              fill={estado ? CORES_ESTADO[estado].fill : 'transparent'}
-              stroke="currentColor"
-              strokeWidth={0.75}
-              className="cursor-pointer hover:fill-primary/20"
-              onClick={(e) => {
-                e.stopPropagation();
-                onSelecionarFace(numero, face);
-              }}
-            >
-              <title>{`Dente ${numero} — ${face}${estado ? ` (${CORES_ESTADO[estado].label})` : ''}`}</title>
-            </polygon>
-          );
-        })}
-      </svg>
+        <svg width={30} height={36} viewBox={`0 0 ${VB_W} ${VB_H}`} role="img">
+          <title>{`Dente ${numero}${rotuloEstado}`}</title>
+          <path
+            d={TOOTH_PATH}
+            transform={transform}
+            fill={estado ? CORES_ESTADO[estado].fill : 'transparent'}
+            fillOpacity={estado ? 0.5 : 0}
+            stroke="currentColor"
+            strokeWidth={1.4}
+            strokeLinejoin="round"
+          />
+        </svg>
+      </button>
 
       <button
         type="button"
-        onClick={() => onSelecionarDente(numero)}
+        onClick={() => onSelecionar(numero)}
         className={cn(
           'relative text-xs font-medium tabular-nums transition-colors hover:text-primary',
           selecionado ? 'text-primary' : 'text-muted-foreground',
@@ -163,25 +121,19 @@ export interface OdontogramaProps {
   denticaoInicial?: Denticao;
   /** Estados visíveis. Filtrar repinta o odontograma. */
   estadosVisiveis?: EstadoOdontograma[];
+  /** Chamado ao clicar num dente (seleção). A face é marcada no editor. */
   onSelecionarFace?: (dente: number, face: FaceDental) => void;
   onSelecionarDente?: (dente: number) => void;
   onSelecionarRegiao?: (regiao: string) => void;
   className?: string;
 }
 
-const REGIOES = [
-  'Maxila',
-  'Mandíbula',
-  'Arcada superior',
-  'Arcada inferior',
-  'Arcadas',
-] as const;
+const REGIOES = ['Maxila', 'Mandíbula', 'Arcada superior', 'Arcada inferior', 'Arcadas'] as const;
 
 export function Odontograma({
   registros,
   denticaoInicial = 'permanente',
   estadosVisiveis,
-  onSelecionarFace,
   onSelecionarDente,
   onSelecionarRegiao,
   className,
@@ -204,7 +156,7 @@ export function Odontograma({
       atual.includes(estado) ? atual.filter((e) => e !== estado) : [...atual, estado],
     );
 
-  const selecionarDente = (dente: number) => {
+  const selecionar = (dente: number) => {
     setDenteSelecionado(dente);
     onSelecionarDente?.(dente);
   };
@@ -213,33 +165,13 @@ export function Odontograma({
     <div className="flex items-start justify-center gap-4">
       <div className="flex gap-1">
         {esquerda.map((d) => (
-          <Dente
-            key={d}
-            numero={d}
-            registros={registrosVisiveis}
-            selecionado={denteSelecionado === d}
-            onSelecionarFace={(dente, face) => {
-              setDenteSelecionado(dente);
-              onSelecionarFace?.(dente, face);
-            }}
-            onSelecionarDente={selecionarDente}
-          />
+          <Dente key={d} numero={d} registros={registrosVisiveis} selecionado={denteSelecionado === d} onSelecionar={selecionar} />
         ))}
       </div>
       <div className="w-px self-stretch bg-border" aria-hidden />
       <div className="flex gap-1">
         {direita.map((d) => (
-          <Dente
-            key={d}
-            numero={d}
-            registros={registrosVisiveis}
-            selecionado={denteSelecionado === d}
-            onSelecionarFace={(dente, face) => {
-              setDenteSelecionado(dente);
-              onSelecionarFace?.(dente, face);
-            }}
-            onSelecionarDente={selecionarDente}
-          />
+          <Dente key={d} numero={d} registros={registrosVisiveis} selecionado={denteSelecionado === d} onSelecionar={selecionar} />
         ))}
       </div>
     </div>
@@ -267,7 +199,7 @@ export function Odontograma({
       </div>
 
       {/* arcadas */}
-      <div className="space-y-6 overflow-x-auto py-2">
+      <div className="space-y-5 overflow-x-auto py-2">
         {renderArcada(grupos.supDireito, grupos.supEsquerdo)}
         <div className="h-px bg-border" aria-hidden />
         {renderArcada(grupos.infDireito, grupos.infEsquerdo)}
