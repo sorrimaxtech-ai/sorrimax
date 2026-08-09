@@ -592,8 +592,16 @@ export function laboratoriosConhecidos(lista: ProteseServico[]): string[] {
 export function validarProtese(input: ProteseInput): string | null {
   if (!input.pacienteId) return "Selecione o paciente.";
   if (!input.tipoPeca.trim()) return "Informe o tipo de peça.";
-  if (input.valorCusto !== null && input.valorCusto !== undefined && input.valorCusto < 0)
-    return "O valor de custo não pode ser negativo.";
+  if (input.valorCusto !== null && input.valorCusto !== undefined) {
+    if (!Number.isFinite(input.valorCusto)) return "Valor de custo inválido.";
+    if (input.valorCusto < 0) return "O valor de custo não pode ser negativo.";
+    if (input.valorCusto > 1_000_000) return "Valor de custo acima do limite (R$ 1.000.000).";
+  }
+  if (input.previsaoRetorno) {
+    // aceita só data ISO (o <input type=date> já garante, mas o service é o portão)
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(input.previsaoRetorno) || Number.isNaN(Date.parse(input.previsaoRetorno)))
+      return "Data de previsão inválida.";
+  }
   return null;
 }
 

@@ -27,10 +27,11 @@ import {
 import { toast } from "sonner";
 import { useTenant } from "@/hooks/useTenant";
 import { DENTES_PERMANENTES, DENTES_DECIDUOS, isArcadaSuperior } from "@/types/odonto";
+import { CampoMoeda } from "@/components/ui/campo-moeda";
 import {
   listarProteses, listarPacientesResumo, criarProtese, atualizarProtese, moverEtapa,
   excluirProtese, validarProtese, laboratoriosConhecidos, resumirProteses,
-  mensagemErro, brl, dataBr,
+  mensagemErro, brl, dataBr, hojeISO,
   ETAPAS_PROTESE, ETAPA_LABEL, ETAPA_CLASSE, ETAPA_PONTO, ETAPA_AJUDA,
   type ProteseServico, type EtapaProtese, type ProteseInput,
 } from "@/services/estoque";
@@ -625,7 +626,15 @@ const Protese = () => {
                 <Input
                   id="pr-cor"
                   value={form.cor ?? ""}
-                  onChange={(e) => setForm({ ...form, cor: e.target.value })}
+                  onChange={(e) =>
+                    setForm({
+                      // escala de cor (Vita) é código curto: A2, B1, BL3, A3,5.
+                      // Normaliza pra maiúscula e barra caractere fora do padrão.
+                      ...form,
+                      cor: e.target.value.toUpperCase().replace(/[^A-Z0-9 .,/-]/g, "").slice(0, 16),
+                    })
+                  }
+                  maxLength={16}
                   placeholder="Ex.: A2, B1, BL3"
                 />
               </div>
@@ -692,6 +701,8 @@ const Protese = () => {
                 <Label htmlFor="pr-prev">Previsão de retorno</Label>
                 <Input
                   id="pr-prev" type="date"
+                  min={hojeISO()}
+                  max="2100-12-31"
                   value={form.previsaoRetorno ?? ""}
                   onChange={(e) => setForm({ ...form, previsaoRetorno: e.target.value })}
                 />
@@ -700,18 +711,15 @@ const Protese = () => {
                 </p>
               </div>
               <div className="grid gap-1.5">
-                <Label htmlFor="pr-custo">Valor de custo (R$)</Label>
-                <Input
-                  id="pr-custo" type="number" min={0} step="0.01"
-                  value={form.valorCusto ?? ""}
-                  onChange={(e) =>
-                    setForm({
-                      ...form,
-                      valorCusto: e.target.value === "" ? null : Number(e.target.value),
-                    })
-                  }
-                  placeholder="Quanto o laboratório cobra"
+                <Label htmlFor="pr-custo">Valor de custo</Label>
+                <CampoMoeda
+                  id="pr-custo"
+                  value={form.valorCusto}
+                  onChange={(reais) => setForm({ ...form, valorCusto: reais })}
                 />
+                <p className="text-[11px] text-gray-400">
+                  Quanto o laboratório cobra pela peça.
+                </p>
               </div>
             </div>
 
