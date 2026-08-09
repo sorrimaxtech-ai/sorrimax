@@ -646,3 +646,139 @@ export async function limparDadosExemplo(): Promise<void> {
   const { error } = await supabase.rpc("limpar_dados_exemplo");
   if (error) throw error;
 }
+
+// ============================================================================
+// Importar / Exportar pacientes — a "porta de entrada" da migração do concorrente
+// ----------------------------------------------------------------------------
+// A pergunta nº1 de quem troca de sistema: "como trago meus 800 pacientes?".
+// Export gera CSV da base; import lê CSV (nome, celular, nascimento, cpf, email),
+// deduplica por celular e insere em lote respeitando a RLS do tenant.
+// ============================================================================
+
+export interface LinhaImport {
+  nome: string;
+  celular: string;
+  nascimento: string; // YYYY-MM-DD
+  cpf?: string;
+  email?: string;
+}
+
+export interface ResultadoImport {
+  inseridos: number;
+  pulados: number; // já existiam (mesmo celular) ou inválidos
+  erros: string[];
+}
+
+/** CSV da base inteira — colunas legíveis, pronto pra abrir no Excel. */
+export async function exportarPacientesCSV(clinicaId: string): Promise<string> {
+  const { data, error } = await supabase
+    .from("pacientes")
+    .select("nome_completo, celular, cpf, data_nascimento, email, cidade, uf")
+    .eq("clinica_id", clinicaId)
+    .order("nome_completo");
+  if (error) throw error;
+  const cabecalho = ["Nome", "Celular", "CPF", "Nascimento", "Email", "Cidade", "UF"];
+  const esc = (v: unknown) => {
+    const s = String(v ?? "");
+    return /[",\n;]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+  };
+  const linhas = (data ?? []).map((p: any) =>
+    [p.nome_completo, p.celular, p.cpf, p.data_nascimento, p.email, p.cidade, p.uf].map(esc).join(","));
+  return [cabecalho.join(","), ...linhas].join("\n");
+}
+
+/** Parser de CSV simples porém correto (aspas, vírgula dentro de campo, ;/,). */
+export function parseCSV(texto: string): string[][] {
+  const linhas: string[][] = [];
+  let campo = "", linha: string[] = [], dentroAspas = false;
+  const sep = (texto.split("\n")[0]?.includes(";") && !texto.split("\n")[0]?.includes(",")) ? ";" : ",";
+  for (let i = 0; i < texto.length; i++) {
+    const c = texto[i];
+    if (dentroAspas) {
+      if (c === '"' && texto[i + 1] === '"') { campo += '"'; i++; }
+      else if (c === '"') dentroAspas = false;
+      else campo += c;
+    } else if (c === '"') dentroAspas = true;
+    else if (c === sep) { linha.push(campo); campo = ""; }
+    else if (c === "\n" || c === "\r") {
+      if (c === "\r" && texto[i + 1] === "\n") i++;
+      linha.push(campo); campo = "";
+      if (linha.some((x) => x.trim())) linhas.push(linha);
+      linha = [];
+    } else campo += c;
+  }
+  if (campo || linha.length) { linha.push(campo); if (linha.some((x) => x.trim())) linhas.push(linha); }
+  return linhas;
+}
+
+/** Mapeia as linhas do CSV para o formato de import, tolerante a cabeçalhos. */
+export function mapearImport(linhas: string[][]): LinhaImport[] {
+  if (linhas.length === 0) return [];
+  const cab = linhas[0].map((h) => soDigitos(h) ? h : h.toLowerCase().trim());
+  const acha = (...alvos: string[]) =>
+    cab.findIndex((h) => alvos.some((a) => h.includes(a)));
+  const iNome = acha("nome");
+  const iCel = acha("celular", "telefone", "whats", "fone");
+  const iNasc = acha("nascimento", "nasc", "data de nasc");
+  const iCpf = acha("cpf");
+  const iEmail = acha("email", "e-mail");
+  // sem cabeçalho reconhecível: assume ordem nome, celular, nascimento, cpf, email
+  const temCab = iNome >= 0 || iCel >= 0;
+  const corpo = temCab ? linhas.slice(1) : linhas;
+  const col = (l: string[], idx: number, fallback: number) => (idx >= 0 ? l[idx] : l[fallback]) ?? "";
+  return corpo.map((l) => ({
+    nome: col(l, iNome, 0).trim(),
+    celular: col(l, iCel, 1).trim(),
+    nascimento: normalizarData(col(l, iNasc, 2).trim()),
+    cpf: col(l, iCpf, 3).trim() || undefined,
+    email: col(l, iEmail, 4).trim() || undefined,
+  }));
+}
+
+/** dd/mm/aaaa ou aaaa-mm-dd -> aaaa-mm-dd. */
+function normalizarData(s: string): string {
+  const t = s.trim();
+  const br = t.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+  if (br) return `${br[3]}-${br[2]}-${br[1]}`;
+  const iso = t.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (iso) return `${iso[1]}-${iso[2]}-${iso[3]}`;
+  return "";
+}
+
+export async function importarPacientes(
+  clinicaId: string, linhas: LinhaImport[],
+): Promise<ResultadoImport> {
+  const erros: string[] = [];
+  // celulares já existentes: dedup
+  const { data: existentes } = await supabase
+    .from("pacientes").select("celular").eq("clinica_id", clinicaId);
+  const jaTem = new Set((existentes ?? []).map((p: any) => soDigitos(p.celular)));
+
+  const validas: any[] = [];
+  const vistos = new Set<string>();
+  linhas.forEach((l, idx) => {
+    const cel = soDigitos(l.celular);
+    if (!l.nome || cel.length < 10 || !l.nascimento) {
+      erros.push(`Linha ${idx + 1}: nome, celular (com DDD) e nascimento são obrigatórios`);
+      return;
+    }
+    if (jaTem.has(cel) || vistos.has(cel)) return; // pulado (duplicado)
+    vistos.add(cel);
+    validas.push({
+      clinica_id: clinicaId, nome_completo: l.nome, celular: cel,
+      data_nascimento: l.nascimento, cpf: l.cpf ? soDigitos(l.cpf) : null,
+      email: l.email || null, origem: "importacao",
+    });
+  });
+
+  // insere em lotes de 200 (uma ida ao banco por lote)
+  let inseridos = 0;
+  for (let i = 0; i < validas.length; i += 200) {
+    const lote = validas.slice(i, i + 200);
+    const { error, count } = await supabase.from("pacientes").insert(lote, { count: "exact" });
+    if (error) erros.push(`Lote ${i / 200 + 1}: ${error.message}`);
+    else inseridos += count ?? lote.length;
+  }
+
+  return { inseridos, pulados: linhas.length - inseridos - 0, erros };
+}

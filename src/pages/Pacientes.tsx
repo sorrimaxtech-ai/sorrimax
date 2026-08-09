@@ -13,15 +13,15 @@ import {
 } from "@/components/ui/dropdown-menu";
 import {
   Users, Plus, Search, Loader2, MessageCircle, MoreVertical, Pencil,
-  UserRoundX, UserRoundCheck, Trash2, EyeOff, Eye,
-  Eraser,
+  UserRoundX, UserRoundCheck, Trash2, EyeOff, Eye, Eraser, Upload, Download,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useTenant } from "@/hooks/useTenant";
 import { PacienteDialog } from "@/components/pacientes/PacienteDialog";
+import { ImportarPacientesDialog } from "@/components/pacientes/ImportarPacientesDialog";
 import {
   definirAtivo, excluirPaciente, formatarCelular, formatarCpf, idadeEmAnos,
-  linkWhatsApp, listarPacientes, soDigitos, limparDadosExemplo, type PacienteLista,
+  linkWhatsApp, listarPacientes, soDigitos, limparDadosExemplo, exportarPacientesCSV, type PacienteLista,
 } from "@/services/pacientes";
 
 // ============================================================================
@@ -41,6 +41,24 @@ const Pacientes = () => {
   const [busca, setBusca] = useState("");
   const [mostrarInativos, setMostrarInativos] = useState(false);
   const [dialogAberto, setDialogAberto] = useState(false);
+  const [importar, setImportar] = useState(false);
+  const [exportando, setExportando] = useState(false);
+
+  const exportar = async () => {
+    if (!clinicaId) return;
+    setExportando(true);
+    try {
+      const csv = await exportarPacientesCSV(clinicaId);
+      const url = URL.createObjectURL(new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8" }));
+      const a = document.createElement("a");
+      a.href = url; a.download = `pacientes-${new Date().toISOString().slice(0,10)}.csv`;
+      a.click(); URL.revokeObjectURL(url);
+    } catch (e: any) {
+      toast.error("Erro ao exportar", { description: e.message });
+    } finally {
+      setExportando(false);
+    }
+  };
   const [emEdicao, setEmEdicao] = useState<PacienteLista | null>(null);
   const [paraExcluir, setParaExcluir] = useState<PacienteLista | null>(null);
   const [excluindo, setExcluindo] = useState(false);
@@ -135,12 +153,20 @@ const Pacientes = () => {
                 Cadastro único por pessoa — dele saem agenda, orçamento, prontuário e cobrança.
               </p>
             </div>
-            <Button
-              onClick={() => { setEmEdicao(null); setDialogAberto(true); }}
-              className="bg-brand-600 hover:bg-brand-700 gap-2"
-            >
-              <Plus className="h-4 w-4" /> Novo Paciente
-            </Button>
+            <div className="flex flex-wrap gap-2">
+              <Button variant="outline" className="gap-2" onClick={() => setImportar(true)}>
+                <Upload className="h-4 w-4" /> Importar
+              </Button>
+              <Button variant="outline" className="gap-2" onClick={exportar} disabled={exportando}>
+                {exportando ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />} Exportar
+              </Button>
+              <Button
+                onClick={() => { setEmEdicao(null); setDialogAberto(true); }}
+                className="bg-brand-600 hover:bg-brand-700 gap-2"
+              >
+                <Plus className="h-4 w-4" /> Novo Paciente
+              </Button>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
@@ -324,6 +350,13 @@ const Pacientes = () => {
           )}
         </div>
       </main>
+
+      <ImportarPacientesDialog
+        clinicaId={clinicaId}
+        aberto={importar}
+        onFechar={() => setImportar(false)}
+        onImportado={carregar}
+      />
 
       <PacienteDialog
         aberto={dialogAberto}
