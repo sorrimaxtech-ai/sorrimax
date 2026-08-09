@@ -1,4 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { cors } from "../_shared/cors.ts";
 
 // ============================================================================
 // whatsapp-instances — CRUD de instância pelo SERVIDOR
@@ -93,8 +94,10 @@ function extrairNumero(data: any): string | null {
 }
 
 Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response("ok", { headers: CORS });
+  const c = cors(req);
+  if (req.method === "OPTIONS") return new Response("ok", { headers: c });
 
+  const res = await (async () => {
   const admin = createClient(SUPABASE_URL, SERVICE_ROLE, {
     auth: { persistSession: false },
   });
@@ -493,4 +496,7 @@ Deno.serve(async (req) => {
   } catch (e) {
     return json({ erro: "Falha inesperada.", detalhe: String(e) }, 500);
   }
+  })();
+  for (const [k, v] of Object.entries(c)) res.headers.set(k, v);
+  return res;
 });

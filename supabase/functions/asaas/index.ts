@@ -17,6 +17,7 @@
 // ============================================================================
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { cors } from "../_shared/cors.ts";
 
 const admin = createClient(
   Deno.env.get("SUPABASE_URL")!,
@@ -60,7 +61,10 @@ function erroAsaas(r: { data: any }): string {
 }
 
 Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response("ok", { headers: CORS });
+  const c = cors(req);
+  if (req.method === "OPTIONS") return new Response("ok", { headers: c });
+
+  const res = await (async () => {
   if (req.method !== "POST") return erro("Método não suportado", 405);
 
   // --- autenticação: quem é o usuário e de qual clínica ---
@@ -291,6 +295,9 @@ Deno.serve(async (req) => {
   }
 
   return erro("Ação desconhecida", 400);
+  })();
+  for (const [k, v] of Object.entries(c)) res.headers.set(k, v);
+  return res;
 });
 
 function soDigitos(x: unknown): string { return String(x ?? "").replace(/\D/g, ""); }
