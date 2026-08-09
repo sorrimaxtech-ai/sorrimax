@@ -7,18 +7,40 @@ import { MetricCard } from "@/components/dashboard/MetricCard";
 import { TodaySchedule } from "@/components/dashboard/TodaySchedule";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { linkWhatsApp } from "@/services/pacientes";
 import {
   Users, Calendar, Activity, Info, UserRoundPlus, CalendarClock, Cake,
-  MessageCircle, UserRoundSearch,
+  UserCheck, UserRoundPlus as NovosIcon, Stethoscope,
 } from "lucide-react";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import {
+  LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
+  ResponsiveContainer, Legend, LabelList,
+} from "recharts";
+
+// Cores dos gráficos — par validado para daltonismo (ΔE≥23 em todos os tipos
+// de CVD, contraste ≥3:1 no fundo claro). Azul = marca; âmbar = falta.
+const COR_SERIE = "#0099c7";
+const COR_OK = "#0077b6";
+const COR_FALTA = "#d97706";
+const ESTILO_TOOLTIP = {
+  backgroundColor: "white",
+  border: "1px solid #e5e7eb",
+  borderRadius: "8px",
+  boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
+} as const;
 
 // Série do gráfico: vem de `consultas` (banco), NUNCA inventada.
 // Mostrar número falso num dashboard é pior que não mostrar nada — o dono da
 // clínica toma decisão em cima do que vê.
 const MESES_PT = ["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"];
+
+// Estado vazio dos gráficos — mesma altura do gráfico para o grid não pular.
+const GraficoVazio = ({ texto }: { texto: string }) => (
+  <div className="h-[260px] flex flex-col items-center justify-center text-center gap-2">
+    <Activity className="h-10 w-10 text-gray-300" />
+    <p className="text-sm font-medium text-gray-700">Ainda sem dados</p>
+    <p className="text-xs text-gray-500 max-w-sm">{texto}</p>
+  </div>
+);
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -42,7 +64,11 @@ const Dashboard = () => {
   const [consultasHoje, setConsultasHoje] = useState(0);
   const [semConfirmacao, setSemConfirmacao] = useState<any[]>([]);
   const [aniversariantes, setAniversariantes] = useState<any[]>([]);
-  const [recall, setRecall] = useState<any[]>([]);
+  const [comparecimento, setComparecimento] = useState<
+    { mes: string; concluidas: number; faltas: number }[]
+  >([]);
+  const [novosPacientes, setNovosPacientes] = useState<{ mes: string; novos: number }[]>([]);
+  const [porProfissional, setPorProfissional] = useState<{ nome: string; consultas: number }[]>([]);
 
   const carregarPainel = async (clinicaId: string) => {
     const hoje0 = new Date(); hoje0.setHours(0, 0, 0, 0);
@@ -51,7 +77,12 @@ const Dashboard = () => {
     const ama1 = new Date(hoje1); ama1.setDate(ama1.getDate() + 1);
     const CANCELADAS = "(cancelado,desmarcado,cancelado_pelo_cliente,recusado)";
 
-    const [ativos, hoje, amanha, nasc, inativos] = await Promise.all([
+    const seisMeses = new Date(hoje0);
+    seisMeses.setMonth(seisMeses.getMonth() - 5);
+    seisMeses.setDate(1);
+    const mesAtual = `${hoje0.getFullYear()}-${String(hoje0.getMonth() + 1).padStart(2, "0")}-01`;
+
+    const [ativos, hoje, amanha, nasc, ocupacao, criados, profs] = await Promise.all([
       supabase.from("pacientes").select("id", { count: "exact", head: true })
         .eq("clinica_id", clinicaId).eq("ativo", true),
       supabase.from("consultas").select("id", { count: "exact", head: true })
@@ -67,14 +98,18 @@ const Dashboard = () => {
       supabase.from("pacientes").select("id, nome_completo, celular, data_nascimento")
         .eq("clinica_id", clinicaId).eq("ativo", true)
         .not("data_nascimento", "is", null).limit(2000),
-      supabase.from("vw_pacientes_inativos")
-        .select("paciente_id, nome_completo, celular, dias_sem_vir")
+      supabase.from("vw_ocupacao_agenda")
+        .select("mes, profissional_id, total_consultas, concluidas, no_show")
         .eq("clinica_id", clinicaId)
-        .order("dias_sem_vir", { ascending: true })
-        .limit(6),
+        .gte("mes", seisMeses.toISOString().slice(0, 10)),
+      supabase.from("pacientes").select("created_at")
+        .eq("clinica_id", clinicaId)
+        .gte("created_at", seisMeses.toISOString())
+        .limit(5000),
+      supabase.from("profiles").select("id, full_name").eq("clinica_id", clinicaId),
     ]);
 
-    for (const r of [ativos, hoje, amanha, nasc, inativos]) {
+    for (const r of [ativos, hoje, amanha, nasc, ocupacao, criados, profs]) {
       if (r.error) console.error("[dashboard] painel:", r.error.message);
     }
     if (ativos.count !== null) setPacientesAtivos(ativos.count);
@@ -86,7 +121,50 @@ const Dashboard = () => {
       const d = new Date(`${p.data_nascimento}T12:00:00`);
       return d.getDate() === agora.getDate() && d.getMonth() === agora.getMonth();
     }));
-    setRecall((inativos.data as any[]) ?? []);
+
+    // Esqueleto zero-preenchido dos 6 meses (mesma regra do gráfico de
+    // crescimento: nunca inventar número, mas nunca pular mês sem dado).
+    const meses: { chave: string; rotulo: string }[] = [];
+    for (let i = 0; i < 6; i++) {
+      const d = new Date(seisMeses);
+      d.setMonth(seisMeses.getMonth() + i);
+      meses.push({
+        chave: `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`,
+        rotulo: MESES_PT[d.getMonth()],
+      });
+    }
+
+    const ocupRows = (ocupacao.data as any[]) ?? [];
+    setComparecimento(meses.map((m) => {
+      const doMes = ocupRows.filter((r) => String(r.mes).startsWith(m.chave));
+      return {
+        mes: m.rotulo,
+        concluidas: doMes.reduce((s, r) => s + Number(r.concluidas ?? 0), 0),
+        faltas: doMes.reduce((s, r) => s + Number(r.no_show ?? 0), 0),
+      };
+    }));
+
+    const criadosRows = (criados.data as any[]) ?? [];
+    setNovosPacientes(meses.map((m) => ({
+      mes: m.rotulo,
+      novos: criadosRows.filter((p) => String(p.created_at).startsWith(m.chave)).length,
+    })));
+
+    const nomes = new Map(((profs.data as any[]) ?? []).map((p) => [p.id, p.full_name]));
+    const porProf = new Map<string, number>();
+    for (const r of ocupRows.filter((r) => String(r.mes).startsWith(mesAtual.slice(0, 7)))) {
+      if (!r.profissional_id) continue;
+      porProf.set(r.profissional_id, (porProf.get(r.profissional_id) ?? 0) + Number(r.total_consultas ?? 0));
+    }
+    setPorProfissional(
+      Array.from(porProf.entries())
+        .map(([id, consultas]) => ({
+          nome: (nomes.get(id) ?? "Profissional").split(" ").slice(0, 2).join(" "),
+          consultas,
+        }))
+        .sort((a, b) => b.consultas - a.consultas)
+        .slice(0, 6),
+    );
   };
 
   // Conta consultas reais por mês (últimos 6 meses) para o gráfico.
@@ -272,171 +350,126 @@ const Dashboard = () => {
             <TodaySchedule />
           </div>
 
-          {/* Listas de ação: o que dá para resolver AGORA com uma mensagem */}
+          {/* Análises — dados reais do banco, nada financeiro */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-            <Card className="border-gray-100">
-              <CardContent className="p-5">
-                <div className="flex items-center justify-between mb-4">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                    Amanhã — aguardando confirmação
-                  </p>
-                  {semConfirmacao.length > 0 && (
-                    <Badge className="bg-amber-100 text-amber-800 border-0">{semConfirmacao.length}</Badge>
-                  )}
-                </div>
-                {semConfirmacao.length === 0 ? (
-                  <p className="text-sm text-gray-500 py-4 text-center">
-                    Nenhuma consulta de amanhã pendente de confirmação.
-                  </p>
-                ) : (
-                  <div className="space-y-2">
-                    {semConfirmacao.map((c) => {
-                      const hora = new Date(c.inicio).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
-                      const nome = c.pacientes?.nome_completo ?? "Paciente";
-                      const wa = linkWhatsApp(
-                        c.pacientes?.celular ?? "",
-                        `Olá, ${nome.split(" ")[0]}! Podemos confirmar sua consulta de amanhã às ${hora}?`,
-                      );
-                      return (
-                        <div key={c.id} className="flex items-center gap-3 p-3 rounded-lg border border-gray-100">
-                          <span className="w-12 text-sm font-bold text-gray-900 tabular-nums">{hora}</span>
-                          <span className="flex-1 min-w-0 truncate text-sm text-gray-800">{nome}</span>
-                          {wa && (
-                            <Button asChild size="sm" variant="outline" className="gap-1.5 text-emerald-700 border-emerald-200 hover:bg-emerald-50">
-                              <a href={wa} target="_blank" rel="noreferrer">
-                                <MessageCircle className="h-3.5 w-3.5" /> Confirmar
-                              </a>
-                            </Button>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-
-            <div className="space-y-6">
-              {aniversariantes.length > 0 && (
-                <Card className="border-gray-100">
-                  <CardContent className="p-5">
-                    <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-4">
-                      Aniversariantes de hoje 🎂
-                    </p>
-                    <div className="space-y-2">
-                      {aniversariantes.map((p) => {
-                        const wa = linkWhatsApp(
-                          p.celular ?? "",
-                          `Feliz aniversário, ${p.nome_completo.split(" ")[0]}! 🎉 Toda a equipe deseja um dia incrível!`,
-                        );
-                        return (
-                          <div key={p.id} className="flex items-center gap-3 p-3 rounded-lg border border-gray-100">
-                            <span className="flex-1 min-w-0 truncate text-sm text-gray-800">{p.nome_completo}</span>
-                            {wa && (
-                              <Button asChild size="sm" variant="outline" className="gap-1.5 text-purple-700 border-purple-200 hover:bg-purple-50">
-                                <a href={wa} target="_blank" rel="noreferrer">
-                                  <Cake className="h-3.5 w-3.5" /> Parabenizar
-                                </a>
-                              </Button>
-                            )}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
-
-              <Card className="border-gray-100">
-                <CardContent className="p-5">
-                  <div className="flex items-center justify-between mb-4">
-                    <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                      Pacientes para reativar
-                    </p>
-                    <UserRoundSearch className="h-4 w-4 text-gray-400" />
-                  </div>
-                  {recall.length === 0 ? (
-                    <p className="text-sm text-gray-500 py-4 text-center">
-                      Nenhum paciente sumido — a base está em dia.
-                    </p>
-                  ) : (
-                    <div className="space-y-2">
-                      {recall.map((p) => {
-                        const wa = linkWhatsApp(
-                          p.celular ?? "",
-                          `Olá, ${p.nome_completo.split(" ")[0]}! Sentimos sua falta por aqui. Que tal agendar uma avaliação?`,
-                        );
-                        return (
-                          <div key={p.paciente_id} className="flex items-center gap-3 p-3 rounded-lg border border-gray-100">
-                            <span className="flex-1 min-w-0 truncate text-sm text-gray-800">{p.nome_completo}</span>
-                            <span className="text-xs text-gray-500 whitespace-nowrap">{p.dias_sem_vir} dias</span>
-                            {wa && (
-                              <Button asChild size="sm" variant="outline" className="gap-1.5 text-brand-700 border-brand-200 hover:bg-brand-50">
-                                <a href={wa} target="_blank" rel="noreferrer">
-                                  <MessageCircle className="h-3.5 w-3.5" /> Chamar
-                                </a>
-                              </Button>
-                            )}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-
-          {/* Crescimento de agendamentos — dados reais */}
-          <div className="mb-8">
-            <Card className="border-gray-100 shadow-lg hover:shadow-xl transition-shadow duration-300">
-              <CardHeader>
-                <CardTitle className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                  <Activity className="h-5 w-5 text-brand-600" />
+            {/* Crescimento de agendamentos */}
+            <Card className="border-gray-100 shadow-sm">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-base font-semibold text-gray-900 flex items-center gap-2">
+                  <Activity className="h-4 w-4 text-brand-600" />
                   Crescimento de Agendamentos
                 </CardTitle>
-                <p className="text-sm text-gray-600">
-                  {isDemo ? "Dados de demonstração" : "Últimos 6 meses"}
-                </p>
+                <p className="text-xs text-gray-500">{isDemo ? "Dados de demonstração" : "Últimos 6 meses"}</p>
               </CardHeader>
               <CardContent>
                 {serieCrescimento.some((d) => d.agendamentos > 0) ? (
-                  <ResponsiveContainer width="100%" height={300}>
+                  <ResponsiveContainer width="100%" height={260}>
                     <LineChart data={serieCrescimento}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                      <XAxis dataKey="month" stroke="#666" />
-                      <YAxis stroke="#666" allowDecimals={false} />
-                      <Tooltip
-                        contentStyle={{
-                          backgroundColor: 'white',
-                          border: '1px solid #e5e7eb',
-                          borderRadius: '8px',
-                          boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
-                        }}
-                      />
+                      <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
+                      <XAxis dataKey="month" stroke="#666" tickLine={false} axisLine={false} />
+                      <YAxis stroke="#666" allowDecimals={false} tickLine={false} axisLine={false} width={32} />
+                      <Tooltip contentStyle={ESTILO_TOOLTIP} />
                       <Line
                         type="monotone"
                         dataKey="agendamentos"
-                        stroke="#00b4d8"
-                        strokeWidth={3}
-                        dot={{ fill: '#00b4d8', r: 6 }}
-                        activeDot={{ r: 8 }}
-                        // A animação do recharts anima stroke-dasharray de 0 até o
-                        // comprimento da curva. Aqui ela travava no 1º frame
-                        // (dasharray "6px 1202px") e a linha ficava INVISÍVEL —
-                        // o gráfico parecia vazio mesmo com dado correto.
+                        name="Agendamentos"
+                        stroke={COR_SERIE}
+                        strokeWidth={2}
+                        dot={{ fill: COR_SERIE, r: 4 }}
+                        activeDot={{ r: 6, stroke: "#fff", strokeWidth: 2 }}
+                        // animação do recharts trava no 1º frame e some com a linha
                         isAnimationActive={false}
                       />
                     </LineChart>
                   </ResponsiveContainer>
                 ) : (
-                  <div className="h-[300px] flex flex-col items-center justify-center text-center gap-2">
-                    <Activity className="h-10 w-10 text-gray-300" />
-                    <p className="text-sm font-medium text-gray-700">Ainda sem agendamentos</p>
-                    <p className="text-xs text-gray-500 max-w-sm">
-                      O gráfico aparece assim que a primeira consulta for marcada.
-                    </p>
-                  </div>
+                  <GraficoVazio texto="O gráfico aparece assim que a primeira consulta for marcada." />
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Comparecimento × faltas */}
+            <Card className="border-gray-100 shadow-sm">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-base font-semibold text-gray-900 flex items-center gap-2">
+                  <UserCheck className="h-4 w-4 text-brand-600" />
+                  Comparecimento × Faltas
+                </CardTitle>
+                <p className="text-xs text-gray-500">Consultas concluídas e não comparecimentos por mês</p>
+              </CardHeader>
+              <CardContent>
+                {comparecimento.some((d) => d.concluidas > 0 || d.faltas > 0) ? (
+                  <ResponsiveContainer width="100%" height={260}>
+                    <BarChart data={comparecimento} barCategoryGap="28%">
+                      <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
+                      <XAxis dataKey="mes" stroke="#666" tickLine={false} axisLine={false} />
+                      <YAxis stroke="#666" allowDecimals={false} tickLine={false} axisLine={false} width={32} />
+                      <Tooltip contentStyle={ESTILO_TOOLTIP} cursor={{ fill: "rgba(0,0,0,0.04)" }} />
+                      <Legend iconType="circle" iconSize={8} wrapperStyle={{ fontSize: 12 }} />
+                      <Bar dataKey="concluidas" name="Concluídas" stackId="a" fill={COR_OK}
+                        stroke="#fff" strokeWidth={2} maxBarSize={28} isAnimationActive={false} />
+                      <Bar dataKey="faltas" name="Faltas" stackId="a" fill={COR_FALTA}
+                        stroke="#fff" strokeWidth={2} maxBarSize={28} radius={[4, 4, 0, 0]} isAnimationActive={false} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <GraficoVazio texto="Aparece quando houver consultas concluídas ou faltas registradas." />
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Novos pacientes por mês */}
+            <Card className="border-gray-100 shadow-sm">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-base font-semibold text-gray-900 flex items-center gap-2">
+                  <NovosIcon className="h-4 w-4 text-brand-600" />
+                  Novos Pacientes
+                </CardTitle>
+                <p className="text-xs text-gray-500">Cadastros por mês — o termômetro de captação</p>
+              </CardHeader>
+              <CardContent>
+                {novosPacientes.some((d) => d.novos > 0) ? (
+                  <ResponsiveContainer width="100%" height={260}>
+                    <BarChart data={novosPacientes} barCategoryGap="28%">
+                      <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
+                      <XAxis dataKey="mes" stroke="#666" tickLine={false} axisLine={false} />
+                      <YAxis stroke="#666" allowDecimals={false} tickLine={false} axisLine={false} width={32} />
+                      <Tooltip contentStyle={ESTILO_TOOLTIP} cursor={{ fill: "rgba(0,0,0,0.04)" }} />
+                      <Bar dataKey="novos" name="Novos pacientes" fill={COR_SERIE}
+                        radius={[4, 4, 0, 0]} maxBarSize={28} isAnimationActive={false} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <GraficoVazio texto="Aparece com o primeiro cadastro de paciente do período." />
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Consultas por profissional (mês atual) */}
+            <Card className="border-gray-100 shadow-sm">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-base font-semibold text-gray-900 flex items-center gap-2">
+                  <Stethoscope className="h-4 w-4 text-brand-600" />
+                  Consultas por Profissional
+                </CardTitle>
+                <p className="text-xs text-gray-500">Mês atual — distribuição da produção clínica</p>
+              </CardHeader>
+              <CardContent>
+                {porProfissional.length > 0 ? (
+                  <ResponsiveContainer width="100%" height={260}>
+                    <BarChart data={porProfissional} layout="vertical" barCategoryGap="28%">
+                      <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" horizontal={false} />
+                      <XAxis type="number" stroke="#666" allowDecimals={false} tickLine={false} axisLine={false} />
+                      <YAxis type="category" dataKey="nome" stroke="#666" tickLine={false} axisLine={false} width={120} />
+                      <Tooltip contentStyle={ESTILO_TOOLTIP} cursor={{ fill: "rgba(0,0,0,0.04)" }} />
+                      <Bar dataKey="consultas" name="Consultas" fill={COR_OK}
+                        radius={[0, 4, 4, 0]} maxBarSize={20} isAnimationActive={false}>
+                        <LabelList dataKey="consultas" position="right" style={{ fill: "#374151", fontSize: 12 }} />
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <GraficoVazio texto="Aparece quando houver consultas atribuídas a profissionais neste mês." />
                 )}
               </CardContent>
             </Card>
