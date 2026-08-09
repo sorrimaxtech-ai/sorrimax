@@ -18,6 +18,7 @@ const Feedback = lazy(() => import("./pages/Feedback"));
 const OnboardingPreview = lazy(() => import("./pages/OnboardingPreview"));
 const RedefinirSenha = lazy(() => import("./pages/RedefinirSenha"));
 const Assinatura = lazy(() => import("./pages/Assinatura"));
+const AgendaPreview = lazy(() => import("./pages/AgendaPreview"));
 const SiriTest = lazy(() => import("./pages/SiriTest"));
 import NotFound from "./pages/NotFound";
 const EmConstrucao = lazy(() => import("./pages/EmConstrucao"));
@@ -100,6 +101,7 @@ const App = () => (
           <Route path="/feedback" element={<Feedback />} />
           <Route path="/onboarding-preview" element={<OnboardingPreview />} />
           <Route path="/siri-test" element={<SiriTest />} />
+          <Route path="/agenda-preview" element={<AgendaPreview />} />
 
           {/* ---------------- app autenticado ----------------
               A sessão é verificada UMA vez, no layout. As páginas filhas
