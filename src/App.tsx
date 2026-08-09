@@ -19,6 +19,7 @@ const OnboardingPreview = lazy(() => import("./pages/OnboardingPreview"));
 const RedefinirSenha = lazy(() => import("./pages/RedefinirSenha"));
 const AgendamentoPublico = lazy(() => import("./pages/AgendamentoPublico"));
 const Assinatura = lazy(() => import("./pages/Assinatura"));
+const Atividades = lazy(() => import("./pages/Atividades"));
 const AgendaPreview = lazy(() => import("./pages/AgendaPreview"));
 const SiriTest = lazy(() => import("./pages/SiriTest"));
 import NotFound from "./pages/NotFound";
@@ -159,6 +160,7 @@ const App = () => (
             <Route path="/permissoes" element={<Adm e={<Permissoes />} />} />
             <Route path="/integracoes" element={<Adm e={<Integracoes />} />} />
             <Route path="/assinatura" element={<Adm e={<Assinatura />} />} />
+            <Route path="/atividades" element={<Adm e={<Atividades />} />} />
             <Route path="/anotacoes" element={<Anotacoes />} />
 
             {/* ainda sem interface própria */}
