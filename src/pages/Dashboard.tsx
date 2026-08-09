@@ -200,6 +200,17 @@ const Dashboard = () => {
             />
           </div>
 
+          {/* Agenda do dia em primeiro — é o que o dentista olha ao abrir o sistema */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            <div className="lg:col-span-2">
+              <TodaySchedule />
+            </div>
+
+            <div>
+              <QuickActions />
+            </div>
+          </div>
+
           {/* Crescimento de agendamentos — dados reais */}
           <div className="mb-8">
             <Card className="border-gray-100 shadow-lg hover:shadow-xl transition-shadow duration-300">
@@ -253,19 +264,6 @@ const Dashboard = () => {
                 )}
               </CardContent>
             </Card>
-          </div>
-
-          {/* Main Content Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Agenda do Dia - Takes 2 columns */}
-            <div className="lg:col-span-2">
-              <TodaySchedule />
-            </div>
-
-            {/* Ações Rápidas - Takes 1 column */}
-            <div>
-              <QuickActions />
-            </div>
           </div>
         </div>
       </main>
