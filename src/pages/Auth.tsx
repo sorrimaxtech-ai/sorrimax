@@ -26,7 +26,7 @@ const Auth = () => {
     const checkSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
-        navigate("/dashboard");
+        navigate("/agenda");
       }
     };
     
@@ -43,8 +43,8 @@ const Auth = () => {
           localStorage.removeItem('pending_clinic_token');
           navigate(`/configurar-clinica?token=${pendingToken}`);
         } else {
-          // Login normal - ir para dashboard
-          navigate("/dashboard");
+          // Login normal — cai na agenda: o dia da clínica começa por ela
+          navigate("/agenda");
         }
       }
     });

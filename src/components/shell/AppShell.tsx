@@ -2,6 +2,7 @@ import { Outlet } from "react-router-dom";
 import { TopBar } from "./TopBar";
 import { ModuloTabs } from "./ModuloTabs";
 import { Sidebar } from "@/components/dashboard/Sidebar";
+import { FloatingChat } from "@/components/chat/FloatingChat";
 
 // ============================================================================
 // AppShell — moldura única do app autenticado
@@ -32,5 +33,7 @@ export const AppShell = () => (
         </div>
       </div>
     </div>
+    {/* Chat que acompanha todas as telas (some em /conversas) */}
+    <FloatingChat />
   </div>
 );

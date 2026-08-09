@@ -64,7 +64,7 @@ export const ProtectedRoute = ({ children, somenteAdmin }: Props) => {
     return <Navigate to="/auth" replace state={{ de: location.pathname }} />;
   }
   if (estado === "sem-clinica") return <Navigate to="/configurar-clinica" replace />;
-  if (estado === "sem-permissao") return <Navigate to="/dashboard" replace />;
+  if (estado === "sem-permissao") return <Navigate to="/agenda" replace />;
 
   return <>{children}</>;
 };

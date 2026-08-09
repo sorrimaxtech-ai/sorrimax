@@ -48,9 +48,15 @@ interface Handlers {
  *   // ...
  *   off();
  */
-export function subscribeChatRealtime(clinicaId: string, handlers: Handlers): () => void {
+export function subscribeChatRealtime(
+  clinicaId: string,
+  handlers: Handlers,
+  /** Sufixo do canal — dois assinantes simultâneos (página + chat flutuante)
+   * precisam de tópicos distintos, senão um removeChannel derruba o outro. */
+  canal = "",
+): () => void {
   const channel: RealtimeChannel = supabase
-    .channel(`chat-${clinicaId}`)
+    .channel(`chat-${clinicaId}${canal}`)
     .on(
       "postgres_changes",
       { event: "INSERT", schema: "public", table: "whatsapp_messages", filter: `clinica_id=eq.${clinicaId}` },
