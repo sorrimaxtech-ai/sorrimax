@@ -72,7 +72,8 @@ export const Sidebar = () => {
   return (
     <aside
       className={cn(
-        "bg-card border-r border-border flex flex-col shrink-0 transition-all duration-200",
+        // some no mobile — lá a navegação vira drawer (MobileMenu na TopBar)
+        "bg-card border-r border-border hidden lg:flex flex-col shrink-0 transition-all duration-200",
         recolhida ? "w-16" : "w-[228px]",
       )}
     >

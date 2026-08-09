@@ -1,6 +1,7 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useDemoMode } from "@/hooks/useDemoMode";
+import { MobileMenu } from "./MobileMenu";
 import { useTenant } from "@/hooks/useTenant";
 import { moduloDaRota, abaDaRota } from "@/config/navegacao";
 import {
@@ -48,6 +49,7 @@ export const TopBar = () => {
 
   return (
     <header className="h-14 shrink-0 bg-brand-600 text-white flex items-center gap-3 px-4">
+      <MobileMenu />
       <button
         onClick={() => navigate("/dashboard")}
         className="flex items-center gap-2 shrink-0 rounded-md px-1 py-1 hover:bg-white/10 transition-colors"
