@@ -1,6 +1,7 @@
 -- ============================================================================
--- 0044 · Link online de prontuário/anamnese
--- (era 0043; renumerada para 0044 — o outro dev usou 0043 para respostas_rápidas)
+-- 0045 · Link online de prontuário/anamnese
+-- (renumerada: 0043→0044→0045 conforme o outro dev tomou 0043 (respostas
+--  rápidas) e 0044 (healthcheck de instância). Já aplicada no banco.)
 -- ----------------------------------------------------------------------------
 -- A recepção escolhe um modelo de anamnese, gera um link e manda ao paciente
 -- (WhatsApp). O paciente abre /p/<token> SEM login, preenche os dados básicos
