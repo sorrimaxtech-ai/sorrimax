@@ -107,9 +107,15 @@ telas piscam spinner); erro engolido na remoção de item de orçamento; muniç�
   status observável do envio, isolamento por clínica, reversão de comissão no estorno.
 - ✅ Recuperação de senha (`/redefinir-senha`).
 - ✅ Code-splitting por rota (bundle inicial).
-- **Pendentes P**: remover/rebaixar o plano "SORRIMAX AI" da landing; `aria-label` nos botões só-ícone;
-  apertar as 3 policies RLS (clinicas/especialidades/slots); portar o fix de Realtime pro `Conversas.tsx`;
-  guarda de concorrência na baixa de parcela (`where status='pendente'` + checar linhas afetadas).
+- ✅ **Plano "SORRIMAX AI" rebaixado** → "Avançado" com recursos reais (cobrança Asaas, página pública,
+  campanhas); card "Assistente de IA" → "Automação no WhatsApp" (fim do overclaim).
+- ✅ **`aria-label`** nos 2 botões só-ícone restantes (o resto já tinha; 53 no total).
+- ✅ **Guarda de concorrência na baixa de parcela** (`neq status='pago'` + checa linhas afetadas; a 2ª
+  baixa simultânea avisa em vez de fingir sucesso).
+- ✅ **Fix de Realtime no `Conversas.tsx`** (assina uma vez por clínica, usa refs — não re-assina por chat).
+- ✅ **slots RLS** tolera contexto nulo pro agendamento público sem furar o isolamento (0031).
+- **Pendente (decisão de produto)**: RLS de `clinicas`/`especialidades` — global vs por-clínica; documentado,
+  não alterado às cegas.
 
 ### Onda 2 — Esta semana (M)
 - Confirmação automática de consulta (coluna + índice já existem; falta job + template) — recurso nº1 do
@@ -126,6 +132,24 @@ telas piscam spinner); erro engolido na remoção de item de orçamento; muniç�
 - Endurecer o moat de WhatsApp: instância dedicada (sair da conta compartilhada com o Diamond) e caminho
   para a API oficial como fallback; é o maior risco existencial.
 - Storage de imagens clínicas; assinatura digital com validade jurídica; TISS/convênios.
+
+---
+
+## Fechamento da sessão noturna (08→09/08)
+
+Além das Ondas 1–2 já marcadas ✅ acima, esta madrugada fechou:
+
+- **Trilha de auditoria** (migration 0032): `audit_log` + trigger `registrar_auditoria` em
+  consultas/parcelas/orçamentos/pacientes (loga DELETE e mudança de status), RLS admin, FK pro nome de
+  quem agiu, e tela **Ajustes → Atividades**. Responde "quem apagou/estornou?".
+- **CORS travável** nas edge functions autenticadas (`asaas`, `whatsapp-instances`): allow-list opt-in via
+  secret `ALLOWED_ORIGINS`, com `*` de fallback pra não quebrar deploy. Documentado no go-live.
+- **Honestidade comercial** na landing (achado P): fim do tier de IA fictício e do card de assistente
+  autônomo.
+- **a11y**, **guarda de concorrência na baixa**, **Realtime do Conversas** e **slots públicos** (acima).
+
+Fora de escopo por decisão do dono: **storage** (aguardando ele indicar o provedor) e **deploy das edge
+functions que movem dinheiro** (chaves + `supabase functions deploy` são passo dele).
 
 ---
 
