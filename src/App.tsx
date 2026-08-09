@@ -56,6 +56,7 @@ import Comissoes from "./pages/Comissoes";
 import Estoque from "./pages/Estoque";
 import Protese from "./pages/Protese";
 import PaginaPublica from "./pages/PaginaPublica";
+import Marketing from "./pages/Marketing";
 
 // ajustes
 import Profissionais from "./pages/Profissionais";
@@ -132,6 +133,7 @@ const App = () => (
             {/* operação */}
             <Route path="/estoque" element={<Estoque />} />
             <Route path="/protese" element={<Protese />} />
+            <Route path="/marketing" element={<Adm e={<Marketing />} />} />
             <Route path="/pagina-publica" element={<Adm e={<PaginaPublica />} />} />
 
             {/* ajustes */}

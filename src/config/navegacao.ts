@@ -117,11 +117,15 @@ export const MODULOS: Modulo[] = [
   },
   {
     label: "Marketing",
-    href: "/pagina-publica",
+    href: "/marketing",
     icon: Megaphone,
-    base: ["/pagina-publica"],
+    base: ["/marketing", "/pagina-publica"],
     pronto: true,
     soAdmin: true,
+    abas: [
+      { label: "Campanhas", href: "/marketing", pronto: true },
+      { label: "Página pública", href: "/pagina-publica", pronto: true },
+    ],
   },
   {
     label: "Estoque",
