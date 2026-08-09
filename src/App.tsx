@@ -17,6 +17,7 @@ const ConfigurarClinica = lazy(() => import("./pages/ConfigurarClinica"));
 const Feedback = lazy(() => import("./pages/Feedback"));
 const OnboardingPreview = lazy(() => import("./pages/OnboardingPreview"));
 const RedefinirSenha = lazy(() => import("./pages/RedefinirSenha"));
+const AgendamentoPublico = lazy(() => import("./pages/AgendamentoPublico"));
 const Assinatura = lazy(() => import("./pages/Assinatura"));
 const AgendaPreview = lazy(() => import("./pages/AgendaPreview"));
 const SiriTest = lazy(() => import("./pages/SiriTest"));
@@ -95,6 +96,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/redefinir-senha" element={<RedefinirSenha />} />
+          <Route path="/c/:slug" element={<AgendamentoPublico />} />
           <Route path="/demo" element={<DemoLoader />} />
           <Route path="/cadastro" element={<CadastroClinica />} />
           <Route path="/configurar-clinica" element={<ConfigurarClinica />} />
