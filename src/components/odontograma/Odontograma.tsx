@@ -91,7 +91,7 @@ function ArteDente({ numero, estado }: { numero: number; estado: EstadoOdontogra
     WebkitMaskPosition: superior ? 'center bottom' : 'center top', maskPosition: superior ? 'center bottom' : 'center top',
   } as const;
   return (
-    <span className="relative block" style={{ width: 34, height: 56 }}>
+    <span className="relative block" style={{ width: 42, height: 68 }}>
       <img src={url} alt="" draggable={false} onError={() => setSemArte(true)} className={cn('h-full w-full object-contain', posClass)} />
       {/* tint suave do status por cima da arte realista (não chapa o dente) */}
       {cor && <span className="pointer-events-none absolute inset-0" style={{ backgroundColor: cor, opacity: 0.32, ...mask }} />}
