@@ -1,0 +1,311 @@
+/* ==========================================================================
+   Onboarding conversacional — orb, cena e cards
+   Referência técnica e decisões: docs/ONBOARDING-CLARA-REFERENCIA.md
+   ========================================================================== */
+
+/* --- Orb --------------------------------------------------------------- */
+
+.aiorb-wrap {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  align-self: center;
+  margin-inline: auto;
+  padding-bottom: 12px;
+  animation: aiorbEntrance 860ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+/* Sombra no chão. Encolhe quando a orb sobe — sem isso ela parece adesivo. */
+.aiorb-wrap::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 2px;
+  width: calc(var(--aiorb-size, 120px) * 0.58);
+  height: 10px;
+  border-radius: 9999px;
+  background: rgba(24, 39, 71, 0.22);
+  filter: blur(8px);
+  transform: translateX(-50%);
+  animation: aiorbShadow 4.4s ease-in-out 900ms infinite;
+}
+
+.aiorb {
+  position: relative;
+  width: var(--aiorb-size, 120px);
+  height: var(--aiorb-size, 120px);
+  animation: aiorbFloat 4.4s ease-in-out 900ms infinite;
+}
+
+.aiorb__goo {
+  position: absolute;
+  inset: 0;
+  filter: url(#aiorb-goo);
+}
+
+.aiorb__stage {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 180px;
+  height: 180px;
+  transform: scale(var(--aiorb-scale, 0.6667));
+  transform-origin: left top;
+  animation: aiorbSpin 26s linear infinite;
+}
+
+.aiorb__lobe {
+  position: absolute;
+  border-radius: 50%;
+  animation: aiorbLobe 5s ease-in-out infinite;
+}
+
+.aiorb__core {
+  position: absolute;
+  left: 38px;
+  top: 38px;
+  width: 104px;
+  height: 104px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #f8fdff, rgba(186, 230, 253, 0.45) 42%, transparent 68%);
+  filter: blur(4px);
+  animation: aiorbCore 2.8s ease-in-out infinite;
+}
+
+@keyframes aiorbLobe {
+  0%, 100% { transform: scale(0.93); }
+  50%      { transform: scale(1.1); }
+}
+@keyframes aiorbCore {
+  0%, 100% { opacity: 0.5; transform: scale(0.92); }
+  50%      { opacity: 1;   transform: scale(1.22); }
+}
+@keyframes aiorbSpin {
+  to { transform: rotate(360deg); }
+}
+@keyframes aiorbFloat {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50%      { transform: translateY(-12px) scale(1.015); }
+}
+@keyframes aiorbShadow {
+  0%, 100% { opacity: 0.72; transform: translateX(-50%) scaleX(1);    filter: blur(8px); }
+  50%      { opacity: 0.36; transform: translateX(-50%) scaleX(0.72); filter: blur(10px); }
+}
+@keyframes aiorbEntrance {
+  from { opacity: 0; transform: translateY(22px) scale(0.92); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* --- Orb WebGL (shader) -------------------------------------------------
+   O shader vaza o miolo (alpha 0 no centro), o que em fundo claro viraria um
+   anel. O core preenchido devolve corpo à orb; o shader fica como halo.
+   ---------------------------------------------------------------------- */
+
+.claraorb {
+  position: relative;
+  animation: aiorbFloat 4.4s ease-in-out 900ms infinite;
+}
+
+.claraorb::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -10px;
+  width: 58%;
+  height: 10px;
+  border-radius: 9999px;
+  background: rgba(24, 39, 71, 0.2);
+  filter: blur(8px);
+  transform: translateX(-50%);
+  animation: aiorbShadow 4.4s ease-in-out 900ms infinite;
+}
+
+.claraorb__core {
+  position: absolute;
+  inset: 21%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 40% 36%,
+    #ffffff 0%,
+    #b6ecfb 26%,
+    rgba(0, 180, 216, 0.92) 58%,
+    rgba(0, 119, 182, 0.55) 100%
+  );
+  filter: blur(3px);
+  animation: aiorbCore 2.8s ease-in-out infinite;
+}
+
+.claraorb__shader {
+  position: absolute;
+  inset: 0;
+}
+
+/* --- Cena -------------------------------------------------------------- */
+
+.onb-shell {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100dvh;
+  width: 100%;
+  overflow: hidden;
+  padding: 0 1.25rem;
+  background:
+    radial-gradient(circle at 12% 14%, rgba(255, 255, 255, 0.95), transparent 26%),
+    radial-gradient(circle at 88% 18%, rgba(186, 230, 253, 0.72), transparent 30%),
+    radial-gradient(circle at 74% 82%, rgba(0, 180, 216, 0.18), transparent 36%),
+    linear-gradient(135deg, #e2f6fd 0%, #f5fcff 46%, #fff 100%);
+}
+
+/* Malha quadriculada bem fraca por cima do gradiente. */
+.onb-shell::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(0, 119, 182, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 119, 182, 0.045) 1px, transparent 1px);
+  background-size: 68px 68px;
+  mask-image: radial-gradient(circle at 50% 40%, #000 30%, transparent 78%);
+}
+
+.onb-title {
+  margin: 0 auto 2rem;
+  max-width: 46rem;
+  text-align: center;
+  font-family: Sora, Inter, sans-serif;
+  font-size: clamp(1.5rem, 1rem + 1.8vw, 2.15rem);
+  font-weight: 700;
+  line-height: 1.25;
+  color: hsl(215 45% 18%);
+}
+
+.onb-subtitle {
+  margin: -1.25rem auto 2rem;
+  max-width: 34rem;
+  text-align: center;
+  font-size: 0.95rem;
+  color: hsl(215 16% 47%);
+}
+
+/* --- Typewriter --------------------------------------------------------
+   O texto inteiro já está no DOM; cada char é um span que só ganha opacidade.
+   Assim o layout não salta enquanto digita — os cards abaixo já estão no lugar.
+   ---------------------------------------------------------------------- */
+
+.onb-char {
+  opacity: 0;
+  transition: opacity 90ms linear;
+}
+.onb-char.is-visible {
+  opacity: 1;
+}
+
+/* --- Cards de resposta -------------------------------------------------- */
+
+.onb-option {
+  padding: 1rem 1.25rem;
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 700;
+  color: hsl(215 45% 20%);
+  background: rgba(255, 255, 255, 0.68);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(56, 189, 248, 0.34);
+  border-radius: 16px;
+  box-shadow: 0 14px 34px rgba(12, 74, 110, 0.08);
+  transition: transform 180ms, border-color 180ms, background 180ms, box-shadow 180ms;
+  animation: onbCardIn 560ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.onb-option:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(0, 153, 199, 0.58);
+  box-shadow: 0 18px 42px rgba(12, 74, 110, 0.13);
+}
+
+.onb-option[data-selected="true"] {
+  border-color: hsl(var(--primary));
+  box-shadow: 0 0 0 3px rgba(0, 180, 216, 0.22), 0 18px 42px rgba(12, 74, 110, 0.13);
+}
+
+/* Skeleton: mesmo tamanho e raio do card final, para o layout não pular. */
+.onb-option--skeleton {
+  color: transparent;
+  border-color: rgba(56, 189, 248, 0.18);
+  box-shadow: 0 14px 34px rgba(12, 74, 110, 0.05);
+  pointer-events: none;
+}
+
+/* --- CTA primário ------------------------------------------------------- */
+
+.onb-cta {
+  padding: 1rem 2rem;
+  font-weight: 700;
+  color: #fff;
+  border-radius: 16px;
+  /* sombra tingida com a própria cor do botão, não cinza */
+  background: linear-gradient(135deg, rgba(0, 119, 182, 0.96), rgba(0, 180, 216, 0.92));
+  box-shadow: 0 18px 42px rgba(0, 119, 182, 0.24);
+  transition: filter 180ms, box-shadow 180ms, opacity 180ms;
+}
+.onb-cta:hover:not(:disabled) {
+  filter: brightness(1.06);
+  box-shadow: 0 20px 48px rgba(0, 119, 182, 0.3);
+}
+.onb-cta:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* --- Campo de texto ----------------------------------------------------- */
+
+.onb-field {
+  height: 52px;
+  width: 100%;
+  padding: 0 1rem;
+  text-align: center;
+  font-size: 0.95rem;
+  font-weight: 650;
+  color: hsl(215 45% 18%);
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  border-radius: 14px;
+  box-shadow: 0 16px 36px rgba(12, 74, 110, 0.1);
+  transition: border-color 180ms, box-shadow 180ms;
+}
+.onb-field:focus {
+  outline: none;
+  border-color: rgba(0, 153, 199, 0.58);
+  box-shadow: 0 16px 36px rgba(12, 74, 110, 0.1), 0 0 0 4px rgba(0, 180, 216, 0.24);
+}
+
+@keyframes onbCardIn {
+  from { opacity: 0; transform: translateY(20px) scale(0.98); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* --- Acessibilidade -----------------------------------------------------
+   Quem pediu menos movimento recebe a frase inteira de uma vez e nada pulsando.
+   ---------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .aiorb-wrap,
+  .aiorb-wrap::after,
+  .aiorb,
+  .aiorb__stage,
+  .aiorb__lobe,
+  .aiorb__core,
+  .onb-option {
+    animation: none !important;
+  }
+  .onb-char {
+    opacity: 1 !important;
+    transition: none;
+  }
+}

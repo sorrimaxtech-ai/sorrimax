@@ -13,6 +13,7 @@ import DemoLoader from "./pages/DemoLoader";
 import CadastroClinica from "./pages/CadastroClinica";
 import ConfigurarClinica from "./pages/ConfigurarClinica";
 import Feedback from "./pages/Feedback";
+import OnboardingPreview from "./pages/OnboardingPreview";
 import NotFound from "./pages/NotFound";
 import EmConstrucao from "./pages/EmConstrucao";
 
@@ -85,6 +86,7 @@ const App = () => (
           <Route path="/cadastro" element={<CadastroClinica />} />
           <Route path="/configurar-clinica" element={<ConfigurarClinica />} />
           <Route path="/feedback" element={<Feedback />} />
+          <Route path="/onboarding-preview" element={<OnboardingPreview />} />
 
           {/* ---------------- app autenticado ----------------
               A sessão é verificada UMA vez, no layout. As páginas filhas
