@@ -151,10 +151,14 @@ const Conversas = () => {
   const chatAtivo = chats.find((c) => c.id === ativo);
 
   return (
-    <div className="flex min-h-full bg-gray-50">
-      <main className="flex-1 min-w-0 flex overflow-hidden h-full">
+    // h-full (não min-h-full): o AppShell trava a altura em h-screen e passa
+    // ao conteúdo via flex-1. `min-h-full` colapsava para a altura do conteúdo
+    // e deixava metade da tela como um vazio cinza. Aqui a moldura preenche e a
+    // rolagem acontece só dentro de cada coluna.
+    <div className="flex h-full bg-gray-50 overflow-hidden">
+      <main className="flex-1 min-w-0 flex overflow-hidden">
         {/* Lista de conversas */}
-        <div className="w-80 border-r border-border bg-white flex flex-col shrink-0">
+        <div className="w-80 border-r border-border bg-white flex flex-col shrink-0 h-full">
           <div className="p-4 border-b border-border">
             <div className="flex items-center justify-between gap-2 mb-3">
               <h1 className="text-lg font-semibold flex items-center gap-2">
@@ -301,7 +305,7 @@ const Conversas = () => {
         </div>
 
         {/* Janela do chat */}
-        <div className="flex-1 min-w-0 flex flex-col bg-gray-50">
+        <div className="flex-1 min-w-0 flex flex-col bg-gray-50 h-full">
           {!chatAtivo ? (
             <div className="flex-1 min-w-0 flex flex-col items-center justify-center text-center gap-2 px-6">
               <MessageSquare className="h-12 w-12 text-gray-300" />
