@@ -144,6 +144,55 @@ const ConfigurarClinica = () => {
     return `${limited.substring(0, 2)}.${limited.substring(2, 5)}.${limited.substring(5, 8)}/${limited.substring(8, 12)}-${limited.substring(12)}`;
   };
 
+  // ==========================================================================
+  // Carrega o que a clínica JÁ tem (do onboarding/edições) — a tela é de EDIÇÃO,
+  // não um formulário em branco. Antes vinha tudo vazio, como se fosse preencher
+  // de novo. Puxa dados, especialidades e horários e preenche o form.
+  // ==========================================================================
+  useEffect(() => {
+    if (!clinicaId) return;
+    let vivo = true;
+    (async () => {
+      const [{ data: cl }, { data: esp }] = await Promise.all([
+        supabase
+          .from("clinicas")
+          .select("nome_clinica, cnpj, telefone, cep, endereco, numero, complemento, cidade, estado, horario_funcionamento")
+          .eq("id", clinicaId)
+          .maybeSingle(),
+        supabase
+          .from("clinica_especialidades")
+          .select("especialidades(nome)")
+          .eq("clinica_id", clinicaId),
+      ]);
+      if (!vivo || !cl) return;
+
+      const especialidades = (esp ?? [])
+        .map((e: any) => e.especialidades?.nome)
+        .filter((n: unknown): n is string => typeof n === "string");
+
+      const nome = String(cl.nome_clinica ?? "");
+      setFormData((prev) => ({
+        ...prev,
+        // "Clínica de <fulano>" é o nome-placeholder do cadastro; não polui o campo.
+        nomeClinica: /^Clínica de /i.test(nome) ? "" : nome,
+        cnpj: cl.cnpj ? formatCNPJ(cl.cnpj) : "",
+        telefone: cl.telefone ? formatPhone(cl.telefone) : "",
+        cep: cl.cep ? formatCEP(cl.cep) : "",
+        endereco: cl.endereco ?? "",
+        numero: cl.numero ?? "",
+        complemento: cl.complemento ?? "",
+        cidade: cl.cidade ?? "",
+        estado: (cl.estado ?? "").toUpperCase(),
+        especialidades: especialidades.length ? especialidades : prev.especialidades,
+        horarios:
+          cl.horario_funcionamento && typeof cl.horario_funcionamento === "object"
+            ? { ...prev.horarios, ...(cl.horario_funcionamento as object) }
+            : prev.horarios,
+      }));
+    })();
+    return () => { vivo = false; };
+  }, [clinicaId]);
+
   const toggleEspecialidade = (esp: string) => {
     setFormData(prev => ({
       ...prev,
