@@ -14,6 +14,7 @@ import CadastroClinica from "./pages/CadastroClinica";
 import ConfigurarClinica from "./pages/ConfigurarClinica";
 import Feedback from "./pages/Feedback";
 import OnboardingPreview from "./pages/OnboardingPreview";
+import RedefinirSenha from "./pages/RedefinirSenha";
 import SiriTest from "./pages/SiriTest";
 import NotFound from "./pages/NotFound";
 import EmConstrucao from "./pages/EmConstrucao";
@@ -84,6 +85,7 @@ const App = () => (
           {/* ---------------- públicas (sem moldura) ---------------- */}
           <Route path="/" element={<Index />} />
           <Route path="/auth" element={<Auth />} />
+          <Route path="/redefinir-senha" element={<RedefinirSenha />} />
           <Route path="/demo" element={<DemoLoader />} />
           <Route path="/cadastro" element={<CadastroClinica />} />
           <Route path="/configurar-clinica" element={<ConfigurarClinica />} />

@@ -70,6 +70,28 @@ const Auth = () => {
     }
   };
 
+  // Recuperação de senha: sem isso o trial de tráfego pago morre no 2º login
+  // (dentista esquece a senha, não há vendedor pra ligar). Manda o e-mail do
+  // Supabase apontando para /redefinir-senha, onde ele define a nova.
+  const enviarReset = async () => {
+    if (!email) {
+      toast({ title: "Informe seu e-mail", description: "Digite o e-mail da conta acima e clique de novo.", variant: "destructive" });
+      return;
+    }
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/redefinir-senha`,
+      });
+      if (error) throw error;
+      toast({ title: "Verifique seu e-mail", description: "Se houver conta com esse e-mail, enviamos um link para redefinir a senha." });
+    } catch (error: any) {
+      toast({ title: "Não foi possível enviar", description: error.message, variant: "destructive" });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -171,6 +193,17 @@ const Auth = () => {
               {errors.password && (
                 <p className="text-sm text-red-600">{errors.password}</p>
               )}
+            </div>
+
+            <div className="text-right">
+              <button
+                type="button"
+                onClick={enviarReset}
+                disabled={loading}
+                className="text-sm text-brand-600 hover:text-brand-700 transition-colors disabled:opacity-50"
+              >
+                Esqueci minha senha
+              </button>
             </div>
 
             <Button
