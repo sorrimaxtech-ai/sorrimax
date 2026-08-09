@@ -279,15 +279,20 @@ export const CalendarioGrade = ({
           <div className="flex">
             {/* régua de horas */}
             <div className="relative shrink-0" style={{ width: LARGURA_REGUA, height: alturaTotal }}>
-              {horasDaRegua.map((m) => (
-                <span
-                  key={m}
-                  className="absolute right-2 -translate-y-1/2 text-[11px] tabular-nums text-gray-400"
-                  style={{ top: (m - faixa.inicioMin) * PX_POR_MIN }}
-                >
-                  {minutosParaHora(m)}
-                </span>
-              ))}
+              {horasDaRegua.map((m) => {
+                const h = Math.floor(m / 60);
+                // rótulo curto no estilo de agenda clínica: "07h", "12h" = "Meio dia"
+                const rot = m === 720 ? "Meio dia" : `${String(h).padStart(2, "0")}h`;
+                return (
+                  <span
+                    key={m}
+                    className="absolute right-2 -translate-y-1/2 text-[11px] font-medium tabular-nums text-gray-400"
+                    style={{ top: (m - faixa.inicioMin) * PX_POR_MIN }}
+                  >
+                    {rot}
+                  </span>
+                );
+              })}
             </div>
 
             {colunas.map((col) => {
@@ -329,6 +334,22 @@ export const CalendarioGrade = ({
                   className={`relative flex-1 border-l border-gray-100 ${col.destacada ? "bg-brand-50/30" : ""}`}
                   style={{ height: alturaTotal }}
                 >
+                  {/* linha do "agora" — só na coluna de hoje e dentro da faixa visível */}
+                  {col.destacada && (() => {
+                    const agora = new Date();
+                    const nowMin = agora.getHours() * 60 + agora.getMinutes();
+                    if (nowMin < faixa.inicioMin || nowMin > faixa.fimMin) return null;
+                    return (
+                      <div
+                        className="pointer-events-none absolute left-0 right-0 z-20 flex items-center"
+                        style={{ top: (nowMin - faixa.inicioMin) * PX_POR_MIN }}
+                      >
+                        <span className="-ml-1 h-2.5 w-2.5 shrink-0 rounded-full bg-red-500" />
+                        <span className="h-px flex-1 bg-red-500" />
+                      </div>
+                    );
+                  })()}
+
                   {/* slots clicáveis — camada de fundo */}
                   {linhasDeSlot.map((m) => (
                     <button

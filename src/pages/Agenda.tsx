@@ -31,6 +31,7 @@ import { toast } from "sonner";
 
 import { useTenant } from "@/hooks/useTenant";
 import { CalendarioGrade, type AgrupamentoDia, type VisaoAgenda } from "@/components/agenda/CalendarioGrade";
+import { AgendaPainel } from "@/components/agenda/AgendaPainel";
 import { VendaNaConsulta } from "@/components/agenda/VendaNaConsulta";
 import {
   atualizarConsulta, bloqueioNoIntervalo, conflitoDeProfissional, criarConsulta, excluirConsulta,
@@ -420,10 +421,22 @@ const Agenda = () => {
   const semCadastroBasico = !carregandoBase && (pacientes.length === 0 || profissionais.length === 0);
 
   return (
-    <div className="flex min-h-full bg-gray-50">
+    <div className="flex min-h-full bg-background dashboard-theme">
+      {!semClinica && (
+        <AgendaPainel
+          referencia={referencia}
+          onSelecionarDia={(d) => { setReferencia(startOfDay(d)); if (visao === "mes") setVisao("dia"); }}
+          cadeiras={cadeiras}
+          profissionais={profissionais}
+          filtroCadeira={filtroCadeira}
+          onFiltroCadeira={setFiltroCadeira}
+          filtroProfissional={filtroProfissional}
+          onFiltroProfissional={setFiltroProfissional}
+        />
+      )}
       <main className="flex-1 min-w-0 overflow-auto">
-        <div className="p-4 md:p-8">
-          <div className="flex flex-wrap items-start justify-between gap-3 mb-6">
+        <div className="p-4 md:p-6">
+          <div className="flex flex-wrap items-start justify-between gap-3 mb-4">
             <div>
               <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
                 <CalendarDays className="h-6 w-6 text-brand-600" /> Agenda
@@ -486,65 +499,42 @@ const Agenda = () => {
                 </div>
               )}
 
-              {/* controles */}
-              <Card className="border-gray-100 mb-4">
-                <CardContent className="p-4 flex flex-wrap items-center gap-3">
-                  <Tabs value={visao} onValueChange={(v) => setVisao(v as VisaoAgenda)}>
-                    <TabsList>
-                      <TabsTrigger value="dia">Dia</TabsTrigger>
-                      <TabsTrigger value="semana">Semana</TabsTrigger>
-                      <TabsTrigger value="mes">Mês</TabsTrigger>
-                    </TabsList>
-                  </Tabs>
+              {/* controles — barra da agenda no estilo do segmento (Semana/Dia/Cadeira/Mês) */}
+              <div className="mb-4 flex flex-wrap items-center gap-3">
+                <div className="flex items-center gap-1">
+                  <Button variant="outline" size="icon" className="h-9 w-9" onClick={() => navegar(-1)} aria-label="Período anterior">
+                    <ChevronLeft className="h-4 w-4" />
+                  </Button>
+                  <Button variant="outline" className="h-9" onClick={() => setReferencia(startOfDay(new Date()))}>
+                    Hoje
+                  </Button>
+                  <Button variant="outline" size="icon" className="h-9 w-9" onClick={() => navegar(1)} aria-label="Próximo período">
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </div>
 
-                  <div className="flex items-center gap-1">
-                    <Button variant="outline" size="icon" onClick={() => navegar(-1)} aria-label="Período anterior">
-                      <ChevronLeft className="h-4 w-4" />
-                    </Button>
-                    <Button variant="outline" onClick={() => setReferencia(startOfDay(new Date()))}>
-                      Hoje
-                    </Button>
-                    <Button variant="outline" size="icon" onClick={() => navegar(1)} aria-label="Próximo período">
-                      <ChevronRight className="h-4 w-4" />
-                    </Button>
-                  </div>
+                <p className="text-base font-semibold capitalize text-gray-900 min-w-[170px]">{rotuloPeriodo}</p>
 
-                  <p className="text-sm font-semibold capitalize text-gray-800 min-w-[180px]">{rotuloPeriodo}</p>
-
-                  <div className="ml-auto flex flex-wrap items-center gap-2">
-                    <Select value={filtroProfissional} onValueChange={setFiltroProfissional}>
-                      <SelectTrigger className="w-[190px]"><SelectValue placeholder="Profissional" /></SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value={TODOS}>Todos os profissionais</SelectItem>
-                        {profissionais.map((p) => (
-                          <SelectItem key={p.id} value={p.id}>{p.full_name ?? "Sem nome"}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-
-                    <Select value={filtroCadeira} onValueChange={setFiltroCadeira}>
-                      <SelectTrigger className="w-[160px]"><SelectValue placeholder="Cadeira" /></SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value={TODOS}>Todas as cadeiras</SelectItem>
-                        {cadeiras.map((c) => (
-                          <SelectItem key={c.id} value={c.id}>{c.nome}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-
-                    {visao === "dia" && (
-                      <Select value={agrupamentoDia} onValueChange={(v) => setAgrupamentoDia(v as AgrupamentoDia)}>
-                        <SelectTrigger className="w-[180px]"><SelectValue /></SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="nenhum">Coluna única</SelectItem>
-                          <SelectItem value="profissional">Por profissional</SelectItem>
-                          <SelectItem value="cadeira">Por cadeira</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
+                {/* toggle segmentado: Cadeira = dia agrupado por cadeira */}
+                <div className="ml-auto inline-flex rounded-xl bg-muted p-1">
+                  {([
+                    { id: "semana", rot: "Semana", ativo: visao === "semana", set: () => setVisao("semana") },
+                    { id: "dia", rot: "Dia", ativo: visao === "dia" && agrupamentoDia !== "cadeira", set: () => { setVisao("dia"); setAgrupamentoDia("nenhum"); } },
+                    { id: "cadeira", rot: "Cadeira", ativo: visao === "dia" && agrupamentoDia === "cadeira", set: () => { setVisao("dia"); setAgrupamentoDia("cadeira"); } },
+                    { id: "mes", rot: "Mês", ativo: visao === "mes", set: () => setVisao("mes") },
+                  ] as const).map((v) => (
+                    <button
+                      key={v.id}
+                      onClick={v.set}
+                      className={`rounded-lg px-4 py-1.5 text-sm font-medium transition-colors ${
+                        v.ativo ? "bg-card text-brand-700 shadow-sm" : "text-muted-foreground hover:text-foreground"
+                      }`}
+                    >
+                      {v.rot}
+                    </button>
+                  ))}
+                </div>
+              </div>
 
               {/* legenda */}
               <div className="mb-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-gray-600">
