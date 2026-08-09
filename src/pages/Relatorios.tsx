@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import {
   BarChart3, Loader2, AlertTriangle, FileText, CalendarHeart, Wallet, TrendingUp,
-  Filter, MessageCircle, UserX, RotateCcw, Users, Target, ArrowRight, Info,
+  Filter, MessageCircle, UserX, RotateCcw, Users, Target, Info,
 } from "lucide-react";
 import {
   ResponsiveContainer, BarChart, Bar, LineChart, Line,
@@ -20,6 +20,7 @@ import {
 } from "recharts";
 import { toast } from "sonner";
 import { useTenant } from "@/hooks/useTenant";
+import { FunilJornada } from "@/components/relatorios/FunilJornada";
 import {
   carregarKpis, faturamentoPorProcedimento, ocupacaoPorMes, listarPacientesInativos,
   carregarFunil, intervaloDoPeriodo, brl, pct, dataBR, linkWhatsApp, mensagemErro,
@@ -321,43 +322,8 @@ const Relatorios = () => {
                       />
                     ) : (
                       <>
-                        <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 mt-4">
-                          {[
-                            {
-                              t: "Vindos do CRM",
-                              v: String(funil.resumo.vindosDoCrm),
-                              s: `${pct(funil.resumo.taxaOrigemCrmPct)} dos pacientes do período`,
-                            },
-                            {
-                              t: "Pacientes",
-                              v: String(funil.resumo.pacientes),
-                              s: "Cadastrados no período",
-                            },
-                            {
-                              t: "Com orçamento",
-                              v: String(funil.resumo.comOrcamento),
-                              s: brl(funil.resumo.valorOrcado),
-                            },
-                            {
-                              t: "Com aprovação",
-                              v: String(funil.resumo.comOrcamentoAprovado),
-                              s: brl(funil.resumo.valorAprovado),
-                            },
-                            {
-                              t: "Pago",
-                              v: brl(funil.resumo.valorRecebido),
-                              s: `${funil.resumo.comTratamentoConcluido} com tratamento concluído`,
-                            },
-                          ].map((e, idx, arr) => (
-                            <div key={e.t} className="relative bg-white rounded-lg border border-brand-100 p-4">
-                              <p className="text-xs text-gray-500">{e.t}</p>
-                              <p className="text-xl font-bold text-gray-900 mt-1 break-words">{e.v}</p>
-                              <p className="text-[11px] text-gray-400 mt-1">{e.s}</p>
-                              {idx < arr.length - 1 && (
-                                <ArrowRight className="hidden lg:block absolute -right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-brand-300" />
-                              )}
-                            </div>
-                          ))}
+                        <div className="mt-4">
+                          <FunilJornada resumo={funil.resumo} />
                         </div>
 
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-3">
