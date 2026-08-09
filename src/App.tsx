@@ -1,3 +1,5 @@
+import { lazy, Suspense } from "react";
+import { Loader2 } from "lucide-react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -9,64 +11,64 @@ import { AppShell } from "@/components/shell/AppShell";
 // públicas
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
-import DemoLoader from "./pages/DemoLoader";
-import CadastroClinica from "./pages/CadastroClinica";
-import ConfigurarClinica from "./pages/ConfigurarClinica";
-import Feedback from "./pages/Feedback";
-import OnboardingPreview from "./pages/OnboardingPreview";
-import RedefinirSenha from "./pages/RedefinirSenha";
-import SiriTest from "./pages/SiriTest";
+const DemoLoader = lazy(() => import("./pages/DemoLoader"));
+const CadastroClinica = lazy(() => import("./pages/CadastroClinica"));
+const ConfigurarClinica = lazy(() => import("./pages/ConfigurarClinica"));
+const Feedback = lazy(() => import("./pages/Feedback"));
+const OnboardingPreview = lazy(() => import("./pages/OnboardingPreview"));
+const RedefinirSenha = lazy(() => import("./pages/RedefinirSenha"));
+const SiriTest = lazy(() => import("./pages/SiriTest"));
 import NotFound from "./pages/NotFound";
-import EmConstrucao from "./pages/EmConstrucao";
+const EmConstrucao = lazy(() => import("./pages/EmConstrucao"));
 
 // inteligência
-import Dashboard from "./pages/Dashboard";
-import Relatorios from "./pages/Relatorios";
-import RelatorioProfissional from "./pages/RelatorioProfissional";
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+const Relatorios = lazy(() => import("./pages/Relatorios"));
+const RelatorioProfissional = lazy(() => import("./pages/RelatorioProfissional"));
 
 // pacientes
-import Pacientes from "./pages/Pacientes";
-import PacienteFicha from "./pages/PacienteFicha";
-import AnamneseModelos from "./pages/AnamneseModelos";
-import AnamneseEditor from "./pages/AnamneseEditor";
-import AnamnesePreencher from "./pages/AnamnesePreencher";
-import Documentos from "./pages/Documentos";
-import DocumentoEditor from "./pages/DocumentoEditor";
+const Pacientes = lazy(() => import("./pages/Pacientes"));
+const PacienteFicha = lazy(() => import("./pages/PacienteFicha"));
+const AnamneseModelos = lazy(() => import("./pages/AnamneseModelos"));
+const AnamneseEditor = lazy(() => import("./pages/AnamneseEditor"));
+const AnamnesePreencher = lazy(() => import("./pages/AnamnesePreencher"));
+const Documentos = lazy(() => import("./pages/Documentos"));
+const DocumentoEditor = lazy(() => import("./pages/DocumentoEditor"));
 
 // agenda
-import Agenda from "./pages/Agenda";
-import Consultas from "./pages/Consultas";
-import HorariosAtendimento from "./pages/HorariosAtendimento";
-import Cadeiras from "./pages/Cadeiras";
+const Agenda = lazy(() => import("./pages/Agenda"));
+const Consultas = lazy(() => import("./pages/Consultas"));
+const HorariosAtendimento = lazy(() => import("./pages/HorariosAtendimento"));
+const Cadeiras = lazy(() => import("./pages/Cadeiras"));
 
 // vendas
-import Orcamentos from "./pages/Orcamentos";
-import OrcamentoEditor from "./pages/OrcamentoEditor";
-import CRM from "./pages/CRM";
+const Orcamentos = lazy(() => import("./pages/Orcamentos"));
+const OrcamentoEditor = lazy(() => import("./pages/OrcamentoEditor"));
+const CRM = lazy(() => import("./pages/CRM"));
 
 // conversas
-import Conversas from "./pages/Conversas";
+const Conversas = lazy(() => import("./pages/Conversas"));
 
 // financeiro
-import FluxoCaixa from "./pages/FluxoCaixa";
-import FinanceiroReceber from "./pages/FinanceiroReceber";
-import FinanceiroPagar from "./pages/FinanceiroPagar";
-import Comissoes from "./pages/Comissoes";
+const FluxoCaixa = lazy(() => import("./pages/FluxoCaixa"));
+const FinanceiroReceber = lazy(() => import("./pages/FinanceiroReceber"));
+const FinanceiroPagar = lazy(() => import("./pages/FinanceiroPagar"));
+const Comissoes = lazy(() => import("./pages/Comissoes"));
 
 // operação
-import Estoque from "./pages/Estoque";
-import Protese from "./pages/Protese";
-import PaginaPublica from "./pages/PaginaPublica";
-import Marketing from "./pages/Marketing";
+const Estoque = lazy(() => import("./pages/Estoque"));
+const Protese = lazy(() => import("./pages/Protese"));
+const PaginaPublica = lazy(() => import("./pages/PaginaPublica"));
+const Marketing = lazy(() => import("./pages/Marketing"));
 
 // ajustes
-import Profissionais from "./pages/Profissionais";
-import Procedimentos from "./pages/Procedimentos";
-import Especialidades from "./pages/Especialidades";
-import RotulosAgenda from "./pages/RotulosAgenda";
-import Permissoes from "./pages/Permissoes";
-import Integracoes from "./pages/Integracoes";
-import Anotacoes from "./pages/Anotacoes";
+const Profissionais = lazy(() => import("./pages/Profissionais"));
+const Procedimentos = lazy(() => import("./pages/Procedimentos"));
+const Especialidades = lazy(() => import("./pages/Especialidades"));
+const RotulosAgenda = lazy(() => import("./pages/RotulosAgenda"));
+const Permissoes = lazy(() => import("./pages/Permissoes"));
+const Integracoes = lazy(() => import("./pages/Integracoes"));
+const Anotacoes = lazy(() => import("./pages/Anotacoes"));
 
 const queryClient = new QueryClient();
 
@@ -81,6 +83,11 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <Suspense fallback={
+          <div className="flex h-screen items-center justify-center bg-background">
+            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+          </div>
+        }>
         <Routes>
           {/* ---------------- públicas (sem moldura) ---------------- */}
           <Route path="/" element={<Index />} />
@@ -155,6 +162,7 @@ const App = () => (
 
           <Route path="*" element={<NotFound />} />
         </Routes>
+        </Suspense>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
