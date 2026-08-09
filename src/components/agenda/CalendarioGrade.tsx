@@ -30,10 +30,11 @@ interface Props {
   onSelecionarDia: (dia: Date) => void;
 }
 
-/** Escala vertical da grade. 1.4px por minuto = 42px por slot de 30min: cabe
- *  "09:00 · Nome do paciente" em duas linhas sem cortar. */
+/** Escala vertical da grade. 1.7px por minuto = ~51px por slot de 30min: dá
+ *  respiro entre as linhas (aspecto sólido, não apertado) e cabe "09:00 · Nome"
+ *  em duas linhas sem cortar. */
 const COR_COMPROMISSO = "#94a3b8";
-const PX_POR_MIN = 1.4;
+const PX_POR_MIN = 1.7;
 const LARGURA_REGUA = 60;
 const SEM_CADEIRA = "__sem_cadeira__";
 
@@ -260,12 +261,12 @@ export const CalendarioGrade = ({
     <div className="overflow-x-auto">
       <div className={visao === "semana" ? "min-w-[760px]" : "min-w-[420px]"}>
         {/* cabeçalho fora do scroll vertical, com a mesma régua de largura */}
-        <div className="flex border-b border-gray-100">
+        <div className="flex border-b border-gray-200 sticky top-0 z-30 bg-white">
           <div className="shrink-0" style={{ width: LARGURA_REGUA }} />
           {colunas.map((col) => (
             <div
               key={col.chave}
-              className={`flex-1 border-l border-gray-100 px-2 py-2 text-center ${col.destacada ? "bg-brand-50/60" : ""}`}
+              className={`flex-1 border-l border-gray-200 px-2 py-2.5 text-center ${col.destacada ? "bg-brand-50/60" : ""}`}
             >
               <p className={`text-xs font-semibold capitalize ${col.destacada ? "text-brand-700" : "text-gray-700"}`}>
                 {col.titulo}
@@ -331,7 +332,7 @@ export const CalendarioGrade = ({
               return (
                 <div
                   key={col.chave}
-                  className={`relative flex-1 border-l border-gray-100 ${col.destacada ? "bg-brand-50/30" : ""}`}
+                  className={`relative flex-1 border-l border-gray-200 ${col.destacada ? "bg-brand-50/30" : ""}`}
                   style={{ height: alturaTotal }}
                 >
                   {/* linha do "agora" — só na coluna de hoje e dentro da faixa visível */}
@@ -350,7 +351,8 @@ export const CalendarioGrade = ({
                     );
                   })()}
 
-                  {/* slots clicáveis — camada de fundo */}
+                  {/* slots clicáveis — camada de fundo. Ao passar o mouse, a célula
+                      acende e mostra o horário numa caixinha (como agenda clínica). */}
                   {linhasDeSlot.map((m) => (
                     <button
                       key={m}
@@ -364,14 +366,18 @@ export const CalendarioGrade = ({
                           cadeiraId: col.cadeiraId && col.cadeiraId !== SEM_CADEIRA ? col.cadeiraId : null,
                         });
                       }}
-                      className={`absolute left-0 right-0 w-full border-t transition-colors hover:bg-brand-100/50 ${
+                      className={`group absolute left-0 right-0 w-full border-t transition-colors hover:bg-brand-50 ${
                         m % 60 === 0 ? "border-gray-200" : "border-gray-100 border-dashed"
                       }`}
                       style={{
                         top: (m - faixa.inicioMin) * PX_POR_MIN,
                         height: (faixa.slotMin || 30) * PX_POR_MIN,
                       }}
-                    />
+                    >
+                      <span className="pointer-events-none absolute left-1 top-1 rounded-md border border-brand-300 bg-white px-1.5 py-0.5 text-[10px] font-semibold tabular-nums text-brand-700 opacity-0 shadow-sm transition-opacity group-hover:opacity-100">
+                        {minutosParaHora(m)}
+                      </span>
+                    </button>
                   ))}
 
                   {/* bloqueios — faixa cinza hachurada, acima do fundo e abaixo das consultas */}
