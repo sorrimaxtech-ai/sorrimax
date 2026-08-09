@@ -179,7 +179,7 @@ const FinanceiroReceber = () => {
     try {
       await estornarParcela(aEstornar.id, clinicaId);
       toast.success("Pagamento estornado", {
-        description: "A parcela voltou para pendente. Se havia comissão liberada por esta baixa, revise-a na tela de comissões — ela não é revertida sozinha.",
+        description: "A parcela voltou para pendente. Comissão liberada por esta baixa foi revertida para prevista automaticamente.",
       });
       setAEstornar(null);
       await carregar();
@@ -599,9 +599,7 @@ const FinanceiroReceber = () => {
               A parcela de {brl(aEstornar?.valor_pago ?? aEstornar?.valor)} volta para pendente e a
               taxa é zerada. Use só quando a baixa foi um erro ou o pagamento foi estornado de verdade.
               <span className="mt-2 block font-medium text-amber-700">
-                A comissão liberada por esta baixa NÃO é revertida automaticamente: ela continua como
-                liberada e precisa ser ajustada na mão em Comissões.
-              </span>
+                Comissão liberada por esta baixa volta sozinha para prevista. Comissão já paga ao dentista não é afetada.</span>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

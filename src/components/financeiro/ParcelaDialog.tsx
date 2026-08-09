@@ -259,7 +259,7 @@ export const ParcelaDialog = ({
             Ao confirmar, o valor líquido é calculado pelo servidor (valor pago menos a taxa) e, se
             existir comissão vinculada a esta parcela, ela passa de{" "}
             <span className="font-medium">prevista</span> para <span className="font-medium">liberada</span>.
-            Atenção: estornar depois desfaz a baixa, mas não desfaz a liberação da comissão.
+            Estornar depois desfaz a baixa e reverte a comissão liberada de volta para prevista.
           </p>
         </div>
 

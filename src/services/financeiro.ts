@@ -411,12 +411,9 @@ export async function baixarParcela(input: BaixaParcela): Promise<void> {
 /**
  * Desfaz a baixa (erro de digitação, estorno de cartão). Zera o que a baixa gravou.
  *
- * ATENÇÃO — a comissão NÃO volta sozinha. O trigger `parcela_liberar_comissoes`
- * (migration 0007) só tem o ramo `pago`: ele promove `prevista → liberada` e não
- * tem caminho de volta. Estornar a parcela deixa a comissão vinculada parada em
- * `liberada`, ou seja, a clínica segue devendo comissão sobre dinheiro que não
- * entrou. Enquanto não existir o ramo reverso no banco, a UI é obrigada a dizer
- * isso ao usuário em vez de afirmar que a reversão aconteceu.
+ * A comissão volta sozinha: o trigger `parcela_reverter_comissoes` (migration
+ * 0026) devolve `liberada → prevista` quando a parcela sai de `pago`. Comissão
+ * já `paga` ao dentista não é tocada — reverter aí seria calote nele.
  */
 export async function estornarParcela(parcelaId: string, clinicaId: string): Promise<void> {
   const { error } = await supabase
