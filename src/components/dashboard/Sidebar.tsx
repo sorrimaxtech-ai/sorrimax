@@ -14,7 +14,7 @@ import { useTenant } from "@/hooks/useTenant";
 // nível de "Agenda". O usuário lia o menu inteiro toda vez.
 //
 // Agora: 12 módulos, sem rótulo de grupo. O que era sub-item virou aba dentro
-// do módulo (ModuloTabs), ao lado do conteúdo. Identidade VITTALHUB no topo
+// do módulo (ModuloTabs), ao lado do conteúdo. Identidade SORRIMAX no topo
 // ficou na TopBar — aqui é só navegação.
 // ============================================================================
 

@@ -1,5 +1,5 @@
 -- ============================================================
--- 0000 · Bootstrap da base Vittalhub (estrutura, sem RLS)
+-- 0000 · Bootstrap da base Sorrimax (estrutura, sem RLS)
 -- Gerado dos schemas do repo. RLS fica no 0001.
 -- ============================================================
 

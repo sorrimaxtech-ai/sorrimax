@@ -125,7 +125,7 @@ const Auth = () => {
               <Sparkles className="h-6 w-6" />
             </div>
             <h1 className="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-emerald-500 bg-clip-text text-transparent">
-              VITTALHUB
+              SORRIMAX
             </h1>
           </div>
           <p className="text-xl text-gray-600">Bem-vindo de volta</p>

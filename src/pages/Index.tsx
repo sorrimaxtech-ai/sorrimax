@@ -21,7 +21,7 @@ const Header = () => {
         <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-primary-foreground">
           <Sparkles className="h-3 w-3" />
         </div>
-        <span className="font-display text-sm font-bold tracking-tight text-foreground">VITTALHUB</span>
+        <span className="font-display text-sm font-bold tracking-tight text-foreground">SORRIMAX</span>
         <div className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse ml-1" />
       </div>
     </header>
@@ -42,7 +42,7 @@ const HeroSection = () => {
             <span>Gestão médica 10x mais inteligente</span>
           </div>
           <h1 className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-8 text-slate-900 leading-[1.1]">
-            VITTALHUB: gestão médica inteligente a partir de <span className="text-primary">R$ 97/mês</span>
+            SORRIMAX: gestão médica inteligente a partir de <span className="text-primary">R$ 97/mês</span>
           </h1>
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed">
             Substitua planilhas, agenda de papel e sistemas complexos por uma plataforma simples, bonita e eficiente.
@@ -65,7 +65,7 @@ const HeroSection = () => {
             <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent z-10 pointer-events-none" />
             <img 
               src={heroDashboard} 
-              alt="Dashboard VITTALHUB" 
+              alt="Dashboard SORRIMAX" 
               className="w-full h-auto"
             />
           </div>
@@ -191,7 +191,7 @@ const PricingSection = () => (
             features: ["Tudo do Essencial", "Confirmação Automática", "Disparo de Mensagens em Massa", "Múltiplos Profissionais", "Relatórios Avançados"]
           },
           {
-            name: "VITTALHUB AI",
+            name: "SORRIMAX AI",
             price: "R$ 297",
             period: "/mês",
             description: "Automação total com nossa Inteligência Artificial.",
@@ -243,7 +243,7 @@ const FAQSection = () => (
         {[
           {
             q: "Preciso instalar algum programa?",
-            a: "Não! O VITTALHUB é 100% online. Você pode acessar de qualquer lugar, pelo computador, tablet ou celular."
+            a: "Não! O SORRIMAX é 100% online. Você pode acessar de qualquer lugar, pelo computador, tablet ou celular."
           },
           {
             q: "Como funciona o teste grátis?",
@@ -318,7 +318,7 @@ const CTASection = () => {
               Pronto para transformar sua clínica?
             </h2>
             <p className="text-primary-foreground/80 text-lg mb-8">
-              Junte-se a centenas de profissionais que já automatizaram sua gestão com VITTALHUB
+              Junte-se a centenas de profissionais que já automatizaram sua gestão com SORRIMAX
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Button 
@@ -352,10 +352,10 @@ const Footer = () => (
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
             <Sparkles className="h-4 w-4 text-primary-foreground" />
           </div>
-          <span className="font-display text-lg font-bold">VITTALHUB</span>
+          <span className="font-display text-lg font-bold">SORRIMAX</span>
         </div>
         <p className="text-sm text-muted-foreground">
-          © 2024 VITTALHUB. Todos os direitos reservados.
+          © 2024 SORRIMAX. Todos os direitos reservados.
         </p>
         <div className="flex items-center gap-6">
           <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Termos</a>

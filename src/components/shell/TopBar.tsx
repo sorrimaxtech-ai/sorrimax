@@ -53,7 +53,7 @@ export const TopBar = () => {
         className="flex items-center gap-2 shrink-0 rounded-md px-1 py-1 hover:bg-white/10 transition-colors"
       >
         <Stethoscope className="h-5 w-5" />
-        <span className="font-display text-lg font-bold tracking-tight">VITTALHUB</span>
+        <span className="font-display text-lg font-bold tracking-tight">SORRIMAX</span>
       </button>
 
       {/* Trilha: módulo › aba. Some no mobile para não competir com o logo. */}

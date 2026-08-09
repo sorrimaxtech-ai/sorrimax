@@ -1,6 +1,6 @@
 -- ============================================
 -- Políticas de RLS para Permitir Inserção de Dados
--- VITTALHUB - Sistema de Gestão de Clínicas
+-- SORRIMAX - Sistema de Gestão de Clínicas
 -- ============================================
 -- 
 -- IMPORTANTE: Execute este script ANTES de tentar criar dados de teste

@@ -1,5 +1,5 @@
 -- ============================================================================
--- VITTALHUB · 0019 · Tirar toda função privilegiada do alcance de anon
+-- SORRIMAX · 0019 · Tirar toda função privilegiada do alcance de anon
 -- ----------------------------------------------------------------------------
 -- Postgres concede EXECUTE a PUBLIC por padrão em toda função criada. Para
 -- SECURITY DEFINER isso é ruim: a função roda como owner e ignora RLS.

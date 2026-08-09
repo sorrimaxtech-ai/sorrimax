@@ -1,4 +1,4 @@
-# Fluxo de Cadastro e Login - VITTALHUB
+# Fluxo de Cadastro e Login - SORRIMAX
 
 ## 🎯 Visão Geral
 
@@ -234,9 +234,9 @@ async function convidarProfissional(emailNovo: string, role: string) {
   // Enviar email com link de convite
   await sendEmail({
     to: emailNovo,
-    subject: "Convite para VITTALHUB",
+    subject: "Convite para SORRIMAX",
     body: `Você foi convidado para a clínica. 
-           Acesse: https://vittalhub.com/aceitar-convite/${conviteToken}`,
+           Acesse: https://sorrimax.com/aceitar-convite/${conviteToken}`,
   });
 }
 

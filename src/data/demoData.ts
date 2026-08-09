@@ -677,10 +677,10 @@ export const demoMetricas = {
 };
 
 export const demoClinica = {
-  nome: 'Clínica VITTALHUB Demo',
+  nome: 'Clínica SORRIMAX Demo',
   cnpj: '12.345.678/0001-90',
   telefone: '(73) 3456-7890',
-  email: 'contato@vittalhubdemo.com.br',
+  email: 'contato@sorrimaxdemo.com.br',
   endereco: 'Rua das Flores, 123 - Centro',
   cidade: 'Ilhéus',
   estado: 'BA',
@@ -689,7 +689,7 @@ export const demoClinica = {
 
 export const demoUsuario = {
   nome: 'Dr. Paulo Mendes',
-  email: 'demo@vittalhub.com',
+  email: 'demo@sorrimax.com',
   role: 'admin',
   especialidade: 'Cardiologia',
 };

@@ -1,5 +1,5 @@
 -- ============================================================================
--- VITTALHUB · 0003 · Agenda: disponibilidade, bloqueios, consultas, recorrência
+-- SORRIMAX · 0003 · Agenda: disponibilidade, bloqueios, consultas, recorrência
 -- ----------------------------------------------------------------------------
 -- Substitui os mocks de src/pages/Agenda.tsx.
 -- Destaques em relação ao benchmark:

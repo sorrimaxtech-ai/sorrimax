@@ -1,5 +1,5 @@
 // ============================================================================
-// VITTALHUB Odonto — tipos do domínio
+// SORRIMAX Odonto — tipos do domínio
 // Espelha as migrations 0005/0006. Manter em sincronia com o schema.
 // ============================================================================
 

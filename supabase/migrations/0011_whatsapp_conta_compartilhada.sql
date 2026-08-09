@@ -1,10 +1,10 @@
 -- ============================================================================
--- 0011 · Diferenciação de conta uazapi COMPARTILHADA (Vittalhub × Diamond)
+-- 0011 · Diferenciação de conta uazapi COMPARTILHADA (Sorrimax × Diamond)
 -- ----------------------------------------------------------------------------
 -- A conta uazapi (grupodiamond.uazapi.com) é a MESMA usada pelo Diamond CRM.
 -- Suas instâncias são de clientes do Diamond (SolarMax, Lobo Soluções), não
 -- clínicas. Estes campos deixam explícito no banco o que é compartilhado, pra:
---   · o Vittalhub NUNCA deletar/reinit uma instância que é do Diamond
+--   · o Sorrimax NUNCA deletar/reinit uma instância que é do Diamond
 --   · saber que o webhook daquela instância é gerido pelo Diamond (fan-out)
 --   · o admin token NÃO fica em coluna — vai como secret da Edge Function
 -- ============================================================================

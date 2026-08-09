@@ -73,7 +73,7 @@ CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
 -- ══ 01_schema_principal.sql ══
 -- ============================================
--- VITTALHUB - Schema Completo do Banco de Dados
+-- SORRIMAX - Schema Completo do Banco de Dados
 -- Execute este script no SQL Editor do Supabase
 -- ============================================
 
@@ -681,7 +681,7 @@ CREATE TRIGGER update_wa_chats_modtime
 
 -- ▼▼▼ 0000_bootstrap_base.sql
 -- ============================================================
--- 0000 · Bootstrap da base Vittalhub (estrutura, sem RLS)
+-- 0000 · Bootstrap da base Sorrimax (estrutura, sem RLS)
 -- Gerado dos schemas do repo. RLS fica no 0001.
 -- ============================================================
 
@@ -871,7 +871,7 @@ CREATE INDEX IF NOT EXISTS idx_wa_messages_created ON whatsapp_messages(created_
 
 -- ▼▼▼ 0001_foundation_rls.sql
 -- ============================================================================
--- VITTALHUB · 0001 · Fundação e RLS consolidado
+-- SORRIMAX · 0001 · Fundação e RLS consolidado
 -- ----------------------------------------------------------------------------
 -- Substitui: fix_rls.sql, fix_rls_v2, fix_rls_anon_setup, fix_rls_definitive,
 --            fix_rls_especialidades, fix_rls_final, fix_rls_profiles_login,
@@ -1134,7 +1134,7 @@ commit;
 
 -- ▼▼▼ 0002_core_pacientes_servicos.sql
 -- ============================================================================
--- VITTALHUB · 0002 · Núcleo clínico: convênios, pacientes, serviços
+-- SORRIMAX · 0002 · Núcleo clínico: convênios, pacientes, serviços
 -- ----------------------------------------------------------------------------
 -- Substitui os mocks de src/pages/Pacientes.tsx por dados reais.
 -- Perfil de produto: CLÍNICA MULTI-PROFISSIONAL (vocabulário paciente/consulta,
@@ -1315,7 +1315,7 @@ commit;
 
 -- ▼▼▼ 0003_agenda_consultas.sql
 -- ============================================================================
--- VITTALHUB · 0003 · Agenda: disponibilidade, bloqueios, consultas, recorrência
+-- SORRIMAX · 0003 · Agenda: disponibilidade, bloqueios, consultas, recorrência
 -- ----------------------------------------------------------------------------
 -- Substitui os mocks de src/pages/Agenda.tsx.
 -- Destaques em relação ao benchmark:
@@ -1640,7 +1640,7 @@ commit;
 
 -- ▼▼▼ 0004_seed_catalogos.sql
 -- ============================================================================
--- VITTALHUB · 0004 · Seed de catálogos (clínica multi-profissional)
+-- SORRIMAX · 0004 · Seed de catálogos (clínica multi-profissional)
 -- ----------------------------------------------------------------------------
 -- Idempotente: pode rodar quantas vezes quiser.
 -- Só catálogo global. Nada de dado de clínica/paciente aqui.
@@ -1695,7 +1695,7 @@ commit;
 
 -- ▼▼▼ 0005_odonto_procedimentos_odontograma.sql
 -- ============================================================================
--- VITTALHUB · 0005 · Núcleo ODONTOLÓGICO
+-- SORRIMAX · 0005 · Núcleo ODONTOLÓGICO
 -- ----------------------------------------------------------------------------
 -- Vira o produto para odontologia. Traz o que nenhum dos dois benchmarks
 -- entrega junto:
@@ -1968,10 +1968,10 @@ commit;
 
 -- ▼▼▼ 0006_orcamentos_funil.sql
 -- ============================================================================
--- VITTALHUB · 0006 · ORÇAMENTO — a entidade central do negócio odontológico
+-- SORRIMAX · 0006 · ORÇAMENTO — a entidade central do negócio odontológico
 -- ----------------------------------------------------------------------------
 -- Lição do benchmark: em odontologia o centro não é a consulta (VitalHub) nem
--- o lead (VITTALHUB hoje). É o ORÇAMENTO. Aprovar um orçamento dispara:
+-- o lead (SORRIMAX hoje). É o ORÇAMENTO. Aprovar um orçamento dispara:
 --   1. planejamento no odontograma
 --   2. débitos financeiros (0007)
 --   3. movimento no funil comercial
@@ -2207,7 +2207,7 @@ create trigger trg_orc_item_odontograma
 -- ============================================================================
 -- oportunidades — FUNIL UNIFICADO (a tese de produto)
 -- ----------------------------------------------------------------------------
--- O CRM do VITTALHUB hoje é de LEAD (pré-paciente). O do Simples Dental é de
+-- O CRM do SORRIMAX hoje é de LEAD (pré-paciente). O do Simples Dental é de
 -- ORÇAMENTO (pós-paciente). Aqui os dois vivem no mesmo funil, então dá pra
 -- responder: "de cada 100 leads captados, quantos reais viraram tratamento?"
 -- ============================================================================
@@ -2306,7 +2306,7 @@ commit;
 
 -- ▼▼▼ 0007_financeiro_comissoes.sql
 -- ============================================================================
--- VITTALHUB · 0007 · Financeiro, parcelamento e comissões
+-- SORRIMAX · 0007 · Financeiro, parcelamento e comissões
 -- ----------------------------------------------------------------------------
 -- Fecha o loop: orçamento aprovado → débitos parcelados → recebimento →
 -- comissão do profissional. Inclui taxa de cartão para calcular RECEBÍVEL
@@ -2650,7 +2650,7 @@ commit;
 
 -- ▼▼▼ 0008_views_indicadores.sql
 -- ============================================================================
--- VITTALHUB · 0008 · Views de indicadores
+-- SORRIMAX · 0008 · Views de indicadores
 -- ----------------------------------------------------------------------------
 -- ⚠️ TODAS com `security_invoker = on`. View comum no Postgres roda com os
 -- privilégios do OWNER, o que IGNORA o RLS das tabelas de base — seria um
@@ -2867,9 +2867,9 @@ commit;
 
 -- ▼▼▼ 0009_whatsapp_processos.sql
 -- ============================================================================
--- VITTALHUB · 0009 · Processos simultâneos do chat WhatsApp
+-- SORRIMAX · 0009 · Processos simultâneos do chat WhatsApp
 -- ----------------------------------------------------------------------------
--- Porta os processos concorrentes do Diamond CRM para a realidade do Vittalhub.
+-- Porta os processos concorrentes do Diamond CRM para a realidade do Sorrimax.
 -- Mapeamento de arquitetura (Diamond → aqui):
 --   uazapi                → Evolution API (Baileys), que o projeto já usa
 --   Pusher (realtime)     → Supabase Realtime (CDC de whatsapp_messages/chats)
@@ -3187,12 +3187,12 @@ comment on column public.whatsapp_instances.api_token is 'uazapi: instance token
 
 -- ▼▼▼ 0011_whatsapp_conta_compartilhada.sql
 -- ============================================================================
--- 0011 · Diferenciação de conta uazapi COMPARTILHADA (Vittalhub × Diamond)
+-- 0011 · Diferenciação de conta uazapi COMPARTILHADA (Sorrimax × Diamond)
 -- ----------------------------------------------------------------------------
 -- A conta uazapi (grupodiamond.uazapi.com) é a MESMA usada pelo Diamond CRM.
 -- Suas instâncias são de clientes do Diamond (SolarMax, Lobo Soluções), não
 -- clínicas. Estes campos deixam explícito no banco o que é compartilhado, pra:
---   · o Vittalhub NUNCA deletar/reinit uma instância que é do Diamond
+--   · o Sorrimax NUNCA deletar/reinit uma instância que é do Diamond
 --   · saber que o webhook daquela instância é gerido pelo Diamond (fan-out)
 --   · o admin token NÃO fica em coluna — vai como secret da Edge Function
 -- ============================================================================
@@ -3213,7 +3213,7 @@ comment on column public.whatsapp_instances.webhook_mode is
 
 -- ▼▼▼ 0012_hardening_funcoes.sql
 -- ============================================================================
--- VITTALHUB · 0012 · Hardening das funções (corrige o bug do cadastro)
+-- SORRIMAX · 0012 · Hardening das funções (corrige o bug do cadastro)
 -- ----------------------------------------------------------------------------
 -- BUG REPORTADO: ao criar conta, o toast mostra
 --   "new row violates row-level security policy for table pipeline_stages"
@@ -3287,7 +3287,7 @@ commit;
 
 -- ▼▼▼ 0013_auditoria_saude.sql
 -- ============================================================================
--- VITTALHUB · 0013 · Auditoria de saúde permanente
+-- SORRIMAX · 0013 · Auditoria de saúde permanente
 -- ----------------------------------------------------------------------------
 -- O bug "new row violates row-level security policy for table pipeline_stages"
 -- é de uma CLASSE de problema, não um caso isolado. Esta função transforma as
@@ -3439,7 +3439,7 @@ commit;
 
 -- ▼▼▼ 0014_correcoes_auditoria.sql
 -- ============================================================================
--- VITTALHUB · 0014 · Correções apontadas pela auditoria de saúde (0013)
+-- SORRIMAX · 0014 · Correções apontadas pela auditoria de saúde (0013)
 -- ----------------------------------------------------------------------------
 -- Achados corrigidos aqui:
 --   🔴 2 triggers com INSERT rodando como INVOKER (mesma classe do bug do cadastro)
@@ -3616,7 +3616,7 @@ commit;
 
 -- ▼▼▼ 0015_correcoes_criticas_seguranca.sql
 -- ============================================================================
--- VITTALHUB · 0015 · CORREÇÕES CRÍTICAS DE SEGURANÇA
+-- SORRIMAX · 0015 · CORREÇÕES CRÍTICAS DE SEGURANÇA
 -- ----------------------------------------------------------------------------
 -- Achados de auditoria (06/08/2026), todos comprovados por exploração real:
 --   🔴 clinicas: anon podia LER/ALTERAR/APAGAR todas → 33 FKs ON DELETE CASCADE
@@ -3860,7 +3860,7 @@ commit;
 
 -- ▼▼▼ 0016_rpc_onboarding_atomico.sql
 -- ============================================================================
--- VITTALHUB · 0016 · Onboarding atômico (substitui o fluxo frágil de cadastro)
+-- SORRIMAX · 0016 · Onboarding atômico (substitui o fluxo frágil de cadastro)
 -- ----------------------------------------------------------------------------
 -- FLUXO ANTIGO (quebrado e inseguro):
 --   1. front cria `clinicas` como ANÔNIMO   ← exigia INSERT público (spam/abuso)
@@ -3961,7 +3961,7 @@ commit;
 
 -- ▼▼▼ 0017_blindagem_whatsapp_e_onboarding.sql
 -- ============================================================================
--- VITTALHUB · 0017 · Blindagem do WhatsApp compartilhado + destravamento do login
+-- SORRIMAX · 0017 · Blindagem do WhatsApp compartilhado + destravamento do login
 -- ----------------------------------------------------------------------------
 -- 🔴 api_token das instâncias do Diamond (SolarMax / Lobo / Eforte) era legível
 --    e EDITÁVEL por qualquer usuário logado da clínica — e ainda era empurrado
@@ -4177,7 +4177,7 @@ $agenda$;
 
 -- ▼▼▼ 0018_auditoria_v2.sql
 -- ============================================================================
--- VITTALHUB · 0018 · Auditoria v2 — fecha as lacunas do próprio auditor
+-- SORRIMAX · 0018 · Auditoria v2 — fecha as lacunas do próprio auditor
 -- ----------------------------------------------------------------------------
 -- A v1 não pegou `clinicas_all_access` (USING(true) TO public) porque só
 -- verificava "existe alguma policy com current_clinica_id". Policies são
@@ -4298,7 +4298,7 @@ grant execute on function public.auditoria_saude() to authenticated, service_rol
 
 -- ▼▼▼ 0019_revoke_funcoes_anon.sql
 -- ============================================================================
--- VITTALHUB · 0019 · Tirar toda função privilegiada do alcance de anon
+-- SORRIMAX · 0019 · Tirar toda função privilegiada do alcance de anon
 -- ----------------------------------------------------------------------------
 -- Postgres concede EXECUTE a PUBLIC por padrão em toda função criada. Para
 -- SECURITY DEFINER isso é ruim: a função roda como owner e ignora RLS.
@@ -4350,7 +4350,7 @@ grant execute on function public.auditoria_guard_null() to authenticated, servic
 
 -- ▼▼▼ 0020_hof_regioes.sql
 -- ============================================================================
--- VITTALHUB · 0020 · Regiões faciais (HOF — Harmonização Orofacial)
+-- SORRIMAX · 0020 · Regiões faciais (HOF — Harmonização Orofacial)
 -- ----------------------------------------------------------------------------
 -- O orçamento precisa lançar procedimento em REGIÃO DO ROSTO, não só em dente.
 -- É o recurso premium do concorrente (faceograma). Lista fechada = consistência
@@ -4414,7 +4414,7 @@ alter table public.odontograma_registros
 
 -- ▼▼▼ 0021_fix_comissao_parcela.sql
 -- ============================================================================
--- VITTALHUB · 0021 · Comissão precisa estar ligada à PARCELA
+-- SORRIMAX · 0021 · Comissão precisa estar ligada à PARCELA
 -- ----------------------------------------------------------------------------
 -- BUG (achado em teste de ponta a ponta): `gerar_debitos_orcamento` criava a
 -- comissão com `parcela_id = NULL`. O trigger `parcela_liberar_comissoes` só
@@ -4494,7 +4494,7 @@ grant execute on function public.gerar_debitos_orcamento(uuid, public.forma_paga
 
 -- ▼▼▼ 0022_anamnese_documentos.sql
 -- ============================================================================
--- VITTALHUB · 0022 · Anamnese digital + Documentos com merge fields
+-- SORRIMAX · 0022 · Anamnese digital + Documentos com merge fields
 -- ----------------------------------------------------------------------------
 -- Dois diferenciais competitivos num só bloco:
 --   · ANAMNESE com construtor de formulário: escala (PHQ-9/GAD-7/dor 0-10),
@@ -4967,7 +4967,7 @@ commit;
 
 -- ▼▼▼ 0023_estoque_protese_publico.sql
 -- ============================================================================
--- VITTALHUB · 0023 · Estoque, Prótese, Página Pública e Perfis de Permissão
+-- SORRIMAX · 0023 · Estoque, Prótese, Página Pública e Perfis de Permissão
 -- ----------------------------------------------------------------------------
 -- 4 blocos:
 --   1. ESTOQUE     — produtos + movimentos (entrada/saida/ajuste/perda) e a

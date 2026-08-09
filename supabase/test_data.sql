@@ -1,6 +1,6 @@
 ?-- ============================================
 -- Script de Criação de Usuário de Teste
--- VITTALHUB - Sistema de Gestão de Clínicas
+-- SORRIMAX - Sistema de Gestão de Clínicas
 -- ============================================
 -- 
 -- INSTRUÇÕES:
@@ -20,7 +20,7 @@ INSERT INTO clinicas (
   telefone
 )
 VALUES (
-  'Clínica Teste VITTALHUB',
+  'Clínica Teste SORRIMAX',
   '12.345.678/0001-90',
   'contato@clinicateste.com',
   '(11) 98765-4321'
@@ -31,7 +31,7 @@ RETURNING id, codigo_clinica, nome_clinica;
 -- Exemplo de retorno:
 -- id: 550e8400-e29b-41d4-a716-446655440000
 -- codigo_clinica: VH-12345
--- nome_clinica: Clínica Teste VITTALHUB
+-- nome_clinica: Clínica Teste SORRIMAX
 
 -- ============================================
 -- PASSO 2: Criar Usuário no Supabase Auth
@@ -40,7 +40,7 @@ RETURNING id, codigo_clinica, nome_clinica;
 -- Vá para: Supabase Dashboard → Authentication → Users → Add User
 -- 
 -- Preencha:
--- - Email: admin@vittalhub.com
+-- - Email: admin@sorrimax.com
 -- - Password: teste123456
 -- - Auto Confirm User: ✓ (marcar)
 -- 
@@ -80,18 +80,18 @@ SELECT
 FROM clinicas c
 LEFT JOIN profiles p ON p.clinica_id = c.id
 LEFT JOIN assinaturas a ON a.clinica_id = c.id
-WHERE c.nome_clinica = 'Clínica Teste VITTALHUB';
+WHERE c.nome_clinica = 'Clínica Teste SORRIMAX';
 
 -- ============================================
 -- RESULTADO ESPERADO:
 -- ============================================
 -- clinica_id: [UUID da clínica]
 -- codigo_clinica: VH-XXXXX
--- nome_clinica: Clínica Teste VITTALHUB
+-- nome_clinica: Clínica Teste SORRIMAX
 -- email_clinica: contato@clinicateste.com
 -- usuario_id: [UUID do usuário]
 -- full_name: Admin Teste
--- email: admin@vittalhub.com
+-- email: admin@sorrimax.com
 -- role: admin
 -- plano: trial
 -- status_assinatura: trial
@@ -103,7 +103,7 @@ WHERE c.nome_clinica = 'Clínica Teste VITTALHUB';
 -- ============================================
 -- CREDENCIAIS DE LOGIN:
 -- ============================================
--- Email: admin@vittalhub.com
+-- Email: admin@sorrimax.com
 -- Senha: teste123456
 -- ============================================
 

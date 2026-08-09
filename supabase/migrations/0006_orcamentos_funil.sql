@@ -1,8 +1,8 @@
 -- ============================================================================
--- VITTALHUB · 0006 · ORÇAMENTO — a entidade central do negócio odontológico
+-- SORRIMAX · 0006 · ORÇAMENTO — a entidade central do negócio odontológico
 -- ----------------------------------------------------------------------------
 -- Lição do benchmark: em odontologia o centro não é a consulta (VitalHub) nem
--- o lead (VITTALHUB hoje). É o ORÇAMENTO. Aprovar um orçamento dispara:
+-- o lead (SORRIMAX hoje). É o ORÇAMENTO. Aprovar um orçamento dispara:
 --   1. planejamento no odontograma
 --   2. débitos financeiros (0007)
 --   3. movimento no funil comercial
@@ -238,7 +238,7 @@ create trigger trg_orc_item_odontograma
 -- ============================================================================
 -- oportunidades — FUNIL UNIFICADO (a tese de produto)
 -- ----------------------------------------------------------------------------
--- O CRM do VITTALHUB hoje é de LEAD (pré-paciente). O do Simples Dental é de
+-- O CRM do SORRIMAX hoje é de LEAD (pré-paciente). O do Simples Dental é de
 -- ORÇAMENTO (pós-paciente). Aqui os dois vivem no mesmo funil, então dá pra
 -- responder: "de cada 100 leads captados, quantos reais viraram tratamento?"
 -- ============================================================================

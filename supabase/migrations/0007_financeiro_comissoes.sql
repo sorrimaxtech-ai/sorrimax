@@ -1,5 +1,5 @@
 -- ============================================================================
--- VITTALHUB · 0007 · Financeiro, parcelamento e comissões
+-- SORRIMAX · 0007 · Financeiro, parcelamento e comissões
 -- ----------------------------------------------------------------------------
 -- Fecha o loop: orçamento aprovado → débitos parcelados → recebimento →
 -- comissão do profissional. Inclui taxa de cartão para calcular RECEBÍVEL

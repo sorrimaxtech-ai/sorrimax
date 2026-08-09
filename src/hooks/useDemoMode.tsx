@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
-const DEMO_MODE_KEY = 'vittalhub_demo_mode';
+const DEMO_MODE_KEY = 'sorrimax_demo_mode';
 
 export const useDemoMode = () => {
   const [isDemo, setIsDemo] = useState(() => {

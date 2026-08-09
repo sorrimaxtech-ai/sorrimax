@@ -1,5 +1,5 @@
 -- ============================================================================
--- VITTALHUB · 0008 · Views de indicadores
+-- SORRIMAX · 0008 · Views de indicadores
 -- ----------------------------------------------------------------------------
 -- ⚠️ TODAS com `security_invoker = on`. View comum no Postgres roda com os
 -- privilégios do OWNER, o que IGNORA o RLS das tabelas de base — seria um

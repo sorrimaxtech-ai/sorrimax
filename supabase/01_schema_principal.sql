@@ -1,5 +1,5 @@
 -- ============================================
--- VITTALHUB - Schema Completo do Banco de Dados
+-- SORRIMAX - Schema Completo do Banco de Dados
 -- Execute este script no SQL Editor do Supabase
 -- ============================================
 

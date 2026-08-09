@@ -1,5 +1,5 @@
 -- ============================================================================
--- VITTALHUB · 0014 · Correções apontadas pela auditoria de saúde (0013)
+-- SORRIMAX · 0014 · Correções apontadas pela auditoria de saúde (0013)
 -- ----------------------------------------------------------------------------
 -- Achados corrigidos aqui:
 --   🔴 2 triggers com INSERT rodando como INVOKER (mesma classe do bug do cadastro)

@@ -1,5 +1,5 @@
 -- ============================================================================
--- VITTALHUB · 0016 · Onboarding atômico (substitui o fluxo frágil de cadastro)
+-- SORRIMAX · 0016 · Onboarding atômico (substitui o fluxo frágil de cadastro)
 -- ----------------------------------------------------------------------------
 -- FLUXO ANTIGO (quebrado e inseguro):
 --   1. front cria `clinicas` como ANÔNIMO   ← exigia INSERT público (spam/abuso)

@@ -1,6 +1,6 @@
-# Contrato de construção — VITTALHUB (leia ANTES de escrever código)
+# Contrato de construção — SORRIMAX (leia ANTES de escrever código)
 
-Projeto: `~/Downloads/vittalhub-master` · Vite + React 18 + TS + shadcn/ui + Supabase + TailwindCSS.
+Projeto: `~/Downloads/sorrimax-master` · Vite + React 18 + TS + shadcn/ui + Supabase + TailwindCSS.
 Idioma da UI: **português brasileiro**. Identidade: **verde esmeralda** (`emerald-600`).
 
 ## ⛔ REGRAS DURAS

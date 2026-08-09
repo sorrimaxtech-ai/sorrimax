@@ -1,5 +1,5 @@
 -- ============================================================================
--- VITTALHUB · 0015 · CORREÇÕES CRÍTICAS DE SEGURANÇA
+-- SORRIMAX · 0015 · CORREÇÕES CRÍTICAS DE SEGURANÇA
 -- ----------------------------------------------------------------------------
 -- Achados de auditoria (06/08/2026), todos comprovados por exploração real:
 --   🔴 clinicas: anon podia LER/ALTERAR/APAGAR todas → 33 FKs ON DELETE CASCADE

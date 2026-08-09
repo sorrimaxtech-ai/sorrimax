@@ -1,5 +1,5 @@
 -- ============================================================================
--- VITTALHUB · 0023 · Estoque, Prótese, Página Pública e Perfis de Permissão
+-- SORRIMAX · 0023 · Estoque, Prótese, Página Pública e Perfis de Permissão
 -- ----------------------------------------------------------------------------
 -- 4 blocos:
 --   1. ESTOQUE     — produtos + movimentos (entrada/saida/ajuste/perda) e a

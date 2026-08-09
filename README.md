@@ -4,7 +4,7 @@ Sistema de gestão para clínicas odontológicas: agenda, prontuário, odontogra
 orçamentos, financeiro e atendimento por WhatsApp. Multi-tenant — uma instalação
 atende várias clínicas, isoladas no banco por `clinica_id`.
 
-> Antes chamado **Vittalhub**. O nome antigo ainda aparece em comentários e na
+> Antes chamado **Sorrimax**. O nome antigo ainda aparece em comentários e na
 > pasta local do projeto; trocar quando encostar no arquivo.
 
 ## Stack

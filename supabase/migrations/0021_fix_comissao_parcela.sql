@@ -1,5 +1,5 @@
 -- ============================================================================
--- VITTALHUB · 0021 · Comissão precisa estar ligada à PARCELA
+-- SORRIMAX · 0021 · Comissão precisa estar ligada à PARCELA
 -- ----------------------------------------------------------------------------
 -- BUG (achado em teste de ponta a ponta): `gerar_debitos_orcamento` criava a
 -- comissão com `parcela_id = NULL`. O trigger `parcela_liberar_comissoes` só

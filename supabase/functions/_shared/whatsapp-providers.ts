@@ -1,7 +1,7 @@
 // ============================================================================
 // Adapter de provedores WhatsApp — uazapi + evolution
 // ----------------------------------------------------------------------------
-// Porta de utils/uazapi.ts (Diamond) + suporte à Evolution já usada no Vittalhub.
+// Porta de utils/uazapi.ts (Diamond) + suporte à Evolution já usada no Sorrimax.
 // Mantém os algoritmos fiéis: normalizeBrazilianPhone, extractExternalId (com
 // normalização do id prefixado — chave do dedup), splitIntoParts, circuit breaker.
 // ============================================================================

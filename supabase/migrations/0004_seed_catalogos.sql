@@ -1,5 +1,5 @@
 -- ============================================================================
--- VITTALHUB · 0004 · Seed de catálogos (clínica multi-profissional)
+-- SORRIMAX · 0004 · Seed de catálogos (clínica multi-profissional)
 -- ----------------------------------------------------------------------------
 -- Idempotente: pode rodar quantas vezes quiser.
 -- Só catálogo global. Nada de dado de clínica/paciente aqui.

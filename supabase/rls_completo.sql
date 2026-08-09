@@ -1,5 +1,5 @@
 -- ============================================
--- RLS POLICIES - VITTALHUB
+-- RLS POLICIES - SORRIMAX
 -- Políticas de segurança Row Level Security
 -- ============================================
 

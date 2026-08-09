@@ -1,5 +1,5 @@
 -- ============================================
--- VITTALHUB - Script de Criação do Banco de Dados
+-- SORRIMAX - Script de Criação do Banco de Dados
 -- Execute este script no SQL Editor do Supabase
 -- ============================================
 

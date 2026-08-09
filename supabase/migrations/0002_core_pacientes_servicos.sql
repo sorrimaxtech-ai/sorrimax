@@ -1,5 +1,5 @@
 -- ============================================================================
--- VITTALHUB · 0002 · Núcleo clínico: convênios, pacientes, serviços
+-- SORRIMAX · 0002 · Núcleo clínico: convênios, pacientes, serviços
 -- ----------------------------------------------------------------------------
 -- Substitui os mocks de src/pages/Pacientes.tsx por dados reais.
 -- Perfil de produto: CLÍNICA MULTI-PROFISSIONAL (vocabulário paciente/consulta,

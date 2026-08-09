@@ -1,5 +1,5 @@
 -- ============================================================================
--- VITTALHUB · 0022 · Anamnese digital + Documentos com merge fields
+-- SORRIMAX · 0022 · Anamnese digital + Documentos com merge fields
 -- ----------------------------------------------------------------------------
 -- Dois diferenciais competitivos num só bloco:
 --   · ANAMNESE com construtor de formulário: escala (PHQ-9/GAD-7/dor 0-10),

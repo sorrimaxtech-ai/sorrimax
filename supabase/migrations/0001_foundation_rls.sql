@@ -1,5 +1,5 @@
 -- ============================================================================
--- VITTALHUB · 0001 · Fundação e RLS consolidado
+-- SORRIMAX · 0001 · Fundação e RLS consolidado
 -- ----------------------------------------------------------------------------
 -- Substitui: fix_rls.sql, fix_rls_v2, fix_rls_anon_setup, fix_rls_definitive,
 --            fix_rls_especialidades, fix_rls_final, fix_rls_profiles_login,

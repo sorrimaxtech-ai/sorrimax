@@ -1,5 +1,5 @@
 // ============================================================================
-// Envio de mensagem — porta do caminho sendMessage (Diamond) para o Vittalhub.
+// Envio de mensagem — porta do caminho sendMessage (Diamond) para o Sorrimax.
 // O envio NÃO chama a Evolution/uazapi direto do navegador: enfileira via RPC
 // (wa_enfileirar_texto), que cria a mensagem otimista (pending) + o item na
 // outbox de forma atômica. O worker (Edge Function whatsapp-outbox) envia e o

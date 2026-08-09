@@ -1,5 +1,5 @@
 -- ============================================================================
--- VITTALHUB · 0005 · Núcleo ODONTOLÓGICO
+-- SORRIMAX · 0005 · Núcleo ODONTOLÓGICO
 -- ----------------------------------------------------------------------------
 -- Vira o produto para odontologia. Traz o que nenhum dos dois benchmarks
 -- entrega junto:

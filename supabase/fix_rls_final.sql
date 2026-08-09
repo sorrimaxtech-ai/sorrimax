@@ -1,5 +1,5 @@
 -- ============================================
--- RLS POLICIES - VITTALHUB (CORREÇÃO DE PERMISSÕES)
+-- RLS POLICIES - SORRIMAX (CORREÇÃO DE PERMISSÕES)
 -- ============================================
 
 -- 1. CLINICAS

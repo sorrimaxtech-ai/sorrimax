@@ -1,5 +1,5 @@
 -- ============================================================================
--- VITTALHUB · 0012 · Hardening das funções (corrige o bug do cadastro)
+-- SORRIMAX · 0012 · Hardening das funções (corrige o bug do cadastro)
 -- ----------------------------------------------------------------------------
 -- BUG REPORTADO: ao criar conta, o toast mostra
 --   "new row violates row-level security policy for table pipeline_stages"

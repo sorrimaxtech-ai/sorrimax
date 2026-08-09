@@ -1,4 +1,4 @@
-# Migrations VITTALHUB
+# Migrations SORRIMAX
 
 Migrations versionadas e ordenadas. Substituem a pasta solta de `.sql` da raiz de
 `supabase/`, que tinha 15 arquivos de RLS sobrepostos e conflitantes.

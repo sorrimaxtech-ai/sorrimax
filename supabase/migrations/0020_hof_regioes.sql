@@ -1,5 +1,5 @@
 -- ============================================================================
--- VITTALHUB · 0020 · Regiões faciais (HOF — Harmonização Orofacial)
+-- SORRIMAX · 0020 · Regiões faciais (HOF — Harmonização Orofacial)
 -- ----------------------------------------------------------------------------
 -- O orçamento precisa lançar procedimento em REGIÃO DO ROSTO, não só em dente.
 -- É o recurso premium do concorrente (faceograma). Lista fechada = consistência

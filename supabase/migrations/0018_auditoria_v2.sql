@@ -1,5 +1,5 @@
 -- ============================================================================
--- VITTALHUB · 0018 · Auditoria v2 — fecha as lacunas do próprio auditor
+-- SORRIMAX · 0018 · Auditoria v2 — fecha as lacunas do próprio auditor
 -- ----------------------------------------------------------------------------
 -- A v1 não pegou `clinicas_all_access` (USING(true) TO public) porque só
 -- verificava "existe alguma policy com current_clinica_id". Policies são

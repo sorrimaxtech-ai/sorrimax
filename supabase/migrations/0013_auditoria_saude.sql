@@ -1,5 +1,5 @@
 -- ============================================================================
--- VITTALHUB · 0013 · Auditoria de saúde permanente
+-- SORRIMAX · 0013 · Auditoria de saúde permanente
 -- ----------------------------------------------------------------------------
 -- O bug "new row violates row-level security policy for table pipeline_stages"
 -- é de uma CLASSE de problema, não um caso isolado. Esta função transforma as

@@ -1,5 +1,5 @@
 -- ============================================================================
--- VITTALHUB · 0017 · Blindagem do WhatsApp compartilhado + destravamento do login
+-- SORRIMAX · 0017 · Blindagem do WhatsApp compartilhado + destravamento do login
 -- ----------------------------------------------------------------------------
 -- 🔴 api_token das instâncias do Diamond (SolarMax / Lobo / Eforte) era legível
 --    e EDITÁVEL por qualquer usuário logado da clínica — e ainda era empurrado

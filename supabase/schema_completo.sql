@@ -1,4 +1,4 @@
-# Schema Completo do Banco de Dados - VITTALHUB
+# Schema Completo do Banco de Dados - SORRIMAX
 
 ## 📋 Visão Geral
 
@@ -42,7 +42,7 @@ DECLARE
   code_exists BOOLEAN;
 BEGIN
   LOOP
-    -- Gera código no formato VH-XXXXX (VH = VittalHub)
+    -- Gera código no formato VH-XXXXX (VH = Sorrimax)
     new_code := 'VH-' || LPAD(FLOOR(RANDOM() * 99999)::TEXT, 5, '0');
     
     -- Verifica se código já existe

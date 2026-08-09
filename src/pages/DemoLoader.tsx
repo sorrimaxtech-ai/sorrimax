@@ -9,7 +9,7 @@ const DemoLoader = () => {
 
   useEffect(() => {
     // Ativar modo demo e redirecionar
-    localStorage.setItem('vittalhub_demo_mode', 'true');
+    localStorage.setItem('sorrimax_demo_mode', 'true');
     
     // Pequeno delay para efeito visual
     const timer = setTimeout(() => {

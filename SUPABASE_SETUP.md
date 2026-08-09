@@ -1,10 +1,10 @@
-# Guia de Configuração do Banco de Dados Supabase - VITTALHUB
+# Guia de Configuração do Banco de Dados Supabase - SORRIMAX
 
 ## 📋 Passo a Passo Inicial
 
 1. **Criar conta no Supabase**: https://supabase.com
 2. **Criar novo projeto**:
-   - Nome: `vittalhub`
+   - Nome: `sorrimax`
    - Senha do banco: Anote em local seguro!
    - Região: South America (São Paulo)
 

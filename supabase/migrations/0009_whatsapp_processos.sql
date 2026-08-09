@@ -1,7 +1,7 @@
 -- ============================================================================
--- VITTALHUB · 0009 · Processos simultâneos do chat WhatsApp
+-- SORRIMAX · 0009 · Processos simultâneos do chat WhatsApp
 -- ----------------------------------------------------------------------------
--- Porta os processos concorrentes do Diamond CRM para a realidade do Vittalhub.
+-- Porta os processos concorrentes do Diamond CRM para a realidade do Sorrimax.
 -- Mapeamento de arquitetura (Diamond → aqui):
 --   uazapi                → Evolution API (Baileys), que o projeto já usa
 --   Pusher (realtime)     → Supabase Realtime (CDC de whatsapp_messages/chats)
