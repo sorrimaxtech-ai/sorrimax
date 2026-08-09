@@ -121,3 +121,18 @@ export async function archiveChat(chatId: string, archived: boolean): Promise<vo
     .eq("id", chatId);
   if (error) throw error;
 }
+
+/**
+ * Pede a transcrição de um áudio recebido.
+ *
+ * Sob demanda, não automático: nem todo áudio precisa virar texto, e quem
+ * decide é quem está atendendo. O texto fica salvo na mensagem.
+ */
+export async function transcreverAudio(mensagemId: string): Promise<string> {
+  const { data, error } = await supabase.functions.invoke("whatsapp-media", {
+    body: { acao: "transcrever", mensagemId },
+  });
+  if (error) throw new Error("Não foi possível transcrever agora");
+  if ((data as any)?.erro) throw new Error((data as any).erro);
+  return (data as any)?.texto as string;
+}

@@ -2,6 +2,10 @@ import { cn } from "@/lib/utils";
 import { statusIcon, type WaStatus } from "@/services/whatsapp/status";
 import type { WaMessageRow } from "@/services/whatsapp/realtime";
 import { FileText, Download, MapPin, Phone } from "lucide-react";
+import { PlayerAudio } from "@/components/whatsapp/PlayerAudio";
+import { transcreverAudio } from "@/services/whatsapp/send";
+import { toast } from "sonner";
+import { useState } from "react";
 
 // ============================================================================
 // MensagemBolha — uma mensagem, renderizada pelo tipo
@@ -19,6 +23,12 @@ function horaCurta(iso: string): string {
 export function MensagemBolha({ m }: { m: WaMessageRow }) {
   const meu = m.from_me;
   const tipo = m.message_type;
+  // Miniatura de 300px basta para reconhecer; ver detalhe de radiografia ou
+  // documento fotografado exige tela cheia.
+  const [ampliada, setAmpliada] = useState(false);
+  const [transcricao, setTranscricao] = useState<string | null>(
+    ((m.metadata as any)?.transcricao as string) ?? null,
+  );
 
   const rodape = (
     <div className={cn("flex items-center gap-1 justify-end mt-0.5 text-[10px] leading-none",
@@ -43,21 +53,34 @@ export function MensagemBolha({ m }: { m: WaMessageRow }) {
     )}>
       {tipo === "image" && m.media_url ? (
         <>
-          <img src={m.media_url} alt={m.content || "Imagem"}
-               className="rounded-xl max-h-80 w-auto object-cover" loading="lazy" />
+          {/* 300px: cabe na coluna sem empurrar o layout e ainda dá pra ver o
+              que o paciente mandou. Clique abre em tamanho real. */}
+          <button onClick={() => setAmpliada(true)} className="block w-full">
+            <img src={m.media_url} alt={m.content || "Imagem"}
+                 className="rounded-xl w-full max-w-[300px] max-h-[300px] min-h-[120px] object-contain bg-black/5 cursor-zoom-in hover:opacity-95 transition-opacity"
+                 loading="lazy" decoding="async" />
+          </button>
           {m.content && <p className="px-2.5 py-1">{m.content}</p>}
           <div className="px-2">{rodape}</div>
         </>
       ) : tipo === "video" && m.media_url ? (
         <>
-          <video src={m.media_url} controls className="rounded-xl max-h-80 w-auto" />
+          <video src={m.media_url} controls playsInline preload="metadata"
+                 className="rounded-xl w-full max-w-[300px] max-h-[300px] bg-black" />
           {m.content && <p className="px-2.5 py-1">{m.content}</p>}
           <div className="px-2">{rodape}</div>
         </>
       ) : (tipo === "audio" || tipo === "ptt") ? (
-        <div className="min-w-[220px]">
+        <div>
           {m.media_url ? (
-            <audio src={m.media_url} controls className="w-full h-9" />
+            <PlayerAudio
+              url={m.media_url} meu={meu}
+              transcricao={transcricao}
+              onTranscrever={async () => {
+                try { setTranscricao(await transcreverAudio(m.id)); }
+                catch (e: any) { toast.error(e?.message ?? "Não foi possível transcrever"); }
+              }}
+            />
           ) : (
             <span className="italic opacity-80">🎤 Mensagem de voz</span>
           )}
@@ -81,7 +104,8 @@ export function MensagemBolha({ m }: { m: WaMessageRow }) {
         </a>
       ) : tipo === "sticker" && m.media_url ? (
         <>
-          <img src={m.media_url} alt="Figurinha" className="h-28 w-28 object-contain" loading="lazy" />
+          <img src={m.media_url} alt="Figurinha" loading="lazy" decoding="async"
+               className="w-[140px] h-auto min-h-[80px] object-contain drop-shadow-sm" />
           {rodape}
         </>
       ) : tipo === "location" ? (
@@ -107,6 +131,34 @@ export function MensagemBolha({ m }: { m: WaMessageRow }) {
           <span className="italic opacity-70">Mensagem não suportada</span>
           {rodape}
         </>
+      )}
+
+      {/* Tela cheia da imagem. Fecha no clique em qualquer lugar ou no Esc —
+          a atendente está com uma mão no telefone, não vai caçar botão. */}
+      {ampliada && m.media_url && (
+        <div
+          className="fixed inset-0 z-50 bg-black/85 flex items-center justify-center p-6 cursor-zoom-out"
+          onClick={() => setAmpliada(false)}
+          onKeyDown={(e) => { if (e.key === "Escape") setAmpliada(false); }}
+          role="button"
+          tabIndex={-1}
+          aria-label="Fechar imagem"
+        >
+          <img
+            src={m.media_url}
+            alt={m.content || "Imagem"}
+            className="max-h-full max-w-full object-contain rounded-lg"
+            onClick={(e) => e.stopPropagation()}
+          />
+          <a
+            href={m.media_url}
+            download
+            onClick={(e) => e.stopPropagation()}
+            className="absolute bottom-6 right-6 rounded-full bg-white/90 px-4 py-2 text-sm font-medium text-gray-800 shadow-lg hover:bg-white"
+          >
+            Baixar
+          </a>
+        </div>
       )}
     </div>
   );

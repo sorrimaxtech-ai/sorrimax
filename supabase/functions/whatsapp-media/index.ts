@@ -110,6 +110,45 @@ async function resgatarUma(msg: any): Promise<"ok" | "sem-provedor" | "falhou"> 
   return "ok";
 }
 
+/**
+ * Transcreve um áudio sob demanda.
+ *
+ * O provedor faz a transcrição no próprio download (`transcribe: true`), então
+ * não precisamos de outro serviço. Fica sob demanda porque nem todo áudio
+ * precisa virar texto — e transcrever tudo custaria caro sem ninguém pedir.
+ */
+async function transcrever(msgId: string): Promise<{ ok: boolean; texto?: string; erro?: string }> {
+  const { data: msg } = await supabase.from("whatsapp_messages")
+    .select("id, chat_id, external_id, metadata, message_type").eq("id", msgId).maybeSingle();
+  if (!msg?.external_id) return { ok: false, erro: "mensagem sem referência no provedor" };
+
+  const { data: chat } = await supabase.from("whatsapp_chats")
+    .select("instance_id").eq("id", msg.chat_id).maybeSingle();
+  const { data: inst } = await supabase.from("whatsapp_instances")
+    .select("api_url, api_token, apikey").eq("id", chat?.instance_id ?? "").maybeSingle();
+  const apiUrl = inst?.api_url;
+  const token = inst?.api_token ?? inst?.apikey;
+  if (!apiUrl || !token) return { ok: false, erro: "conexão indisponível" };
+
+  const res = await fetch(`${apiUrl}/message/download`, {
+    method: "POST",
+    headers: { token, "Content-Type": "application/json" },
+    body: JSON.stringify({
+      id: msg.external_id, return_base64: false, return_link: false,
+      transcribe: true, generate_mp3: true,
+    }),
+  });
+  if (!res.ok) return { ok: false, erro: "o provedor não conseguiu transcrever" };
+  const d = await res.json().catch(() => ({}));
+  const texto: string | null = d?.transcription ?? d?.transcript ?? d?.text ?? null;
+  if (!texto) return { ok: false, erro: "não veio transcrição" };
+
+  await supabase.from("whatsapp_messages")
+    .update({ metadata: { ...(msg.metadata ?? {}), transcricao: texto } })
+    .eq("id", msg.id);
+  return { ok: true, texto };
+}
+
 Deno.serve(async (req) => {
   const url = new URL(req.url);
   const partes = url.pathname.split("/").filter(Boolean);
@@ -128,6 +167,18 @@ Deno.serve(async (req) => {
       status: 302,
       headers: { Location: assinada, "Cache-Control": "private, max-age=600" },
     });
+  }
+
+  // ------------------------------------------------------------- transcrever
+  if (req.method === "POST") {
+    const corpo = await req.clone().json().catch(() => ({}));
+    if (corpo?.acao === "transcrever") {
+      // Só quem está autenticado pede transcrição — é conteúdo de paciente.
+      const jwt = req.headers.get("Authorization") ?? "";
+      if (!jwt.startsWith("Bearer ")) return json({ erro: "não autorizado" }, 401);
+      const r = await transcrever(String(corpo?.mensagemId ?? ""));
+      return r.ok ? json({ texto: r.texto }) : json({ erro: r.erro }, 422);
+    }
   }
 
   // --------------------------------------------------------------- resgatar
