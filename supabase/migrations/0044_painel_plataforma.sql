@@ -730,21 +730,32 @@ begin
   perform public.plataforma_exigir();
 
   return query
-  select coalesce(c.estado, '—'),
-         coalesce(nullif(btrim(c.cidade), ''), '—'),
+  with base as (
+    select c.id,
+           coalesce(c.estado, '—')                        as uf,
+           coalesce(nullif(btrim(c.cidade), ''), '—')     as cid,
+           a.status, a.valor, a.ciclo, a.cortesia
+      from public.clinicas c
+      left join public.asaas_assinaturas a on a.clinica_id = c.id
+     where not c.sistema
+  ),
+  -- contagem de usuários agregada ANTES do group by. Como subquery correlacionada
+  -- dentro do select agrupado, `c.estado` não está no grupo e o Postgres recusa.
+  equipe as (
+    select p.clinica_id, count(*)::int as n
+      from public.profiles p
+     where p.clinica_id is not null
+     group by p.clinica_id
+  )
+  select b.uf, b.cid,
          count(*)::int,
-         count(*) filter (where a.status = 'ativa' and not coalesce(a.cortesia,false))::int,
-         round(coalesce(sum(case when a.status = 'ativa' and not coalesce(a.cortesia,false) and a.valor is not null
-                  then a.valor / public.plataforma_meses_ciclo(a.ciclo) end), 0), 2),
-         (select count(*)::int from public.profiles p
-           where p.clinica_id in (select id from public.clinicas c2
-                                   where not c2.sistema
-                                     and coalesce(c2.estado,'—') = coalesce(c.estado,'—')
-                                     and coalesce(nullif(btrim(c2.cidade),''),'—') = coalesce(nullif(btrim(c.cidade),''),'—')))
-    from public.clinicas c
-    left join public.asaas_assinaturas a on a.clinica_id = c.id
-   where not c.sistema
-   group by 1, 2
+         count(*) filter (where b.status = 'ativa' and not coalesce(b.cortesia,false))::int,
+         round(coalesce(sum(case when b.status = 'ativa' and not coalesce(b.cortesia,false) and b.valor is not null
+                  then b.valor / public.plataforma_meses_ciclo(b.ciclo) end), 0), 2),
+         coalesce(sum(e.n), 0)::int
+    from base b
+    left join equipe e on e.clinica_id = b.id
+   group by b.uf, b.cid
    order by 3 desc, 1, 2;
 end $$;
 

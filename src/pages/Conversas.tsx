@@ -71,6 +71,7 @@ const Conversas = () => {
   const [carregando, setCarregando] = useState(true);
   const fimRef = useRef<HTMLDivElement>(null);
   const arquivoRef = useRef<HTMLInputElement>(null);
+  const [respondendo, setRespondendo] = useState<WaMessageRow | null>(null);
 
   // --- carga inicial dos chats
   useEffect(() => {
@@ -111,6 +112,7 @@ const Conversas = () => {
       .limit(50);
     if (error) { toast.error("Erro ao abrir conversa"); return; }
     setMensagens(((data ?? []) as WaMessageRow[]).reverse());
+    setRespondendo(null);
     await markChatRead(chatId);
     setChats((prev) => prev.map((c) => (c.id === chatId ? { ...c, unread_count: 0 } : c)));
   }, []);
@@ -179,6 +181,7 @@ const Conversas = () => {
     try {
       await enqueueText(ativo, texto);
       setTexto("");
+      setRespondendo(null);
     } catch (e: any) {
       toast.error("Não foi possível enviar", { description: traduzErro(e) });
     } finally {
@@ -520,7 +523,13 @@ const Conversas = () => {
                       )}
                       <div className={cn("flex", m.from_me ? "justify-end" : "justify-start",
                                           mesmaSequencia ? "mt-0.5" : "mt-2")}>
-                        <MensagemBolha m={m} />
+                        <MensagemBolha
+                          m={m}
+                          citada={m.reply_to
+                            ? mensagens.find((x) => x.external_id === m.reply_to) ?? null
+                            : null}
+                          onResponder={setRespondendo}
+                        />
                       </div>
                     </div>
                   );
@@ -548,6 +557,27 @@ const Conversas = () => {
                     e.target.value = "";
                   }}
                 />
+
+                {respondendo && (
+                  <div className="mb-2 flex items-start gap-2 rounded-lg bg-white px-3 py-2 shadow-sm">
+                    <div className="w-[3px] self-stretch rounded-full bg-brand-500 shrink-0" />
+                    <div className="min-w-0 flex-1">
+                      <p className="text-[11px] font-semibold text-brand-700">
+                        Respondendo {respondendo.from_me ? "você mesmo" : (chatAtivo.name ?? "o paciente")}
+                      </p>
+                      <p className="text-xs text-gray-600 truncate">
+                        {respondendo.content || "Mídia"}
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => setRespondendo(null)}
+                      aria-label="Cancelar resposta"
+                      className="h-6 w-6 rounded-full flex items-center justify-center text-slate-400 hover:bg-slate-100 shrink-0"
+                    >
+                      ×
+                    </button>
+                  </div>
+                )}
 
                 {/* items-end: os botões ficam colados no fundo quando o campo
                     cresce em várias linhas, como no WhatsApp. */}

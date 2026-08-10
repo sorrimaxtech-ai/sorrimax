@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
 import { statusIcon, type WaStatus } from "@/services/whatsapp/status";
 import type { WaMessageRow } from "@/services/whatsapp/realtime";
-import { FileText, Download, MapPin, Phone } from "lucide-react";
+import { FileText, Download, MapPin, Phone, CornerUpLeft, CornerUpRight } from "lucide-react";
 import { PlayerAudio } from "@/components/whatsapp/PlayerAudio";
 import { transcreverAudio } from "@/services/whatsapp/send";
 import { toast } from "sonner";
@@ -20,7 +20,15 @@ function horaCurta(iso: string): string {
   return new Date(iso).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
 }
 
-export function MensagemBolha({ m }: { m: WaMessageRow }) {
+interface BolhaProps {
+  m: WaMessageRow;
+  /** Mensagem citada por esta (quando é resposta). */
+  citada?: WaMessageRow | null;
+  onResponder?: (m: WaMessageRow) => void;
+  onEncaminhar?: (m: WaMessageRow) => void;
+}
+
+export function MensagemBolha({ m, citada, onResponder, onEncaminhar }: BolhaProps) {
   const meu = m.from_me;
   const tipo = m.message_type;
   // Miniatura de 300px basta para reconhecer; ver detalhe de radiografia ou
@@ -46,6 +54,13 @@ export function MensagemBolha({ m }: { m: WaMessageRow }) {
   const midiaLarga = tipo === "image" || tipo === "video";
 
   return (
+    <div className="group/msg relative flex items-center gap-1">
+      {/* Ações aparecem ao passar o mouse, do lado de FORA da bolha: dentro
+          elas cobririam o texto justamente quando se quer ler antes de agir. */}
+      {meu && (onResponder || onEncaminhar) && (
+        <AcoesMensagem m={m} onResponder={onResponder} onEncaminhar={onEncaminhar} />
+      )}
+
     <div className={cn(
       "max-w-[75%] rounded-2xl text-sm shadow-sm break-words",
       midiaLarga ? "overflow-hidden p-1" : "px-3.5 py-2",
@@ -53,6 +68,19 @@ export function MensagemBolha({ m }: { m: WaMessageRow }) {
       // (não branco sobre azul) — é o que a recepção reconhece de imediato.
       meu ? "bg-[#d9fdd3] text-[#111b21] rounded-tr-sm" : "bg-white text-[#111b21] rounded-tl-sm",
     )}>
+      {/* Citação: mostra o trecho respondido, como no WhatsApp. Sem isso, a
+          resposta a uma pergunta antiga fica sem contexto na tela. */}
+      {citada && (
+        <div className="mb-1 rounded-md border-l-[3px] border-brand-500 bg-black/5 px-2 py-1">
+          <p className="text-[11px] font-semibold text-brand-700">
+            {citada.from_me ? "Você" : (citada.sender_name ?? "Paciente")}
+          </p>
+          <p className="text-[11.5px] text-gray-600 truncate">
+            {citada.content || "Mídia"}
+          </p>
+        </div>
+      )}
+
       {tipo === "image" && m.media_url ? (
         <>
           {/* 300px: cabe na coluna sem empurrar o layout e ainda dá pra ver o
@@ -161,6 +189,41 @@ export function MensagemBolha({ m }: { m: WaMessageRow }) {
             Baixar
           </a>
         </div>
+      )}
+    </div>
+
+      {!meu && (onResponder || onEncaminhar) && (
+        <AcoesMensagem m={m} onResponder={onResponder} onEncaminhar={onEncaminhar} />
+      )}
+    </div>
+  );
+}
+
+/** Botões que surgem ao passar o mouse na mensagem. */
+function AcoesMensagem({
+  m, onResponder, onEncaminhar,
+}: { m: WaMessageRow; onResponder?: (m: WaMessageRow) => void; onEncaminhar?: (m: WaMessageRow) => void }) {
+  return (
+    <div className="flex items-center gap-0.5 opacity-0 group-hover/msg:opacity-100 transition-opacity shrink-0">
+      {onResponder && (
+        <button
+          onClick={() => onResponder(m)}
+          aria-label="Responder esta mensagem"
+          title="Responder"
+          className="h-7 w-7 rounded-full bg-white shadow-sm flex items-center justify-center text-[#54656f] hover:bg-slate-50"
+        >
+          <CornerUpLeft className="h-3.5 w-3.5" />
+        </button>
+      )}
+      {onEncaminhar && (
+        <button
+          onClick={() => onEncaminhar(m)}
+          aria-label="Encaminhar esta mensagem"
+          title="Encaminhar"
+          className="h-7 w-7 rounded-full bg-white shadow-sm flex items-center justify-center text-[#54656f] hover:bg-slate-50"
+        >
+          <CornerUpRight className="h-3.5 w-3.5" />
+        </button>
       )}
     </div>
   );

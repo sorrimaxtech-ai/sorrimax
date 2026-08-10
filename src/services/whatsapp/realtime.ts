@@ -21,6 +21,7 @@ export interface WaMessageRow {
   mime_type: string | null;
   file_name: string | null;
   sender_name: string | null;
+  reply_to: string | null;
   external_id: string | null;
   created_at: string;
 }
