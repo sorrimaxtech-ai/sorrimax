@@ -85,6 +85,7 @@ const Especialidades = lazy(() => import("./pages/Especialidades"));
 const RotulosAgenda = lazy(() => import("./pages/RotulosAgenda"));
 const Permissoes = lazy(() => import("./pages/Permissoes"));
 const Integracoes = lazy(() => import("./pages/Integracoes"));
+const IdentidadeVisual = lazy(() => import("./pages/IdentidadeVisual"));
 const Anotacoes = lazy(() => import("./pages/Anotacoes"));
 
 const queryClient = new QueryClient();
@@ -185,6 +186,7 @@ const App = () => (
             <Route path="/rotulos" element={<RotulosAgenda />} />
             <Route path="/permissoes" element={<Adm e={<Permissoes />} />} />
             <Route path="/integracoes" element={<Adm e={<Integracoes />} />} />
+            <Route path="/identidade" element={<Adm e={<IdentidadeVisual />} />} />
             <Route path="/assinatura" element={<Adm e={<Assinatura />} />} />
             <Route path="/planos" element={<Adm e={<Planos />} />} />
             <Route path="/atividades" element={<Adm e={<Atividades />} />} />

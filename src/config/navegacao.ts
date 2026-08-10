@@ -143,12 +143,13 @@ export const MODULOS_RODAPE: Modulo[] = [
     href: "/configuracoes",
     icon: Settings,
     base: [
-      "/configuracoes", "/procedimentos", "/especialidades",
+      "/configuracoes", "/identidade", "/procedimentos", "/especialidades",
       "/profissionais", "/permissoes", "/rotulos", "/integracoes", "/assinatura", "/atividades",
     ],
     pronto: true,
     abas: [
       { label: "Clínica", href: "/configuracoes", pronto: true, soAdmin: true },
+      { label: "Identidade visual", href: "/identidade", pronto: true, soAdmin: true },
       { label: "Equipe", href: "/profissionais", pronto: true },
       { label: "Procedimentos", href: "/procedimentos", pronto: true },
       { label: "Especialidades", href: "/especialidades", pronto: true },
