@@ -773,15 +773,21 @@ begin
    where not sistema and segmentacao is not null and segmentacao <> '{}'::jsonb;
 
   return query
-  with respostas as (
-    select s.key as pergunta,
-           case jsonb_typeof(s.value)
-             when 'array'  then jsonb_array_elements_text(s.value)
-             when 'string' then s.value #>> '{}'
-             else s.value::text
-           end as resposta
+  with pares as (
+    select s.key as pergunta, s.value as valor
       from public.clinicas c, jsonb_each(c.segmentacao) s
      where not c.sistema and c.segmentacao <> '{}'::jsonb
+  ),
+  -- A resposta pode ser texto ("dentista") ou lista ("agenda","cobrança"). O
+  -- CASE só normaliza para array — a explosão fica no LATERAL, porque função
+  -- que retorna conjunto dentro de CASE o Postgres recusa.
+  respostas as (
+    select p.pergunta, x.resposta
+      from pares p
+      cross join lateral jsonb_array_elements_text(
+        case when jsonb_typeof(p.valor) = 'array' then p.valor
+             else jsonb_build_array(p.valor) end
+      ) as x(resposta)
   )
   select r.pergunta,
          coalesce(nullif(btrim(r.resposta), ''), '—'),
