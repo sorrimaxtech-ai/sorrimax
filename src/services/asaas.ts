@@ -78,20 +78,37 @@ export interface Assinatura {
   status: "trial" | "ativa" | "atrasada" | "cancelada";
   proximo_vencimento: string | null;
   trial_termina_em: string | null;
+  /** Teste sem data de fim, concedido pelo painel da plataforma. */
+  trial_infinito: boolean;
+  /** Usa de graça por decisão comercial — não é trial vencendo. */
+  cortesia: boolean;
 }
 
 const DIAS_TRIAL = 7;
 
 export async function obterAssinatura(): Promise<Assinatura | null> {
-  // 1) já assinou? asaas_assinaturas tem a linha (plano/status/vencimento).
+  // A linha em asaas_assinaturas passou a existir para TODA clínica (trigger da
+  // 0044), então este é o caminho normal — e é dele que saem o prazo real do
+  // teste e a cortesia. Antes o front chutava `created_at + 7`, o que ignorava
+  // qualquer prazo combinado e mostrava "vencido" para quem tinha 90 dias.
   const { data } = await supabase
     .from("asaas_assinaturas")
-    .select("plano, status, proximo_vencimento, trial_termina_em")
+    .select("plano, status, proximo_vencimento, trial_termina_em, trial_infinito, cortesia")
     .maybeSingle();
-  if (data) return data as Assinatura;
 
-  // 2) sem assinatura → trial implícito da clínica: created_at + 7 dias.
-  //    (o asaas_assinaturas só nasce quando a clínica escolhe um plano)
+  if (data) {
+    const d = data as Record<string, unknown>;
+    return {
+      plano: String(d.plano ?? "trial"),
+      status: (d.status as Assinatura["status"]) ?? "trial",
+      proximo_vencimento: (d.proximo_vencimento as string) ?? null,
+      trial_termina_em: (d.trial_termina_em as string) ?? null,
+      trial_infinito: d.trial_infinito === true,
+      cortesia: d.cortesia === true,
+    };
+  }
+
+  // Fallback para base antiga que ainda não recebeu a 0044.
   const { data: cl } = await supabase
     .from("clinicas")
     .select("plano, assinatura_status, created_at")
@@ -109,6 +126,8 @@ export async function obterAssinatura(): Promise<Assinatura | null> {
     status,
     proximo_vencimento: null,
     trial_termina_em: trialFim,
+    trial_infinito: false,
+    cortesia: false,
   };
 }
 

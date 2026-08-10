@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import { RotaPlataforma } from "@/components/auth/RotaPlataforma";
 import { AppShell } from "@/components/shell/AppShell";
 
 // públicas
@@ -27,6 +28,15 @@ const AgendaPreview = lazy(() => import("./pages/AgendaPreview"));
 const SiriTest = lazy(() => import("./pages/SiriTest"));
 import NotFound from "./pages/NotFound";
 const EmConstrucao = lazy(() => import("./pages/EmConstrucao"));
+const ContaSuspensa = lazy(() => import("./pages/ContaSuspensa"));
+
+// painel da plataforma (time Sorrimax) — fora do app da clínica
+const PlataformaShell = lazy(() => import("./pages/plataforma/PlataformaShell"));
+const PlataformaVisao = lazy(() => import("./pages/plataforma/Visao"));
+const PlataformaContas = lazy(() => import("./pages/plataforma/Contas"));
+const PlataformaPotenciais = lazy(() => import("./pages/plataforma/Potenciais"));
+const PlataformaMercado = lazy(() => import("./pages/plataforma/Mercado"));
+const PlataformaRegistro = lazy(() => import("./pages/plataforma/Registro"));
 
 // inteligência
 const Dashboard = lazy(() => import("./pages/Dashboard"));
@@ -109,6 +119,18 @@ const App = () => (
           <Route path="/onboarding-preview" element={<OnboardingPreview />} />
           <Route path="/siri-test" element={<SiriTest />} />
           <Route path="/agenda-preview" element={<AgendaPreview />} />
+          <Route path="/conta-suspensa" element={<ContaSuspensa />} />
+
+          {/* ---------------- painel do time Sorrimax ----------------
+              Moldura própria: aqui o usuário não é uma clínica, é quem
+              atende todas elas. A tranca de verdade está nas RPCs. */}
+          <Route path="/plataforma" element={<RotaPlataforma><PlataformaShell /></RotaPlataforma>}>
+            <Route index element={<PlataformaVisao />} />
+            <Route path="contas" element={<PlataformaContas />} />
+            <Route path="potenciais" element={<PlataformaPotenciais />} />
+            <Route path="mercado" element={<PlataformaMercado />} />
+            <Route path="registro" element={<PlataformaRegistro />} />
+          </Route>
 
           {/* ---------------- app autenticado ----------------
               A sessão é verificada UMA vez, no layout. As páginas filhas

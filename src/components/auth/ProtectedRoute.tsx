@@ -23,7 +23,7 @@ interface Props {
   somenteAdmin?: boolean;
 }
 
-type Estado = "verificando" | "liberado" | "sem-sessao" | "sem-clinica" | "sem-permissao";
+type Estado = "verificando" | "liberado" | "sem-sessao" | "sem-clinica" | "sem-permissao" | "suspensa";
 
 export const ProtectedRoute = ({ children, somenteAdmin }: Props) => {
   const { isDemo } = useDemoMode();
@@ -44,6 +44,10 @@ export const ProtectedRoute = ({ children, somenteAdmin }: Props) => {
       const ctx = await carregarContexto(true);
       if (!vivo) return;
       if (!ctx?.clinica_id) { setEstado("sem-clinica"); return; }
+      // Bloqueio comercial (painel da plataforma). O banco também fecha as
+      // tabelas por policy restritiva; aqui o desvio existe para a pessoa ver
+      // o motivo em vez de um sistema que abre vazio sem explicar.
+      if (ctx.bloqueada) { setEstado("suspensa"); return; }
       if (somenteAdmin && ctx.role !== "admin") { setEstado("sem-permissao"); return; }
       setEstado("liberado");
     })();
@@ -64,6 +68,7 @@ export const ProtectedRoute = ({ children, somenteAdmin }: Props) => {
     return <Navigate to="/auth" replace state={{ de: location.pathname }} />;
   }
   if (estado === "sem-clinica") return <Navigate to="/configurar-clinica" replace />;
+  if (estado === "suspensa") return <Navigate to="/conta-suspensa" replace />;
   if (estado === "sem-permissao") return <Navigate to="/agenda" replace />;
 
   return <>{children}</>;

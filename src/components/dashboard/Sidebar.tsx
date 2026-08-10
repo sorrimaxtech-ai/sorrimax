@@ -8,7 +8,7 @@ import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem,
   DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { LogOut, Settings, User, X } from "lucide-react";
+import { LogOut, Settings, ShieldCheck, User, X } from "lucide-react";
 import iconWhite from "@/assets/brand/sorrimax-icon-white.png";
 import { useToast } from "@/hooks/use-toast";
 
@@ -132,6 +132,16 @@ export const Sidebar = () => {
               {isDemo && <p className="mt-1 text-[10px] font-bold uppercase tracking-wider text-brand-600">Modo demo</p>}
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
+            {/* Porta do painel do SaaS. Fica aqui, e não na navegação, porque
+                para 99% dos usuários ela não existe — só o time Sorrimax vê. */}
+            {contexto?.plataforma && (
+              <>
+                <DropdownMenuItem onClick={() => navigate("/plataforma")} className="text-brand-700">
+                  <ShieldCheck className="mr-2 h-4 w-4" /> Painel Sorrimax
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+              </>
+            )}
             <DropdownMenuItem onClick={() => navigate("/profissionais")}>
               <User className="mr-2 h-4 w-4" /> Equipe
             </DropdownMenuItem>

@@ -105,14 +105,22 @@ create trigger trg_plataforma_membros_touch before update on public.plataforma_m
 -- ignorado com aviso, não quebra a migration.
 do $$
 declare
-  donos text[] := array['guilhermevvui765@gmail.com'];
+  donos text[] := array[
+    'sorrimaxtech@gmail.com',
+    'sorrimaxtechtt@gmail.com',
+    'sorrimaxtechzz@gmail.com',
+    'guilhermevvui765@gmail.com'
+  ];
   e text;
   uid uuid;
 begin
   foreach e in array donos loop
     select id into uid from auth.users where lower(email) = lower(e) limit 1;
     if uid is null then
-      raise notice '[0044] dono % ainda não existe em auth.users — cadastre-se e rode: insert into plataforma_membros(user_id,email,papel) select id, email, ''dono'' from auth.users where lower(email)=lower(%L);', e, e;
+      raise notice '%', format(
+        '[0044] dono %s ainda não existe em auth.users — cadastre-se e depois rode: '
+        'insert into plataforma_membros(user_id,email,papel) '
+        'select id, email, ''dono'' from auth.users where lower(email)=lower(%L);', e, e);
     else
       insert into public.plataforma_membros (user_id, email, nome, papel)
       values (uid, e, coalesce((select raw_user_meta_data->>'full_name' from auth.users where id = uid), e), 'dono')

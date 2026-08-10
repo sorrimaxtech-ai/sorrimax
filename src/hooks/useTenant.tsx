@@ -21,6 +21,18 @@ export interface Contexto {
   clinica_id: string | null;
   clinica_nome: string | null;
   clinica_codigo: string | null;
+  // vindos da 0044: quem é do time do SaaS, e a situação comercial da clínica.
+  // Ficam aqui porque as três telas que dependem disso (porta do painel, aviso
+  // de bloqueio, contador do teste) precisam do dado antes de qualquer query.
+  plataforma: boolean;
+  plataforma_papel: string | null;
+  plano: string | null;
+  assinatura_status: string | null;
+  trial_termina_em: string | null;
+  trial_infinito: boolean;
+  cortesia: boolean;
+  bloqueada: boolean;
+  bloqueio_motivo: string | null;
 }
 
 let cache: Contexto | null = null;
@@ -81,6 +93,9 @@ export function useTenant() {
     carregando,
     clinicaId: contexto?.clinica_id ?? null,
     isAdmin: contexto?.role === "admin",
+    /** Membro do time Sorrimax — quem enxerga o painel da plataforma. */
+    isPlataforma: contexto?.plataforma === true,
+    isPlataformaDono: contexto?.plataforma_papel === "dono",
     recarregar: () => carregarContexto(true).then(setContexto),
   };
 }
