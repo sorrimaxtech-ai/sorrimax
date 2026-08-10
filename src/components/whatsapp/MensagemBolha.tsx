@@ -54,15 +54,12 @@ export function MensagemBolha({ m, citada, onResponder, onEncaminhar }: BolhaPro
   const midiaLarga = tipo === "image" || tipo === "video";
 
   return (
-    <div className="group/msg relative flex items-center gap-1">
-      {/* Ações aparecem ao passar o mouse, do lado de FORA da bolha: dentro
-          elas cobririam o texto justamente quando se quer ler antes de agir. */}
-      {meu && (onResponder || onEncaminhar) && (
-        <AcoesMensagem m={m} onResponder={onResponder} onEncaminhar={onEncaminhar} />
-      )}
-
+    // Wrapper é o ÚNICO item do flex do pai (justify-end/start) e trava a largura
+    // em 75% DA COLUNA — não do conteúdo. Assim toda bolha alinha no mesmo lugar,
+    // curta ou longa. As ações ficam absolutas aqui dentro (não ocupam largura).
+    <div className="group/msg relative max-w-[75%]">
     <div className={cn(
-      "max-w-[75%] rounded-2xl text-sm shadow-sm break-words",
+      "relative rounded-2xl text-sm shadow-sm break-words",
       midiaLarga ? "overflow-hidden p-1" : "px-3.5 py-2",
       // Cores do WhatsApp: a nossa mensagem em verde-claro com texto escuro
       // (não branco sobre azul) — é o que a recepção reconhece de imediato.
@@ -192,8 +189,18 @@ export function MensagemBolha({ m, citada, onResponder, onEncaminhar }: BolhaPro
       )}
     </div>
 
-      {!meu && (onResponder || onEncaminhar) && (
-        <AcoesMensagem m={m} onResponder={onResponder} onEncaminhar={onEncaminhar} />
+      {/* Ações fora do fluxo (absolutas): surgem no hover ao lado da bolha, sem
+          ocupar largura — senão empurravam a bolha e desalinhavam tudo. */}
+      {(onResponder || onEncaminhar) && (
+        <AcoesMensagem
+          m={m}
+          onResponder={onResponder}
+          onEncaminhar={onEncaminhar}
+          className={cn(
+            "absolute top-1/2 z-10 -translate-y-1/2",
+            meu ? "right-full mr-1.5" : "left-full ml-1.5",
+          )}
+        />
       )}
     </div>
   );
@@ -201,10 +208,10 @@ export function MensagemBolha({ m, citada, onResponder, onEncaminhar }: BolhaPro
 
 /** Botões que surgem ao passar o mouse na mensagem. */
 function AcoesMensagem({
-  m, onResponder, onEncaminhar,
-}: { m: WaMessageRow; onResponder?: (m: WaMessageRow) => void; onEncaminhar?: (m: WaMessageRow) => void }) {
+  m, onResponder, onEncaminhar, className,
+}: { m: WaMessageRow; onResponder?: (m: WaMessageRow) => void; onEncaminhar?: (m: WaMessageRow) => void; className?: string }) {
   return (
-    <div className="flex items-center gap-0.5 opacity-0 group-hover/msg:opacity-100 transition-opacity shrink-0">
+    <div className={cn("flex items-center gap-0.5 opacity-0 group-hover/msg:opacity-100 transition-opacity shrink-0", className)}>
       {onResponder && (
         <button
           onClick={() => onResponder(m)}
